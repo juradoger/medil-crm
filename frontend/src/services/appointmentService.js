@@ -1,59 +1,52 @@
-// Servicio de citas (frontend) — conecta con InsForge
-const BASE_URL = import.meta.env.VITE_INSFORGE_API_URL;
-const API_KEY  = import.meta.env.VITE_INSFORGE_API_KEY;
-
-function getHeaders() {
-  return {
-    'Content-Type': 'application/json',
-    'x-api-key': API_KEY,
-  };
-}
+// Servicio de citas (frontend) — Appointment service (frontend)
+// Usa @insforge/sdk — fluent API igual que Supabase — Uses @insforge/sdk — fluent API like Supabase
+import { db } from '../lib/insforge';
 
 export async function getAll() {
-  const res = await fetch(`${BASE_URL}/appointments`, { headers: getHeaders() });
-  if (!res.ok) throw new Error(`Error cargando citas: ${res.status}`);
-  return res.json();
+  const { data, error } = await db.from('appointments').select().order('date', { ascending: true });
+  if (error) throw new Error(error.message);
+  return data;
 }
 
 export async function getByDate(date) {
-  const res = await fetch(`${BASE_URL}/appointments?date=${encodeURIComponent(date)}`, {
-    headers: getHeaders(),
-  });
-  if (!res.ok) throw new Error(`Error filtrando citas por fecha: ${res.status}`);
-  return res.json();
+  const { data, error } = await db.from('appointments').select().eq('date', date);
+  if (error) throw new Error(error.message);
+  return data;
 }
 
 export async function create(appointmentData) {
-  const res = await fetch(`${BASE_URL}/appointments`, {
-    method: 'POST',
-    headers: getHeaders(),
-    body: JSON.stringify({ ...appointmentData, status: 'scheduled' }),
-  });
-  if (!res.ok) throw new Error(`Error creando cita: ${res.status}`);
-  return res.json();
+  const { data, error } = await db
+    .from('appointments')
+    .insert({ ...appointmentData, status: 'scheduled' })
+    .select()
+    .single();
+  if (error) throw new Error(error.message);
+  return data;
 }
 
 export async function cancel(id) {
-  const res = await fetch(`${BASE_URL}/appointments/${id}`, {
-    method: 'PATCH',
-    headers: getHeaders(),
-    body: JSON.stringify({ status: 'cancelled' }),
-  });
-  if (!res.ok) throw new Error(`Error cancelando cita: ${res.status}`);
-  return res.json();
+  const { data, error } = await db
+    .from('appointments')
+    .update({ status: 'cancelled' })
+    .eq('id', id)
+    .select()
+    .single();
+  if (error) throw new Error(error.message);
+  return data;
 }
 
 export async function markAttended(id) {
-  const res = await fetch(`${BASE_URL}/appointments/${id}`, {
-    method: 'PATCH',
-    headers: getHeaders(),
-    body: JSON.stringify({ status: 'attended' }),
-  });
-  if (!res.ok) throw new Error(`Error marcando cita como atendida: ${res.status}`);
-  return res.json();
+  const { data, error } = await db
+    .from('appointments')
+    .update({ status: 'attended' })
+    .eq('id', id)
+    .select()
+    .single();
+  if (error) throw new Error(error.message);
+  return data;
 }
 
-// Consulta las citas del día y verifica conflicto de horario para el profesional
+// Consulta las citas del día y verifica conflicto de horario para el profesional — Queries day's appointments and checks time slot conflict for the professional
 export async function checkConflict(professionalId, date, time) {
   const existing = await getByDate(date);
   return existing.some(

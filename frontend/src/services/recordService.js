@@ -1,35 +1,29 @@
-// Servicio de historial clínico (frontend) — conecta con InsForge
-const BASE_URL = import.meta.env.VITE_INSFORGE_API_URL;
-const API_KEY  = import.meta.env.VITE_INSFORGE_API_KEY;
-
-function getHeaders() {
-  return {
-    'Content-Type': 'application/json',
-    'x-api-key': API_KEY,
-  };
-}
+// Servicio de historial clínico (frontend) — Medical record service (frontend)
+// Usa @insforge/sdk — política append-only, sin edición ni eliminación — Uses @insforge/sdk — append-only policy, no edits or deletes
+import { db } from '../lib/insforge';
 
 export async function getByPatient(patientId) {
-  const res = await fetch(`${BASE_URL}/medical_records?patientId=${encodeURIComponent(patientId)}`, {
-    headers: getHeaders(),
-  });
-  if (!res.ok) throw new Error(`Error obteniendo historial: ${res.status}`);
-  const entries = await res.json();
-  return sortByDate(entries);
+  const { data, error } = await db
+    .from('medical_records')
+    .select()
+    .eq('patientId', patientId)
+    .order('createdAt', { ascending: false });
+  if (error) throw new Error(error.message);
+  return data;
 }
 
-// Política append-only: solo se crean entradas, nunca se editan ni eliminan
-export async function create(data) {
-  const res = await fetch(`${BASE_URL}/medical_records`, {
-    method: 'POST',
-    headers: getHeaders(),
-    body: JSON.stringify({ ...data, createdAt: new Date().toISOString() }),
-  });
-  if (!res.ok) throw new Error(`Error creando entrada de historial: ${res.status}`);
-  return res.json();
+// Política append-only: solo se crean entradas, nunca se editan ni eliminan — Append-only policy: entries are only created, never edited or deleted
+export async function create(recordData) {
+  const { data, error } = await db
+    .from('medical_records')
+    .insert({ ...recordData, createdAt: new Date().toISOString() })
+    .select()
+    .single();
+  if (error) throw new Error(error.message);
+  return data;
 }
 
-// Ordena descendente por fecha (más reciente primero)
+// Ordena descendente por fecha (más reciente primero) — Sorts descending by date (most recent first)
 export function sortByDate(entries) {
   return [...entries].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 }
