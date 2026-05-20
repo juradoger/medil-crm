@@ -20,13 +20,13 @@ En un CRM médico, los dominios naturales del negocio son: Pacientes, Citas, His
 ### Diagrama 1: Arquitectura Completa
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#CAF0F8', 'primaryBorderColor': '#00B4D8', 'lineColor': '#0096B4', 'fontSize': '14px'}}}%%
+%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#d6e8f7', 'primaryBorderColor': '#0E4A8A', 'lineColor': '#00A896', 'fontSize': '14px'}}}%%
 graph LR
-    classDef page  fill:#CAF0F8,stroke:#00B4D8,stroke-width:2px,color:#003d52
-    classDef hook  fill:#90E0EF,stroke:#0096B4,stroke-width:2px,color:#003d52
-    classDef svc   fill:#00B4D8,stroke:#0096B4,stroke-width:2px,color:#fff
-    classDef db    fill:#0096B4,stroke:#007a96,stroke-width:2px,color:#fff
-    classDef util  fill:#e8f9fd,stroke:#90E0EF,stroke-width:2px,stroke-dasharray:5,color:#003d52
+    classDef page  fill:#d6e8f7,stroke:#0E4A8A,stroke-width:2px,color:#0E4A8A
+    classDef hook  fill:#b3e0db,stroke:#00A896,stroke-width:2px,color:#0E4A8A
+    classDef svc   fill:#00A896,stroke:#007a6e,stroke-width:2px,color:#fff
+    classDef db    fill:#0E4A8A,stroke:#092f5c,stroke-width:2px,color:#fff
+    classDef util  fill:#fff9d6,stroke:#FFD100,stroke-width:2px,stroke-dasharray:5,color:#0E4A8A
 
     subgraph FE["⚛️  Frontend — React 18 + Vite"]
         PAGES[Pages]
@@ -62,8 +62,8 @@ graph LR
     class DB_PAT,DB_APT,DB_REC,DB_REM db
     class CONST util
 
-    style FE fill:#f0fbff,stroke:#00B4D8,stroke-width:2px
-    style BE fill:#e6f4f8,stroke:#0096B4,stroke-width:2px
+    style FE fill:#edf4fb,stroke:#0E4A8A,stroke-width:2px
+    style BE fill:#e6f5f3,stroke:#00A896,stroke-width:2px
 ```
 
 > **Pages:** Dashboard · Patients · Appointments · Reminders · PatientDetail  
@@ -76,7 +76,7 @@ graph LR
 ### Diagrama 2: Flujo Principal del MVP
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'actorBkg': '#00B4D8', 'actorBorder': '#0096B4', 'actorTextColor': '#ffffff', 'actorLineColor': '#90E0EF', 'signalColor': '#0096B4', 'signalTextColor': '#003d52', 'labelBoxBkgColor': '#CAF0F8', 'labelBoxBorderColor': '#00B4D8', 'labelTextColor': '#003d52', 'noteBkgColor': '#CAF0F8', 'noteBorderColor': '#00B4D8'}}}%%
+%%{init: {'theme': 'base', 'themeVariables': {'actorBkg': '#0E4A8A', 'actorBorder': '#092f5c', 'actorTextColor': '#ffffff', 'actorLineColor': '#00A896', 'signalColor': '#00A896', 'signalTextColor': '#0E4A8A', 'labelBoxBkgColor': '#d6e8f7', 'labelBoxBorderColor': '#0E4A8A', 'labelTextColor': '#0E4A8A', 'noteBkgColor': '#fff9d6', 'noteBorderColor': '#FFD100'}}}%%
 sequenceDiagram
     actor Op as Operador
     participant UI as React UI
@@ -154,13 +154,13 @@ In a medical CRM, the natural business domains are: Patients, Appointments, Medi
 ### Diagram 1: Complete Architecture
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#CAF0F8', 'primaryBorderColor': '#00B4D8', 'lineColor': '#0096B4', 'fontSize': '14px'}}}%%
+%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#d6e8f7', 'primaryBorderColor': '#0E4A8A', 'lineColor': '#00A896', 'fontSize': '14px'}}}%%
 graph LR
-    classDef page  fill:#CAF0F8,stroke:#00B4D8,stroke-width:2px,color:#003d52
-    classDef hook  fill:#90E0EF,stroke:#0096B4,stroke-width:2px,color:#003d52
-    classDef svc   fill:#00B4D8,stroke:#0096B4,stroke-width:2px,color:#fff
-    classDef db    fill:#0096B4,stroke:#007a96,stroke-width:2px,color:#fff
-    classDef util  fill:#e8f9fd,stroke:#90E0EF,stroke-width:2px,stroke-dasharray:5,color:#003d52
+    classDef page  fill:#d6e8f7,stroke:#0E4A8A,stroke-width:2px,color:#0E4A8A
+    classDef hook  fill:#b3e0db,stroke:#00A896,stroke-width:2px,color:#0E4A8A
+    classDef svc   fill:#00A896,stroke:#007a6e,stroke-width:2px,color:#fff
+    classDef db    fill:#0E4A8A,stroke:#092f5c,stroke-width:2px,color:#fff
+    classDef util  fill:#fff9d6,stroke:#FFD100,stroke-width:2px,stroke-dasharray:5,color:#0E4A8A
 
     subgraph FE["⚛️  Frontend — React 18 + Vite"]
         PAGES[Pages]
@@ -196,8 +196,8 @@ graph LR
     class DB_PAT,DB_APT,DB_REC,DB_REM db
     class CONST util
 
-    style FE fill:#f0fbff,stroke:#00B4D8,stroke-width:2px
-    style BE fill:#e6f4f8,stroke:#0096B4,stroke-width:2px
+    style FE fill:#edf4fb,stroke:#0E4A8A,stroke-width:2px
+    style BE fill:#e6f5f3,stroke:#00A896,stroke-width:2px
 ```
 
 > **Pages:** Dashboard · Patients · Appointments · Reminders · PatientDetail  
@@ -210,7 +210,7 @@ graph LR
 ### Diagram 2: Main MVP Flow
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'actorBkg': '#00B4D8', 'actorBorder': '#0096B4', 'actorTextColor': '#ffffff', 'actorLineColor': '#90E0EF', 'signalColor': '#0096B4', 'signalTextColor': '#003d52', 'labelBoxBkgColor': '#CAF0F8', 'labelBoxBorderColor': '#00B4D8', 'labelTextColor': '#003d52', 'noteBkgColor': '#CAF0F8', 'noteBorderColor': '#00B4D8'}}}%%
+%%{init: {'theme': 'base', 'themeVariables': {'actorBkg': '#0E4A8A', 'actorBorder': '#092f5c', 'actorTextColor': '#ffffff', 'actorLineColor': '#00A896', 'signalColor': '#00A896', 'signalTextColor': '#0E4A8A', 'labelBoxBkgColor': '#d6e8f7', 'labelBoxBorderColor': '#0E4A8A', 'labelTextColor': '#0E4A8A', 'noteBkgColor': '#fff9d6', 'noteBorderColor': '#FFD100'}}}%%
 sequenceDiagram
     actor Op as Operator
     participant UI as React UI

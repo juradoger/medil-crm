@@ -1,157 +1,223 @@
-# MedIL CRM
+[![English](https://img.shields.io/badge/Language-English-0E4A8A?style=flat-square&logo=googletranslate&logoColor=white)](README.md)
+[![Español](https://img.shields.io/badge/Idioma-Español-00A896?style=flat-square&logo=googletranslate&logoColor=white)](README.es.md)
 
-![Estado](https://img.shields.io/badge/estado-en%20desarrollo-yellow) ![Etapa](https://img.shields.io/badge/etapa-1%20de%203-blue) ![React](https://img.shields.io/badge/React-18-61DAFB?logo=react) ![Vite](https://img.shields.io/badge/Vite-5-646CFF?logo=vite) ![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4-06B6D4?logo=tailwindcss)
+<div align="center">
 
-## Descripción del Proyecto
+<img src="docs/assets/logo.png" alt="MediL CRM" width="280"/>
 
-**MedIL CRM** es un sistema de gestión de relaciones con clientes (CRM) modular diseñado para clínicas y consultorios médicos. Permite gestionar pacientes, citas, historial clínico y recordatorios desde una interfaz unificada. Está construido como una línea de producto de software (SPL), lo que significa que su arquitectura por dominios permite adaptarlo a distintas especialidades médicas con mínima modificación.
+<h1>MediL CRM</h1>
 
----
+**Patient Relationship Management System for Medical Clinics**  
+*Modular · Scalable · Adaptable to multiple healthcare specialties*
 
-## Project Description
+<br/>
 
-**MedIL CRM** is a modular Customer Relationship Management (CRM) system designed for clinics and medical offices. It enables management of patients, appointments, medical records, and reminders from a unified interface. It is built as a Software Product Line (SPL), meaning its domain-driven architecture allows adaptation to different medical specialties with minimal modification.
+![Version](https://img.shields.io/badge/version-1.0.0--stage1-0E4A8A?style=flat-square)
+![React](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react&logoColor=black)
+![Vite](https://img.shields.io/badge/Vite-5-646CFF?style=flat-square&logo=vite&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/TailwindCSS-v4-00A896?style=flat-square&logo=tailwindcss&logoColor=white)
+![React Router](https://img.shields.io/badge/React_Router-v6-CA4245?style=flat-square&logo=reactrouter&logoColor=white)
+![Status](https://img.shields.io/badge/status-in%20development-FFD100?style=flat-square&logoColor=black)
 
----
-
-## Contexto Académico
-
-| Campo | Valor |
-|---|---|
-| Alumna | Ordoñez Choque Nayeli Zharit |
-| Materia | Ingeniería de Software II |
-| Línea de Producto | SPL #2 — Sistemas de gestión empresarial (ERP/CRM) |
-| Institución | Universidad (Proyecto Académico) |
+</div>
 
 ---
 
-## Academic Context
+## 📖 Description
 
-| Field | Value |
-|---|---|
-| Student | Ordoñez Choque Nayeli Zharit |
-| Course | Software Engineering II |
-| Product Line | SPL #2 — Business Management Systems (ERP/CRM) |
-| Institution | University (Academic Project) |
+**MediL CRM** is a web application built as a **Software Product Line (SPL)** for the healthcare sector. It enables medical clinics to manage their complete operation from a single platform — and can be adapted to different medical specialties without rewriting the core logic.
+
+> 📚 **Academic context:** Software Engineering II &nbsp;·&nbsp; SPL #2 — Business Management Systems
 
 ---
 
-## Stack Tecnológico
+## ✨ Key Features
 
-| Tecnología | Versión | Justificación |
-|---|---|---|
-| **React 18** | 18.x | Componentes reutilizables y gestión de estado local; ideal para interfaces modulares de CRM |
-| **Vite** | 5.x | Build tool ultrarrápido con HMR; reduce fricción en desarrollo iterativo académico |
-| **TailwindCSS** | 4.x | Utilidades CSS atómicas que aceleran el prototipado manteniendo consistencia visual |
-| **React Router v6** | 6.x | Enrutamiento declarativo del lado del cliente; cada módulo del CRM tiene su propia ruta |
-| **InsForge** | — | Backend y base de datos integrada; permite persistencia sin configuración de servidor separado |
-| **Mermaid** | — | Diagramas como código; los diagramas viven en el repositorio y se actualizan con el código |
-
----
-
-## Technology Stack
-
-| Technology | Version | Justification |
-|---|---|---|
-| **React 18** | 18.x | Reusable components and local state management; ideal for modular CRM interfaces |
-| **Vite** | 5.x | Ultra-fast build tool with HMR; reduces friction in iterative academic development |
-| **TailwindCSS** | 4.x | Atomic CSS utilities that accelerate prototyping while maintaining visual consistency |
-| **React Router v6** | 6.x | Declarative client-side routing; each CRM module has its own route |
-| **InsForge** | — | Integrated backend and database; enables persistence without separate server setup |
-| **Mermaid** | — | Diagrams as code; diagrams live in the repository and are updated alongside the code |
+| Module | Functionality | Status |
+|:---|:---|:---:|
+| 👤 **Patients** | Full registration, search, and profile management | ✅ MVP |
+| 📅 **Appointments** | Scheduling with automatic time-conflict detection | ✅ MVP |
+| 🗂️ **Medical Records** | Immutable chronological entries with append-only policy | ✅ MVP |
+| 🔔 **Reminders** | Configurable automatic notifications (default: 24h before) | ✅ MVP |
+| 📊 **Dashboard** | Executive summary with key metrics and quick access | 🔄 In progress |
 
 ---
 
-## Estructura del Repositorio
+## 🛠️ Tech Stack
+
+<div align="center">
+
+[![React](https://img.shields.io/badge/React-18.x-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
+[![Vite](https://img.shields.io/badge/Vite-5.x-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev)
+[![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-v4-00A896?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+[![React Router](https://img.shields.io/badge/React_Router-v6-CA4245?style=for-the-badge&logo=reactrouter&logoColor=white)](https://reactrouter.com)
+
+</div>
+
+<br/>
+
+| Layer | Technology | Role in the system |
+|:---|:---|:---|
+| **Frontend** | React 18 + Vite 5 | Component-based UI with HMR for fast iteration |
+| **Styles** | TailwindCSS v4 | Design system with centralized tokens via `@theme` |
+| **Routing** | React Router v6 | Declarative client-side navigation per domain module |
+| **Backend / DB** | InsForge | Integrated persistence behind a uniform service interface |
+| **Documentation** | Mermaid | Architecture diagrams as code within the repository |
+
+---
+
+## 🏗️ System Architecture
+
+<div align="center">
+
+<img src="docs/assets/diagrama-en.png" alt="MediL CRM Architecture Diagram" width="100%"/>
+
+</div>
+
+The system adopts **Domain-Driven Modular Architecture**: each domain is a closed module with its own service and InsForge repository, ensuring high cohesion, low coupling, and SPL reusability.
+
+→ [View full technical architecture documentation](docs/01-arquitectura.md)
+
+---
+
+## 📊 MVP Sequence Flow
+
+<div align="center">
+
+<img src="docs/assets/secuencia-en.png" alt="MediL CRM MVP Sequence Diagram" width="100%"/>
+
+</div>
+
+<details>
+<summary>📋 Description of the 4 main flows</summary>
+
+| # | Flow | Description |
+|:---:|:---|:---|
+| **1** | 🧑‍⚕️ Patient Management | Registration, search, and real-time listing via InsForge |
+| **2** | 📅 Appointment Scheduling | Scheduling with conflict validation before confirmation |
+| **3** | 🔔 Automatic Reminders | Reminder generated 24h before each appointment |
+| **4** | ✅ Cycle Closure | Mark appointment as attended and create clinical history |
+
+</details>
+
+---
+
+## 📦 Installation & Setup
+
+### Prerequisites
+
+- **Node.js** ≥ 18.x
+- **npm** ≥ 9.x
+
+### Quick start
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/juradoger/medil-crm.git
+cd medil-crm
+
+# 2. Install frontend dependencies
+cd frontend
+npm install
+
+# 3. Start the development server
+npm run dev
+```
+
+> The application will be available at **`http://localhost:5173`**
+
+<details>
+<summary>⚙️ Color palette & design tokens</summary>
+
+#### Brand palette (`frontend/src/index.css`)
+
+```css
+@import "tailwindcss";
+
+@theme {
+  --color-primary:    #0E4A8A;   /* Corporate Blue  — titles and primary buttons */
+  --color-accent:     #00A896;   /* Aqua Green      — active elements and icons */
+  --color-alert:      #FFD100;   /* Yellow          — alerts and reminder highlights */
+  --color-background: #FFFFFF;   /* Pure White      — card backgrounds and panels */
+}
+```
+
+#### Configurable constants per specialty (`frontend/src/core/constants.js`)
+
+```js
+// Adjust per CRM variant:
+// 48h → psychology  |  24h → general medicine  |  2h → dental emergencies
+export const HOURS_BEFORE_REMINDER = 24;
+
+export const APPOINTMENT_STATUS = {
+  SCHEDULED:  'scheduled',
+  ATTENDED:   'attended',
+  CANCELLED:  'cancelled',
+};
+```
+
+</details>
+
+---
+
+## 📁 Project Structure
 
 ```
 medil-crm/
-├── frontend/                  # Aplicación React + Vite — React + Vite application
+│
+├── frontend/
 │   └── src/
-│       ├── pages/             # Vistas por ruta — Route views
-│       ├── components/        # Componentes reutilizables — Reusable components
-│       ├── hooks/             # Custom hooks de React — React custom hooks
-│       ├── services/          # Capa de comunicación con el backend — Backend communication layer
-│       └── core/              # Constantes y utilidades globales — Global constants and utilities
-├── backend/                   # Servicios de dominio — Domain services
-│   ├── patients/
-│   ├── appointments/
-│   ├── records/
-│   └── reminders/
-├── docs/                      # Documentación técnica — Technical documentation
-│   ├── 01-arquitectura.md
-│   ├── 02-componentes.md
-│   ├── 03-refactorizacion.md
-│   └── 04-stack.md
-└── README.md
+│       ├── pages/              # Dashboard · Patients · Appointments
+│       │                       # Reminders · PatientDetail
+│       ├── components/
+│       │   └── StatusBadge.jsx # Reusable status component (OCP)
+│       ├── hooks/
+│       │   ├── usePatients.js
+│       │   └── useAppointments.js
+│       ├── services/           # patientService · appointmentService
+│       │                       # recordService · reminderService
+│       └── core/
+│           └── constants.js
+│
+├── backend/
+│   ├── patients/               # PatientService + InsForge repository
+│   ├── appointments/           # AppointmentService + InsForge repository
+│   ├── records/                # MedicalRecordService + InsForge repository
+│   └── reminders/              # ReminderService + InsForge repository
+│
+└── docs/
+    ├── assets/                 # Images and visual resources
+    ├── 01-arquitectura.md
+    ├── 02-componentes.md
+    ├── 03-refactorizacion.md
+    └── 04-stack.md
 ```
 
 ---
 
-## Flujo Principal del MVP
+## 📚 Technical Documentation
 
-El flujo de uso principal del sistema en 7 pasos:
-
-1. **Registrar paciente** — El operador ingresa los datos del paciente nuevo al sistema.
-2. **Buscar paciente** — Se localiza al paciente existente por nombre o identificador.
-3. **Crear cita** — Se agenda una cita médica para el paciente con fecha, hora y duración.
-4. **Verificar conflictos** — El sistema comprueba que no exista otra cita en el mismo horario.
-5. **Generar recordatorio** — Se crea automáticamente un recordatorio 24 horas antes de la cita.
-6. **Registrar historial** — Tras la consulta, el médico agrega una entrada al historial clínico.
-7. **Actualizar estado** — La cita se marca como atendida o cancelada según corresponda.
+| # | Document | Content |
+|:---:|:---|:---|
+| 01 | [🏗️ Architecture](docs/01-arquitectura.md) | Domain modular pattern · architecture and MVP flow diagrams |
+| 02 | [🧩 Components](docs/02-componentes.md) | Catalog of 7 reusable components with methods and SPL analysis |
+| 03 | [♻️ Refactorings](docs/03-refactorizacion.md) | R1–R2 applied and R3–R5 planned with technical justification |
+| 04 | [🛠️ Stack](docs/04-stack.md) | Technical justification for each technology with SE principles |
 
 ---
 
-## Main MVP Flow
+## 👥 Contributing
 
-The 7-step primary usage flow of the system:
+This is a closed academic project. For suggestions or corrections, please open an **Issue** in this repository using the format:
 
-1. **Register patient** — The operator enters new patient data into the system.
-2. **Search patient** — An existing patient is located by name or identifier.
-3. **Create appointment** — A medical appointment is scheduled with date, time, and duration.
-4. **Check conflicts** — The system verifies no other appointment exists at the same time slot.
-5. **Generate reminder** — A reminder is automatically created 24 hours before the appointment.
-6. **Record medical history** — After the visit, the doctor adds an entry to the medical record.
-7. **Update status** — The appointment is marked as attended or cancelled as appropriate.
+```
+[TYPE] Descriptive title
+Types: [BUG] · [ENHANCEMENT] · [DOCS] · [QUESTION]
+```
 
 ---
 
-## Línea de Producto de Software (SPL)
+## 📄 License
 
-MedIL CRM está diseñado como base reutilizable para múltiples especialidades médicas. Gracias a su arquitectura modular por dominio, los módulos de Pacientes, Citas, Historial y Recordatorios pueden reutilizarse directamente en:
-
-| Especialidad | Variante | Módulos reutilizados |
-|---|---|---|
-| **Odontología** | MedIL Dental | Pacientes, Citas, Historial, Recordatorios |
-| **Pediatría** | MedIL Pediatric | Pacientes (con tutor), Citas, Historial, Recordatorios |
-| **Psicología** | MedIL Psych | Pacientes, Citas, Historial (notas sesión), Recordatorios |
-| **Fisioterapia** | MedIL Physio | Pacientes, Citas (recurrentes), Historial (evolución), Recordatorios |
-
----
-
-## Software Product Line (SPL)
-
-MedIL CRM is designed as a reusable base for multiple medical specialties. Thanks to its domain-driven modular architecture, the Patient, Appointment, Medical Record, and Reminder modules can be reused directly in:
-
-| Specialty | Variant | Reused Modules |
-|---|---|---|
-| **Dentistry** | MedIL Dental | Patients, Appointments, Records, Reminders |
-| **Pediatrics** | MedIL Pediatric | Patients (with guardian), Appointments, Records, Reminders |
-| **Psychology** | MedIL Psych | Patients, Appointments, Records (session notes), Reminders |
-| **Physiotherapy** | MedIL Physio | Patients, Appointments (recurring), Records (progress), Reminders |
-
----
-
-## Autora y Materia
-
-**Alumna:** Ordoñez Choque Nayeli Zharit  
-**Materia:** Ingeniería de Software II  
-**Proyecto:** MedIL CRM — SPL #2 Sistemas de gestión empresarial
-
----
-
-## Author and Course
-
-**Student:** Ordoñez Choque Nayeli Zharit  
-**Course:** Software Engineering II  
-**Project:** MedIL CRM — SPL #2 Business Management Systems
+Academic project — Software Engineering II.  
+© 2025 Ordoñez Choque Nayeli Zharit. All rights reserved.
