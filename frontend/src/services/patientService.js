@@ -5,7 +5,7 @@ const API_KEY  = import.meta.env.VITE_INSFORGE_API_KEY;
 function getHeaders() {
   return {
     'Content-Type': 'application/json',
-    'Authorization': `Bearer ${API_KEY}`,
+    'x-api-key': API_KEY,
   };
 }
 

@@ -5,13 +5,13 @@ const API_KEY  = process.env.INSFORGE_API_KEY;
 function getHeaders() {
   return {
     'Content-Type': 'application/json',
-    'Authorization': `Bearer ${API_KEY}`,
+    'x-api-key': API_KEY,
   };
 }
 
 // Política append-only: solo se crean entradas, nunca se editan ni eliminan
 async function createEntry(data) {
-  const res = await fetch(`${API_URL}/records`, {
+  const res = await fetch(`${API_URL}/medical_records`, {
     method: 'POST',
     headers: getHeaders(),
     body: JSON.stringify({ ...data, createdAt: new Date().toISOString() }),
@@ -21,7 +21,7 @@ async function createEntry(data) {
 }
 
 async function getPatientHistory(patientId) {
-  const res = await fetch(`${API_URL}/records?patientId=${encodeURIComponent(patientId)}`, {
+  const res = await fetch(`${API_URL}/medical_records?patientId=${encodeURIComponent(patientId)}`, {
     headers: getHeaders(),
   });
   if (!res.ok) throw new Error(`Error obteniendo historial: ${res.status}`);

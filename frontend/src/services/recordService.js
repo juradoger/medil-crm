@@ -5,12 +5,12 @@ const API_KEY  = import.meta.env.VITE_INSFORGE_API_KEY;
 function getHeaders() {
   return {
     'Content-Type': 'application/json',
-    'Authorization': `Bearer ${API_KEY}`,
+    'x-api-key': API_KEY,
   };
 }
 
 export async function getByPatient(patientId) {
-  const res = await fetch(`${BASE_URL}/records?patientId=${encodeURIComponent(patientId)}`, {
+  const res = await fetch(`${BASE_URL}/medical_records?patientId=${encodeURIComponent(patientId)}`, {
     headers: getHeaders(),
   });
   if (!res.ok) throw new Error(`Error obteniendo historial: ${res.status}`);
@@ -20,7 +20,7 @@ export async function getByPatient(patientId) {
 
 // Política append-only: solo se crean entradas, nunca se editan ni eliminan
 export async function create(data) {
-  const res = await fetch(`${BASE_URL}/records`, {
+  const res = await fetch(`${BASE_URL}/medical_records`, {
     method: 'POST',
     headers: getHeaders(),
     body: JSON.stringify({ ...data, createdAt: new Date().toISOString() }),
