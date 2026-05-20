@@ -51,6 +51,7 @@
 [![Vite](https://img.shields.io/badge/Vite-5.x-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev)
 [![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-v4-00A896?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 [![React Router](https://img.shields.io/badge/React_Router-v6-CA4245?style=for-the-badge&logo=reactrouter&logoColor=white)](https://reactrouter.com)
+[![Vercel](https://img.shields.io/badge/Vercel-Deploy-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://vercel.com)
 
 </div>
 
@@ -62,6 +63,7 @@
 | **Styles** | TailwindCSS v4 | Design system with centralized tokens via `@theme` |
 | **Routing** | React Router v6 | Declarative client-side navigation per domain module |
 | **Backend / DB** | InsForge | Integrated persistence behind a uniform service interface |
+| **Deployment** | Vercel | Automatic deploy on every push to `main`, preview per PR |
 | **Documentation** | Mermaid | Architecture diagrams as code within the repository |
 
 ---
@@ -199,10 +201,10 @@ medil-crm/
 
 | # | Document | Content |
 |:---:|:---|:---|
-| 01 | [🏗️ Architecture](docs/01-arquitectura.md) | Domain modular pattern · architecture and MVP flow diagrams |
-| 02 | [🧩 Components](docs/02-componentes.md) | Catalog of 7 reusable components with methods and SPL analysis |
-| 03 | [♻️ Refactorings](docs/03-refactorizacion.md) | R1–R2 applied and R3–R5 planned with technical justification |
-| 04 | [🛠️ Stack](docs/04-stack.md) | Technical justification for each technology with SE principles |
+| 01 | [🏗️ Architecture](docs/01-arquitectura.en.md) | Domain modular pattern · architecture and MVP flow diagrams |
+| 02 | [🧩 Components](docs/02-componentes.en.md) | Catalog of 7 reusable components with methods and SPL analysis |
+| 03 | [♻️ Refactorings](docs/03-refactorizacion.en.md) | R1–R2 applied and R3–R5 planned with technical justification |
+| 04 | [🛠️ Stack](docs/04-stack.en.md) | Technical justification for each technology with SE principles |
 
 ---
 

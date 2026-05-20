@@ -51,6 +51,7 @@
 [![Vite](https://img.shields.io/badge/Vite-5.x-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev)
 [![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-v4-00A896?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 [![React Router](https://img.shields.io/badge/React_Router-v6-CA4245?style=for-the-badge&logo=reactrouter&logoColor=white)](https://reactrouter.com)
+[![Vercel](https://img.shields.io/badge/Vercel-Deploy-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://vercel.com)
 
 </div>
 
@@ -62,6 +63,7 @@
 | **Estilos** | TailwindCSS v4 | Sistema de diseño con tokens centralizados via `@theme` |
 | **Enrutamiento** | React Router v6 | Navegación declarativa del lado del cliente por módulo |
 | **Backend / BD** | InsForge | Persistencia integrada detrás de una interfaz de servicio uniforme |
+| **Despliegue** | Vercel | Deploy automático en cada push a `main`, preview por PR |
 | **Documentación** | Mermaid | Diagramas de arquitectura como código dentro del repositorio |
 
 ---

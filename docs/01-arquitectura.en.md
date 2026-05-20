@@ -1,47 +1,47 @@
-[![English](https://img.shields.io/badge/Language-English-0E4A8A?style=flat-square)](01-arquitectura.en.md)
-[![README](https://img.shields.io/badge/←_Inicio-README-00A896?style=flat-square)](../README.es.md)
-![Doc](https://img.shields.io/badge/doc-01%20de%2004-FFD100?style=flat-square&logoColor=black)
+[![Español](https://img.shields.io/badge/Idioma-Español-00A896?style=flat-square)](01-arquitectura.md)
+[![README](https://img.shields.io/badge/←_Home-README-0E4A8A?style=flat-square)](../README.md)
+![Doc](https://img.shields.io/badge/doc-01%20of%2004-FFD100?style=flat-square&logoColor=black)
 
 <div align="center">
 
 <img src="assets/logo.png" alt="MediL" width="110"/>
 
-# 🏗️ Arquitectura del Sistema
+# 🏗️ System Architecture
 
-*Patrón Modular por Dominio — Domain-Driven Modular Architecture*
+*Domain-Driven Modular Architecture*
 
 ![React](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react&logoColor=black)
 ![InsForge](https://img.shields.io/badge/Backend-InsForge-0E4A8A?style=flat-square)
-![Mermaid](https://img.shields.io/badge/Diagramas-Mermaid-00A896?style=flat-square)
+![Mermaid](https://img.shields.io/badge/Diagrams-Mermaid-00A896?style=flat-square)
 
 </div>
 
 ---
 
-## Patrón Arquitectónico: Arquitectura Modular por Dominio
+## Architectural Pattern: Domain-Driven Modular Architecture
 
-El sistema MedIL CRM adopta el patrón de **Arquitectura Modular por Dominio** (Domain-Driven Modular Architecture). En este patrón, el código se organiza alrededor de los conceptos del negocio (dominios) en lugar de capas técnicas horizontales.
+The MediL CRM system adopts the **Domain-Driven Modular Architecture** pattern. In this pattern, code is organized around business concepts (domains) rather than horizontal technical layers.
 
-### Justificación
+### Justification
 
-En un CRM médico, los dominios naturales del negocio son: Pacientes, Citas, Historial Clínico y Recordatorios. Cada dominio tiene:
+In a medical CRM, the natural business domains are: Patients, Appointments, Medical Records, and Reminders. Each domain has:
 
-- **Alta cohesión interna:** toda la lógica de un dominio vive junta (service + repository).
-- **Bajo acoplamiento externo:** los dominios se comunican únicamente a través de interfaces definidas (los servicios), nunca accediendo directamente a la base de datos del otro.
-- **Reutilización en SPL:** al ser módulos independientes, pueden trasplantarse a una variante del CRM (odontología, psicología) sin arrastrar dependencias no deseadas.
+- **High internal cohesion:** all logic for a domain lives together (service + repository).
+- **Low external coupling:** domains communicate only through defined interfaces (the services), never accessing another domain's database directly.
+- **SPL reusability:** being independent modules, they can be transplanted to a CRM variant (dentistry, psychology) without dragging unwanted dependencies.
 
 ---
 
-## Diagrama 1: Arquitectura Completa
+## Diagram 1: Complete Architecture
 
 <div align="center">
 
-<img src="assets/diagrama-es.png" alt="Arquitectura MediL CRM" width="100%"/>
+<img src="assets/diagrama-en.png" alt="MediL CRM Architecture" width="100%"/>
 
 </div>
 
 <details>
-<summary>🔧 Ver diagrama técnico (Mermaid)</summary>
+<summary>🔧 View technical diagram (Mermaid)</summary>
 
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#d6e8f7', 'primaryBorderColor': '#0E4A8A', 'lineColor': '#00A896', 'fontSize': '14px'}}}%%
@@ -99,21 +99,21 @@ graph LR
 
 ---
 
-## Diagrama 2: Flujo Principal del MVP
+## Diagram 2: Main MVP Flow
 
 <div align="center">
 
-<img src="assets/secuencia-es.png" alt="Diagrama de Secuencia MVP" width="100%"/>
+<img src="assets/secuencia-en.png" alt="MVP Sequence Diagram" width="100%"/>
 
 </div>
 
 <details>
-<summary>🔧 Ver diagrama técnico (Mermaid)</summary>
+<summary>🔧 View technical diagram (Mermaid)</summary>
 
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': {'actorBkg': '#0E4A8A', 'actorBorder': '#092f5c', 'actorTextColor': '#ffffff', 'actorLineColor': '#00A896', 'signalColor': '#00A896', 'signalTextColor': '#0E4A8A', 'labelBoxBkgColor': '#d6e8f7', 'labelBoxBorderColor': '#0E4A8A', 'labelTextColor': '#0E4A8A', 'noteBkgColor': '#fff9d6', 'noteBorderColor': '#FFD100'}}}%%
 sequenceDiagram
-    actor Op as Operador
+    actor Op as Operator
     participant UI as React UI
     participant PatSvc as PatientService
     participant AptSvc as AppointmentService
@@ -121,34 +121,34 @@ sequenceDiagram
     participant RecSvc as RecordService
     participant DB as InsForge DB
 
-    Op->>UI: 1. Ingresa datos del paciente
+    Op->>UI: 1. Enter patient data
     UI->>PatSvc: createPatient(data)
     PatSvc->>DB: INSERT patient
-    DB-->>PatSvc: registro del paciente
-    PatSvc-->>UI: paciente creado
+    DB-->>PatSvc: patient record
+    PatSvc-->>UI: patient created
 
-    Op->>UI: 2. Busca paciente
+    Op->>UI: 2. Search patient
     UI->>PatSvc: searchPatients(query)
     PatSvc->>DB: QUERY patients
-    DB-->>UI: resultados
+    DB-->>UI: results
 
-    Op->>UI: 3. Crea cita médica
+    Op->>UI: 3. Create appointment
     UI->>AptSvc: createAppointment(data)
     AptSvc->>AptSvc: 4. checkTimeConflict()
     AptSvc->>DB: INSERT appointment
-    DB-->>AptSvc: registro de cita
+    DB-->>AptSvc: appointment record
 
     AptSvc->>RemSvc: 5. createReminderForAppointment(id)
     RemSvc->>RemSvc: calculateReminderDate(date)
-    RemSvc->>DB: INSERT reminder (24h antes)
-    DB-->>UI: cita + recordatorio creados
+    RemSvc->>DB: INSERT reminder (24h before)
+    DB-->>UI: appointment + reminder created
 
-    Op->>UI: 6. Registra historial clínico
+    Op->>UI: 6. Record medical history
     UI->>RecSvc: createEntry(patientId, entry)
     RecSvc->>DB: INSERT medical_record
-    DB-->>UI: entrada guardada
+    DB-->>UI: entry saved
 
-    Op->>UI: 7. Actualiza estado de cita
+    Op->>UI: 7. Update appointment status
     UI->>AptSvc: markAsAttended(id)
     AptSvc->>DB: UPDATE appointment status
     DB-->>UI: status = attended
@@ -158,21 +158,21 @@ sequenceDiagram
 
 ---
 
-## Reutilización en la Línea de Producto de Software
+## Reuse in the Software Product Line
 
-La arquitectura modular por dominio habilita la reutilización en la SPL porque:
+The domain-driven modular architecture enables reuse in the SPL because:
 
-| Principio | Cómo se aplica |
+| Principle | How it is applied |
 |:---|:---|
-| **Módulo cerrado** | Cada dominio tiene su propio servicio y repositorio; reemplazarlo no afecta a los demás |
-| **Constantes configurables** | `HOURS_BEFORE_REMINDER` adapta el sistema a cualquier especialidad sin tocar lógica |
-| **Componentes genéricos** | `StatusBadge` acepta cualquier estado y se extiende sin modificar el componente (OCP) |
-| **Servicios intercambiables** | Cambiar el endpoint InsForge solo requiere modificar `*Service.js`, no los hooks ni páginas |
+| **Closed module** | Each domain has its own service and repository; replacing one does not affect the others |
+| **Configurable constants** | `HOURS_BEFORE_REMINDER` adapts the system to any specialty without touching logic |
+| **Generic components** | `StatusBadge` accepts any status type and extends without modifying the component (OCP) |
+| **Interchangeable services** | Changing the InsForge endpoint only requires modifying `*Service.js`, not hooks or pages |
 
 ---
 
 <div align="center">
 
-[🧩 Siguiente: Componentes →](02-componentes.md) &nbsp;|&nbsp; [← Volver al README](../README.es.md)
+[🧩 Next: Components →](02-componentes.en.md) &nbsp;|&nbsp; [← Back to README](../README.md)
 
 </div>
