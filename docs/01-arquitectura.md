@@ -1,4 +1,9 @@
-# Arquitectura del Sistema — System Architecture
+# Arquitectura del Sistema / System Architecture
+
+---
+
+<details open>
+<summary>🇪🇸 Español</summary>
 
 ## Patrón Arquitectónico: Arquitectura Modular por Dominio
 
@@ -12,7 +17,10 @@ En un CRM médico, los dominios naturales del negocio son: Pacientes, Citas, His
 - **Bajo acoplamiento externo:** los dominios se comunican únicamente a través de interfaces definidas (los servicios), nunca accediendo directamente a la base de datos del otro.
 - **Reutilización en SPL:** al ser módulos independientes, pueden trasplantarse a una variante del CRM (odontología, psicología) sin arrastrar dependencias no deseadas.
 
----
+</details>
+
+<details>
+<summary>🇬🇧 English</summary>
 
 ## Architectural Pattern: Domain-Driven Modular Architecture
 
@@ -26,56 +34,51 @@ In a medical CRM, the natural business domains are: Patients, Appointments, Medi
 - **Low external coupling:** domains communicate only through defined interfaces (the services), never accessing another domain's database directly.
 - **SPL reusability:** being independent modules, they can be transplanted to a CRM variant (dentistry, psychology) without dragging unwanted dependencies.
 
+</details>
+
 ---
 
-## Diagrama 1: Arquitectura Completa — Diagram 1: Complete Architecture
+## Diagrama 1 / Diagram 1 — Arquitectura Completa / Complete Architecture
 
 ```mermaid
-graph TD
-    subgraph Frontend["Frontend — React 18 + Vite"]
-        PAGES["Páginas / Pages<br/>Dashboard · Patients · Appointments<br/>Reminders · PatientDetail"]
-        HOOKS["Custom Hooks<br/>usePatients · useAppointments"]
-        COMP["Componentes / Components<br/>StatusBadge"]
-        SVCF["Servicios Frontend / Frontend Services<br/>patientService · appointmentService<br/>recordService · reminderService"]
-        CONST["Utilidades Compartidas / Shared Utilities<br/>constants · validators · dateUtils"]
+graph LR
+    subgraph FE["Frontend — React 18 + Vite"]
+        PAGES[Pages]
+        HOOKS[Custom Hooks]
+        COMP[StatusBadge]
+        SVCF[Frontend Services]
+        CONST[Shared Utils]
     end
 
-    subgraph Backend["Backend — InsForge"]
-        subgraph DOM_PAT["Dominio Pacientes / Patient Domain"]
-            SVC_PAT["PatientService"]
-            REPO_PAT[("InsForge DB\nPatients")]
-        end
-        subgraph DOM_APT["Dominio Citas / Appointment Domain"]
-            SVC_APT["AppointmentService"]
-            REPO_APT[("InsForge DB\nAppointments")]
-        end
-        subgraph DOM_REC["Dominio Historial / Record Domain"]
-            SVC_REC["MedicalRecordService"]
-            REPO_REC[("InsForge DB\nRecords")]
-        end
-        subgraph DOM_REM["Dominio Recordatorios / Reminder Domain"]
-            SVC_REM["ReminderService"]
-            REPO_REM[("InsForge DB\nReminders")]
-        end
+    subgraph BE["Backend — InsForge"]
+        SVC_PAT[PatientService]
+        DB_PAT[(Patients DB)]
+        SVC_APT[AppointmentService]
+        DB_APT[(Appointments DB)]
+        SVC_REC[MedicalRecordService]
+        DB_REC[(Records DB)]
+        SVC_REM[ReminderService]
+        DB_REM[(Reminders DB)]
     end
 
     PAGES --> HOOKS
     PAGES --> COMP
     HOOKS --> SVCF
-    SVCF --> SVC_PAT
-    SVCF --> SVC_APT
-    SVCF --> SVC_REC
-    SVCF --> SVC_REM
-    SVC_PAT --> REPO_PAT
-    SVC_APT --> REPO_APT
-    SVC_REC --> REPO_REC
-    SVC_REM --> REPO_REM
-    CONST -.->|usa / uses| SVC_REM
+    SVCF --> SVC_PAT --> DB_PAT
+    SVCF --> SVC_APT --> DB_APT
+    SVCF --> SVC_REC --> DB_REC
+    SVCF --> SVC_REM --> DB_REM
+    CONST -.-> SVC_REM
 ```
+
+> **Pages:** Dashboard · Patients · Appointments · Reminders · PatientDetail  
+> **Custom Hooks:** usePatients · useAppointments  
+> **Frontend Services:** patientSvc · appointmentSvc · recordSvc · reminderSvc  
+> **Shared Utils:** constants · validators · dateUtils
 
 ---
 
-## Diagrama 2: Flujo Principal del MVP — Diagram 2: Main MVP Flow
+## Diagrama 2 / Diagram 2 — Flujo Principal del MVP / Main MVP Flow
 
 ```mermaid
 sequenceDiagram
@@ -122,7 +125,8 @@ sequenceDiagram
 
 ---
 
-## Reutilización en la Línea de Producto de Software
+<details open>
+<summary>🇪🇸 Reutilización en la Línea de Producto de Software</summary>
 
 La arquitectura modular por dominio habilita la reutilización en la SPL porque:
 
@@ -131,9 +135,10 @@ La arquitectura modular por dominio habilita la reutilización en la SPL porque:
 3. **Los componentes React son genéricos por diseño:** `StatusBadge` acepta cualquier tipo de estado (`appointment`, `reminder`, `patient`) y puede extenderse con nuevos tipos para nuevas especialidades.
 4. **La capa de servicios frontend es intercambiable:** si una variante del CRM necesita un endpoint diferente de InsForge, solo se modifica `*Service.js`, no los hooks ni las páginas.
 
----
+</details>
 
-## Reuse in the Software Product Line
+<details>
+<summary>🇬🇧 Reuse in the Software Product Line</summary>
 
 The domain-driven modular architecture enables reuse in the SPL because:
 
@@ -141,3 +146,5 @@ The domain-driven modular architecture enables reuse in the SPL because:
 2. **Constants are configurable:** changing `HOURS_BEFORE_REMINDER` in `constants.js` adapts system behavior for a different specialty without touching logic.
 3. **React components are generic by design:** `StatusBadge` accepts any status type (`appointment`, `reminder`, `patient`) and can be extended with new types for new specialties.
 4. **The frontend service layer is interchangeable:** if a CRM variant needs a different InsForge endpoint, only `*Service.js` is modified, not the hooks or pages.
+
+</details>

@@ -1,12 +1,22 @@
-# Catálogo de Refactorizaciones — Refactoring Catalog
+# Catálogo de Refactorizaciones / Refactoring Catalog
+
+<details open>
+<summary>🇪🇸 Introducción</summary>
 
 Este documento registra las refactorizaciones aplicadas en Etapa 2 y las planificadas para Etapa 3, con justificación técnica basada en principios de ingeniería de software.
 
+</details>
+
+<details>
+<summary>🇬🇧 Introduction</summary>
+
 This document records the refactorings applied in Stage 2 and those planned for Stage 3, with technical justification based on software engineering principles.
+
+</details>
 
 ---
 
-## Sección 1 — Refactorizaciones Aplicadas en Etapa 2 — Refactorings Applied in Stage 2
+## Sección 1 / Section 1 — Refactorizaciones Aplicadas en Etapa 2 / Refactorings Applied in Stage 2
 
 ---
 
@@ -14,16 +24,24 @@ This document records the refactorings applied in Stage 2 and those planned for 
 
 **Categoría / Category:** Refactorización de organización de código — Code organization refactoring
 
-#### Problema detectado — Problem detected
+<details open>
+<summary>🇪🇸 Problema detectado</summary>
 
 La lógica de carga de datos, manejo del estado de carga (`loading`), captura de errores y llamadas a servicios estaba mezclada directamente dentro de los componentes de página. Esto viola el principio de **separación de responsabilidades**: los componentes de vista deben ocuparse únicamente de renderizar la interfaz, no de gestionar efectos secundarios ni estado derivado de llamadas a APIs.
 
+</details>
+
+<details>
+<summary>🇬🇧 Problem detected</summary>
+
 The logic for data loading, loading state management (`loading`), error handling, and service calls was mixed directly inside page components. This violates the **separation of concerns** principle: view components should only be responsible for rendering the interface, not managing side effects or state derived from API calls.
 
-#### Código ANTES — Code BEFORE
+</details>
+
+#### Código ANTES / Code BEFORE
 
 ```jsx
-// Patients.jsx — ANTES de la refactorización / BEFORE refactoring
+// Patients.jsx — ANTES / BEFORE
 // Lógica de datos mezclada con la vista — Data logic mixed with the view
 import React, { useState, useEffect } from 'react';
 import { getPatients, createPatient as createPatientSvc } from '../services/patientService';
@@ -61,10 +79,10 @@ export default function Patients() {
 }
 ```
 
-#### Código DESPUÉS — Code AFTER
+#### Código DESPUÉS / Code AFTER
 
 ```js
-// hooks/usePatients.js — DESPUÉS de la refactorización / AFTER refactoring
+// hooks/usePatients.js — DESPUÉS / AFTER
 // Hook separado con única responsabilidad — Separated hook with single responsibility
 import { useState, useEffect } from 'react';
 import { getPatients, createPatient as createPatientSvc } from '../services/patientService';
@@ -92,7 +110,7 @@ export function usePatients() {
 ```
 
 ```jsx
-// pages/Patients.jsx — DESPUÉS de la refactorización / AFTER refactoring
+// pages/Patients.jsx — DESPUÉS / AFTER
 // Componente limpio, solo responsable de la vista — Clean component, only responsible for the view
 import React from 'react';
 import { usePatients } from '../hooks/usePatients';
@@ -111,7 +129,7 @@ export default function Patients() {
 }
 ```
 
-#### Justificación técnica — Technical justification
+#### Justificación técnica / Technical justification
 
 | Principio / Principle | Antes / Before | Después / After |
 |---|---|---|
@@ -126,13 +144,21 @@ export default function Patients() {
 
 **Categoría / Category:** Refactorización de claridad de código — Code clarity refactoring
 
-#### Problema detectado — Problem detected
+<details open>
+<summary>🇪🇸 Problema detectado</summary>
 
 El servicio de recordatorios usaba el valor literal `24` para calcular cuántas horas antes de la cita debía enviarse un recordatorio. Este "número mágico" no comunica su significado a quien lee el código, dificulta el mantenimiento (si el valor cambia, debe buscarse en todo el código) y viola el principio **DRY** (Don't Repeat Yourself) cuando aparece en múltiples lugares.
 
+</details>
+
+<details>
+<summary>🇬🇧 Problem detected</summary>
+
 The reminder service used the literal value `24` to calculate how many hours before the appointment a reminder should be sent. This "magic number" does not communicate its meaning to code readers, makes maintenance difficult (if the value changes, it must be searched throughout the code), and violates the **DRY** (Don't Repeat Yourself) principle when it appears in multiple places.
 
-#### Código ANTES — Code BEFORE
+</details>
+
+#### Código ANTES / Code BEFORE
 
 ```js
 // reminders/reminderService.js — ANTES / BEFORE
@@ -144,7 +170,7 @@ function calculateReminderDate(appointmentDate) {
 }
 ```
 
-#### Código DESPUÉS — Code AFTER
+#### Código DESPUÉS / Code AFTER
 
 ```js
 // core/constants.js — Constante nombrada con significado — Named constant with meaning
@@ -164,7 +190,7 @@ function calculateReminderDate(appointmentDate) {
 }
 ```
 
-#### Justificación técnica — Technical justification
+#### Justificación técnica / Technical justification
 
 | Aspecto / Aspect | Antes / Before | Después / After |
 |---|---|---|
@@ -175,7 +201,7 @@ function calculateReminderDate(appointmentDate) {
 
 ---
 
-## Sección 2 — Refactorizaciones Planificadas para Etapa 3 — Refactorings Planned for Stage 3
+## Sección 2 / Section 2 — Refactorizaciones Planificadas para Etapa 3 / Refactorings Planned for Stage 3
 
 ---
 
@@ -183,13 +209,23 @@ function calculateReminderDate(appointmentDate) {
 
 **Categoría / Category:** Simplificación de lógica condicional — Conditional logic simplification
 
-**Problema objetivo — Target problem:** En `AppointmentService.checkTimeConflict()`, la lógica de verificación de solapamiento de horarios involucrará condiciones anidadas complejas (comparar rangos de tiempo, considerar la duración de la cita existente y la nueva). Una condicional larga dificulta la lectura y el testing.
+<details open>
+<summary>🇪🇸 Problema objetivo y aplicación futura</summary>
 
-In `AppointmentService.checkTimeConflict()`, the time overlap verification logic will involve complex nested conditions (comparing time ranges, considering both existing and new appointment duration). A long conditional makes reading and testing difficult.
+**Problema objetivo:** En `AppointmentService.checkTimeConflict()`, la lógica de verificación de solapamiento de horarios involucrará condiciones anidadas complejas (comparar rangos de tiempo, considerar la duración de la cita existente y la nueva). Una condicional larga dificulta la lectura y el testing.
 
-**Aplicación futura — Etapa 3 / Future application — Stage 3:** Extraer cada condición de solapamiento en funciones auxiliares nombradas (`hasStartConflict`, `hasEndConflict`, `isContainedWithin`) para que la condicional principal lea como lenguaje natural.
+**Aplicación — Etapa 3:** Extraer cada condición de solapamiento en funciones auxiliares nombradas (`hasStartConflict`, `hasEndConflict`, `isContainedWithin`) para que la condicional principal lea como lenguaje natural.
 
-Extract each overlap condition into named helper functions (`hasStartConflict`, `hasEndConflict`, `isContainedWithin`) so the main conditional reads like natural language.
+</details>
+
+<details>
+<summary>🇬🇧 Target problem and future application</summary>
+
+**Target problem:** In `AppointmentService.checkTimeConflict()`, the time overlap verification logic will involve complex nested conditions (comparing time ranges, considering both existing and new appointment duration). A long conditional makes reading and testing difficult.
+
+**Application — Stage 3:** Extract each overlap condition into named helper functions (`hasStartConflict`, `hasEndConflict`, `isContainedWithin`) so the main conditional reads like natural language.
+
+</details>
 
 ---
 
@@ -197,13 +233,23 @@ Extract each overlap condition into named helper functions (`hasStartConflict`, 
 
 **Categoría / Category:** Claridad de nombres — Naming clarity
 
-**Problema objetivo — Target problem:** Durante el desarrollo de Etapa 1, variables con nombres genéricos como `data`, `item`, `result` o `d` pueden aparecer en las funciones de servicio. Estos nombres no comunican el dominio y dificultan la comprensión al leer código sin contexto.
+<details open>
+<summary>🇪🇸 Problema objetivo y aplicación futura</summary>
 
-During Stage 1 development, variables with generic names like `data`, `item`, `result`, or `d` may appear in service functions. These names do not communicate the domain and make code understanding difficult when reading without context.
+**Problema objetivo:** Durante el desarrollo de Etapa 1, variables con nombres genéricos como `data`, `item`, `result` o `d` pueden aparecer en las funciones de servicio. Estos nombres no comunican el dominio y dificultan la comprensión al leer código sin contexto.
 
-**Aplicación futura — Etapa 3 / Future application — Stage 3:** Renombrar sistemáticamente para alinear con el vocabulario del dominio: `data` → `patientData`, `item` → `appointmentRecord`, `result` → `reminderList`. Aplicar tanto en backend como en hooks del frontend.
+**Aplicación — Etapa 3:** Renombrar sistemáticamente para alinear con el vocabulario del dominio: `data` → `patientData`, `item` → `appointmentRecord`, `result` → `reminderList`. Aplicar tanto en backend como en hooks del frontend.
 
-Systematically rename to align with domain vocabulary: `data` → `patientData`, `item` → `appointmentRecord`, `result` → `reminderList`. Apply in both backend and frontend hooks.
+</details>
+
+<details>
+<summary>🇬🇧 Target problem and future application</summary>
+
+**Target problem:** During Stage 1 development, variables with generic names like `data`, `item`, `result`, or `d` may appear in service functions. These names do not communicate the domain and make code understanding difficult when reading without context.
+
+**Application — Stage 3:** Systematically rename to align with domain vocabulary: `data` → `patientData`, `item` → `appointmentRecord`, `result` → `reminderList`. Apply in both backend and frontend hooks.
+
+</details>
 
 ---
 
@@ -211,10 +257,20 @@ Systematically rename to align with domain vocabulary: `data` → `patientData`,
 
 **Categoría / Category:** Separación de comando y consulta (CQS) — Command-Query Separation (CQS)
 
-**Problema objetivo — Target problem:** Funciones que realizan tanto una consulta (retornan datos) como una modificación (actualizan estado) en la misma operación violan el principio CQS. Por ejemplo, una función que marca una cita como atendida Y retorna el listado actualizado mezcla dos responsabilidades.
+<details open>
+<summary>🇪🇸 Problema objetivo y aplicación futura</summary>
 
-Functions that perform both a query (return data) and a modification (update state) in the same operation violate the CQS principle. For example, a function that marks an appointment as attended AND returns the updated list mixes two responsibilities.
+**Problema objetivo:** Funciones que realizan tanto una consulta (retornan datos) como una modificación (actualizan estado) en la misma operación violan el principio CQS. Por ejemplo, una función que marca una cita como atendida Y retorna el listado actualizado mezcla dos responsabilidades.
 
-**Aplicación futura — Etapa 3 / Future application — Stage 3:** Separar en `markAsAttended(id)` (modifier, retorna void) y `listByDate(date)` (query, retorna lista). El componente que consume el hook llama a ambas en secuencia, manteniendo cada función con una única responsabilidad observable.
+**Aplicación — Etapa 3:** Separar en `markAsAttended(id)` (modifier, retorna void) y `listByDate(date)` (query, retorna lista). El componente que consume el hook llama a ambas en secuencia, manteniendo cada función con una única responsabilidad observable.
 
-Separate into `markAsAttended(id)` (modifier, returns void) and `listByDate(date)` (query, returns list). The component consuming the hook calls both in sequence, keeping each function with a single observable responsibility.
+</details>
+
+<details>
+<summary>🇬🇧 Target problem and future application</summary>
+
+**Target problem:** Functions that perform both a query (return data) and a modification (update state) in the same operation violate the CQS principle. For example, a function that marks an appointment as attended AND returns the updated list mixes two responsibilities.
+
+**Application — Stage 3:** Separate into `markAsAttended(id)` (modifier, returns void) and `listByDate(date)` (query, returns list). The component consuming the hook calls both in sequence, keeping each function with a single observable responsibility.
+
+</details>
