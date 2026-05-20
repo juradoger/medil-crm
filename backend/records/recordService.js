@@ -1,19 +1,37 @@
-// Servicio de dominio de historial clínico — Medical record domain service
-// Gestiona entradas del historial y se conecta con InsForge — Manages history entries and connects to InsForge
+// Servicio de dominio de historial clínico
+const API_URL = process.env.INSFORGE_API_URL;
+const API_KEY  = process.env.INSFORGE_API_KEY;
 
-// Crea una nueva entrada en el historial clínico de un paciente — Creates a new entry in a patient's medical history
-async function createEntry(patientId, entryData) {
-  // TODO Etapa 1 — conectar con InsForge / connect to InsForge
+function getHeaders() {
+  return {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${API_KEY}`,
+  };
 }
 
-// Obtiene el historial clínico completo de un paciente — Fetches the complete medical history of a patient
+// Política append-only: solo se crean entradas, nunca se editan ni eliminan
+async function createEntry(data) {
+  const res = await fetch(`${API_URL}/records`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify({ ...data, createdAt: new Date().toISOString() }),
+  });
+  if (!res.ok) throw new Error(`Error creando entrada de historial: ${res.status}`);
+  return res.json();
+}
+
 async function getPatientHistory(patientId) {
-  // TODO Etapa 1 — conectar con InsForge / connect to InsForge
+  const res = await fetch(`${API_URL}/records?patientId=${encodeURIComponent(patientId)}`, {
+    headers: getHeaders(),
+  });
+  if (!res.ok) throw new Error(`Error obteniendo historial: ${res.status}`);
+  const entries = await res.json();
+  return sortByDate(entries);
 }
 
-// Ordena las entradas del historial por fecha descendente — Sorts history entries by descending date
+// Ordena descendente por fecha (más reciente primero)
 function sortByDate(entries) {
-  // TODO Etapa 1 — conectar con InsForge / connect to InsForge
+  return [...entries].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 }
 
 module.exports = { createEntry, getPatientHistory, sortByDate };

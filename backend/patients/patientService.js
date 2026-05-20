@@ -1,29 +1,55 @@
-// Servicio de dominio de pacientes — Patient domain service
-// Gestiona la lógica de negocio de pacientes y se conecta con InsForge — Manages patient business logic and connects to InsForge
+// Servicio de dominio de pacientes
+const API_URL = process.env.INSFORGE_API_URL;
+const API_KEY  = process.env.INSFORGE_API_KEY;
 
-// Crea un nuevo registro de paciente — Creates a new patient record
+function getHeaders() {
+  return {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${API_KEY}`,
+  };
+}
+
 async function createPatient(patientData) {
-  // TODO Etapa 1 — conectar con InsForge / connect to InsForge
+  const res = await fetch(`${API_URL}/patients`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(patientData),
+  });
+  if (!res.ok) throw new Error(`Error creando paciente: ${res.status}`);
+  return res.json();
 }
 
-// Actualiza los datos de un paciente existente — Updates an existing patient's data
 async function updatePatient(id, patientData) {
-  // TODO Etapa 1 — conectar con InsForge / connect to InsForge
+  const res = await fetch(`${API_URL}/patients/${id}`, {
+    method: 'PUT',
+    headers: getHeaders(),
+    body: JSON.stringify(patientData),
+  });
+  if (!res.ok) throw new Error(`Error actualizando paciente: ${res.status}`);
+  return res.json();
 }
 
-// Obtiene un paciente por su identificador único — Fetches a patient by unique identifier
 async function getPatientById(id) {
-  // TODO Etapa 1 — conectar con InsForge / connect to InsForge
+  const res = await fetch(`${API_URL}/patients/${id}`, { headers: getHeaders() });
+  if (!res.ok) throw new Error(`Paciente no encontrado: ${res.status}`);
+  return res.json();
 }
 
-// Busca pacientes por nombre u otros criterios — Searches patients by name or other criteria
 async function searchPatients(query) {
-  // TODO Etapa 1 — conectar con InsForge / connect to InsForge
+  const res = await fetch(`${API_URL}/patients?search=${encodeURIComponent(query)}`, {
+    headers: getHeaders(),
+  });
+  if (!res.ok) throw new Error(`Error buscando pacientes: ${res.status}`);
+  return res.json();
 }
 
-// Valida los datos del paciente antes de persistirlos — Validates patient data before persisting
+// Valida que los campos requeridos existan antes de persistir
 function validatePatientData(patientData) {
-  // TODO Etapa 1 — conectar con InsForge / connect to InsForge
+  const required = ['name', 'email', 'phone'];
+  for (const field of required) {
+    if (!patientData[field]) throw new Error(`Campo requerido faltante: ${field}`);
+  }
+  return true;
 }
 
 module.exports = { createPatient, updatePatient, getPatientById, searchPatients, validatePatientData };

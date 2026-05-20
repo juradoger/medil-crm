@@ -1,37 +1,54 @@
-// Hook personalizado para gestión de citas — Custom hook for appointment management
-// Abstrae el estado y las llamadas al servicio — Abstracts state and service calls
+// Hook personalizado para gestión de citas
 import { useState, useEffect } from 'react';
 import {
-  getAppointments,
-  createAppointment as createAppointmentSvc,
-  cancelAppointment as cancelAppointmentSvc,
-  filterByDate as filterByDateSvc,
+  getAll,
+  getByDate,
+  create as createSvc,
+  cancel as cancelSvc,
+  markAttended as markAttendedSvc,
 } from '../services/appointmentService';
 
 export function useAppointments() {
-  const [appointments, setAppointments] = useState([]); // Lista de citas — Appointment list
-  const [loading, setLoading] = useState(false);        // Estado de carga — Loading state
-  const [error, setError] = useState(null);             // Error capturado — Captured error
+  const [appointments, setAppointments] = useState([]);
+  const [loading, setLoading]           = useState(false);
+  const [error, setError]               = useState(null);
 
-  // Carga inicial de citas — Initial appointment load
+  // Carga las citas del día actual al montar el componente
   useEffect(() => {
-    // TODO Etapa 1 — implementar lógica / implement logic
+    const today = new Date().toISOString().split('T')[0];
+    filterByDate(today);
   }, []);
 
-  // Crea una nueva cita — Creates a new appointment
   async function createAppointment(appointmentData) {
-    // TODO Etapa 1 — implementar lógica / implement logic
+    const newAppt = await createSvc(appointmentData);
+    setAppointments((prev) => [...prev, newAppt]);
+    return newAppt;
   }
 
-  // Cancela una cita por ID — Cancels an appointment by ID
   async function cancelAppointment(id) {
-    // TODO Etapa 1 — implementar lógica / implement logic
+    const updated = await cancelSvc(id);
+    setAppointments((prev) => prev.map((a) => (a.id === id ? updated : a)));
+    return updated;
   }
 
-  // Filtra citas por fecha — Filters appointments by date
+  async function markAsAttended(id) {
+    const updated = await markAttendedSvc(id);
+    setAppointments((prev) => prev.map((a) => (a.id === id ? updated : a)));
+    return updated;
+  }
+
   async function filterByDate(date) {
-    // TODO Etapa 1 — implementar lógica / implement logic
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await getByDate(date);
+      setAppointments(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   }
 
-  return { appointments, loading, error, createAppointment, cancelAppointment, filterByDate };
+  return { appointments, loading, error, createAppointment, cancelAppointment, markAsAttended, filterByDate };
 }

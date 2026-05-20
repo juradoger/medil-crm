@@ -1,29 +1,61 @@
-// Servicio de dominio de citas médicas — Medical appointment domain service
-// Gestiona la lógica de negocio de citas y se conecta con InsForge — Manages appointment business logic and connects to InsForge
+// Servicio de dominio de citas médicas
+const API_URL = process.env.INSFORGE_API_URL;
+const API_KEY  = process.env.INSFORGE_API_KEY;
 
-// Crea una nueva cita médica — Creates a new medical appointment
+function getHeaders() {
+  return {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${API_KEY}`,
+  };
+}
+
 async function createAppointment(appointmentData) {
-  // TODO Etapa 1 — conectar con InsForge / connect to InsForge
+  const res = await fetch(`${API_URL}/appointments`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify({ ...appointmentData, status: 'scheduled' }),
+  });
+  if (!res.ok) throw new Error(`Error creando cita: ${res.status}`);
+  return res.json();
 }
 
-// Cancela una cita existente por su ID — Cancels an existing appointment by ID
 async function cancelAppointment(id) {
-  // TODO Etapa 1 — conectar con InsForge / connect to InsForge
+  const res = await fetch(`${API_URL}/appointments/${id}`, {
+    method: 'PATCH',
+    headers: getHeaders(),
+    body: JSON.stringify({ status: 'cancelled' }),
+  });
+  if (!res.ok) throw new Error(`Error cancelando cita: ${res.status}`);
+  return res.json();
 }
 
-// Marca una cita como atendida — Marks an appointment as attended
 async function markAsAttended(id) {
-  // TODO Etapa 1 — conectar con InsForge / connect to InsForge
+  const res = await fetch(`${API_URL}/appointments/${id}`, {
+    method: 'PATCH',
+    headers: getHeaders(),
+    body: JSON.stringify({ status: 'attended' }),
+  });
+  if (!res.ok) throw new Error(`Error marcando cita como atendida: ${res.status}`);
+  return res.json();
 }
 
-// Lista las citas de una fecha específica — Lists appointments for a specific date
 async function listByDate(date) {
-  // TODO Etapa 1 — conectar con InsForge / connect to InsForge
+  const res = await fetch(`${API_URL}/appointments?date=${encodeURIComponent(date)}`, {
+    headers: getHeaders(),
+  });
+  if (!res.ok) throw new Error(`Error listando citas: ${res.status}`);
+  return res.json();
 }
 
-// Verifica si existe conflicto de horario para una cita — Checks for time conflict for an appointment
-async function checkTimeConflict(date, durationMinutes) {
-  // TODO Etapa 1 — conectar con InsForge / connect to InsForge
+// Consulta las citas del día y verifica si el profesional ya tiene una en ese horario
+async function checkTimeConflict(professionalId, date, time) {
+  const existing = await listByDate(date);
+  return existing.some(
+    (appt) =>
+      appt.professionalId === professionalId &&
+      appt.time === time &&
+      appt.status !== 'cancelled'
+  );
 }
 
 module.exports = { createAppointment, cancelAppointment, markAsAttended, listByDate, checkTimeConflict };

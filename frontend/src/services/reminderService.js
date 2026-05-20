@@ -1,19 +1,36 @@
-// Servicio de recordatorios (frontend) — Reminder service (frontend)
-// Se comunica con el backend de InsForge — Communicates with the InsForge backend
+// Servicio de recordatorios (frontend) — conecta con InsForge
+const BASE_URL = import.meta.env.VITE_INSFORGE_API_URL;
+const API_KEY  = import.meta.env.VITE_INSFORGE_API_KEY;
 
-const BASE_URL = '/api/reminders';
-
-// Obtiene todos los recordatorios pendientes — Fetches all pending reminders
-export async function getPendingReminders() {
-  // TODO Etapa 1 — implementar lógica / implement logic
+function getHeaders() {
+  return {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${API_KEY}`,
+  };
 }
 
-// Crea un recordatorio para una cita — Creates a reminder for an appointment
-export async function createReminderForAppointment(appointmentId) {
-  // TODO Etapa 1 — implementar lógica / implement logic
+export async function getPending() {
+  const res = await fetch(`${BASE_URL}/reminders?status=pending`, { headers: getHeaders() });
+  if (!res.ok) throw new Error(`Error cargando recordatorios pendientes: ${res.status}`);
+  return res.json();
 }
 
-// Marca un recordatorio como enviado — Marks a reminder as sent
-export async function markAsSent(reminderId) {
-  // TODO Etapa 1 — implementar lógica / implement logic
+export async function create(reminderData) {
+  const res = await fetch(`${BASE_URL}/reminders`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify({ ...reminderData, status: 'pending' }),
+  });
+  if (!res.ok) throw new Error(`Error creando recordatorio: ${res.status}`);
+  return res.json();
+}
+
+export async function markSent(reminderId) {
+  const res = await fetch(`${BASE_URL}/reminders/${reminderId}`, {
+    method: 'PATCH',
+    headers: getHeaders(),
+    body: JSON.stringify({ status: 'sent' }),
+  });
+  if (!res.ok) throw new Error(`Error marcando recordatorio como enviado: ${res.status}`);
+  return res.json();
 }

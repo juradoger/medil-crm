@@ -1,5 +1,4 @@
-// Hook personalizado para gestión de pacientes — Custom hook for patient management
-// Abstrae el estado y las llamadas al servicio — Abstracts state and service calls
+// Hook personalizado para gestión de pacientes
 import { useState, useEffect } from 'react';
 import {
   getPatients,
@@ -9,29 +8,56 @@ import {
 } from '../services/patientService';
 
 export function usePatients() {
-  const [patients, setPatients] = useState([]);   // Lista de pacientes — Patient list
-  const [loading, setLoading] = useState(false);  // Estado de carga — Loading state
-  const [error, setError] = useState(null);       // Error capturado — Captured error
+  const [patients, setPatients] = useState([]);
+  const [loading, setLoading]   = useState(false);
+  const [error, setError]       = useState(null);
 
-  // Carga inicial de pacientes — Initial patient load
   useEffect(() => {
-    // TODO Etapa 1 — implementar lógica / implement logic
+    load();
   }, []);
 
-  // Crea un nuevo paciente y actualiza la lista — Creates a new patient and updates list
+  async function load() {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await getPatients();
+      setPatients(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   async function createPatient(patientData) {
-    // TODO Etapa 1 — implementar lógica / implement logic
+    const newPatient = await createPatientSvc(patientData);
+    setPatients((prev) => [...prev, newPatient]);
+    return newPatient;
   }
 
-  // Actualiza un paciente existente — Updates an existing patient
   async function updatePatient(id, patientData) {
-    // TODO Etapa 1 — implementar lógica / implement logic
+    const updated = await updatePatientSvc(id, patientData);
+    setPatients((prev) => prev.map((p) => (p.id === id ? updated : p)));
+    return updated;
   }
 
-  // Busca pacientes por término — Searches patients by term
   async function searchPatients(query) {
-    // TODO Etapa 1 — implementar lógica / implement logic
+    setLoading(true);
+    setError(null);
+    try {
+      const results = await searchPatientsSvc(query);
+      setPatients(results);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   }
 
-  return { patients, loading, error, createPatient, updatePatient, searchPatients };
+  // Recarga la lista completa desde InsForge
+  async function refreshPatients() {
+    await load();
+  }
+
+  return { patients, loading, error, createPatient, updatePatient, searchPatients, refreshPatients };
 }

@@ -1,31 +1,63 @@
-// Servicio de dominio de recordatorios — Reminder domain service
-// Gestiona la generación y envío de recordatorios y se conecta con InsForge — Manages reminder generation and delivery and connects to InsForge
+// Servicio de dominio de recordatorios
 const { HOURS_BEFORE_REMINDER } = require('../../frontend/src/core/constants');
+const API_URL = process.env.INSFORGE_API_URL;
+const API_KEY  = process.env.INSFORGE_API_KEY;
 
-// Crea un recordatorio vinculado a una cita — Creates a reminder linked to an appointment
-async function createReminderForAppointment(appointmentId) {
-  // TODO Etapa 1 — conectar con InsForge / connect to InsForge
+function getHeaders() {
+  return {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${API_KEY}`,
+  };
 }
 
-// Calcula la fecha de envío del recordatorio usando la constante HOURS_BEFORE_REMINDER — Calculates reminder send date using HOURS_BEFORE_REMINDER constant
+// Calcula la fecha de envío restando HOURS_BEFORE_REMINDER horas a la cita
 function calculateReminderDate(appointmentDate) {
-  // Usa HOURS_BEFORE_REMINDER en lugar de valor literal — Uses HOURS_BEFORE_REMINDER instead of magic number
-  // TODO Etapa 1 — conectar con InsForge / connect to InsForge
+  const date = new Date(appointmentDate);
+  date.setHours(date.getHours() - HOURS_BEFORE_REMINDER);
+  return date;
 }
 
-// Genera el mensaje de texto del recordatorio — Generates the reminder text message
-function generateMessage(patientName, appointmentDate) {
-  // TODO Etapa 1 — conectar con InsForge / connect to InsForge
+function generateMessage(patientName, appointmentDate, appointmentTime, professional) {
+  return `Recordatorio: ${patientName}, tiene cita el ${appointmentDate} a las ${appointmentTime} con ${professional}.`;
 }
 
-// Marca un recordatorio como enviado — Marks a reminder as sent
+async function createReminderForAppointment(appointment) {
+  const sendAt  = calculateReminderDate(appointment.date);
+  const message = generateMessage(
+    appointment.patientName,
+    appointment.date,
+    appointment.time,
+    appointment.professional
+  );
+  const res = await fetch(`${API_URL}/reminders`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify({
+      appointmentId: appointment.id,
+      patientId: appointment.patientId,
+      message,
+      sendAt: sendAt.toISOString(),
+      status: 'pending',
+    }),
+  });
+  if (!res.ok) throw new Error(`Error creando recordatorio: ${res.status}`);
+  return res.json();
+}
+
 async function markAsSent(reminderId) {
-  // TODO Etapa 1 — conectar con InsForge / connect to InsForge
+  const res = await fetch(`${API_URL}/reminders/${reminderId}`, {
+    method: 'PATCH',
+    headers: getHeaders(),
+    body: JSON.stringify({ status: 'sent' }),
+  });
+  if (!res.ok) throw new Error(`Error marcando recordatorio como enviado: ${res.status}`);
+  return res.json();
 }
 
-// Lista todos los recordatorios pendientes de envío — Lists all pending reminders
 async function listPending() {
-  // TODO Etapa 1 — conectar con InsForge / connect to InsForge
+  const res = await fetch(`${API_URL}/reminders?status=pending`, { headers: getHeaders() });
+  if (!res.ok) throw new Error(`Error listando recordatorios pendientes: ${res.status}`);
+  return res.json();
 }
 
 module.exports = { createReminderForAppointment, calculateReminderDate, generateMessage, markAsSent, listPending };

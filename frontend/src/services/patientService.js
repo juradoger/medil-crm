@@ -1,29 +1,50 @@
-// Servicio de pacientes (frontend) — Patient service (frontend)
-// Se comunica con el backend de InsForge — Communicates with the InsForge backend
+// Servicio de pacientes (frontend) — conecta con InsForge
+const BASE_URL = import.meta.env.VITE_INSFORGE_API_URL;
+const API_KEY  = import.meta.env.VITE_INSFORGE_API_KEY;
 
-const BASE_URL = '/api/patients';
+function getHeaders() {
+  return {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${API_KEY}`,
+  };
+}
 
-// Obtiene todos los pacientes — Fetches all patients
 export async function getPatients() {
-  // TODO Etapa 1 — implementar lógica / implement logic
+  const res = await fetch(`${BASE_URL}/patients`, { headers: getHeaders() });
+  if (!res.ok) throw new Error(`Error cargando pacientes: ${res.status}`);
+  return res.json();
 }
 
-// Obtiene un paciente por ID — Fetches a patient by ID
 export async function getPatientById(id) {
-  // TODO Etapa 1 — implementar lógica / implement logic
+  const res = await fetch(`${BASE_URL}/patients/${id}`, { headers: getHeaders() });
+  if (!res.ok) throw new Error(`Paciente no encontrado: ${res.status}`);
+  return res.json();
 }
 
-// Crea un nuevo paciente — Creates a new patient
 export async function createPatient(patientData) {
-  // TODO Etapa 1 — implementar lógica / implement logic
+  const res = await fetch(`${BASE_URL}/patients`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(patientData),
+  });
+  if (!res.ok) throw new Error(`Error creando paciente: ${res.status}`);
+  return res.json();
 }
 
-// Actualiza los datos de un paciente — Updates patient data
 export async function updatePatient(id, patientData) {
-  // TODO Etapa 1 — implementar lógica / implement logic
+  const res = await fetch(`${BASE_URL}/patients/${id}`, {
+    method: 'PUT',
+    headers: getHeaders(),
+    body: JSON.stringify(patientData),
+  });
+  if (!res.ok) throw new Error(`Error actualizando paciente: ${res.status}`);
+  return res.json();
 }
 
-// Busca pacientes por término — Searches patients by term
 export async function searchPatients(query) {
-  // TODO Etapa 1 — implementar lógica / implement logic
+  const res = await fetch(`${BASE_URL}/patients?search=${encodeURIComponent(query)}`, {
+    headers: getHeaders(),
+  });
+  if (!res.ok) throw new Error(`Error buscando pacientes: ${res.status}`);
+  return res.json();
 }
