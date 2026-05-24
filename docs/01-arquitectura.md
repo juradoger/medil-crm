@@ -171,6 +171,110 @@ La arquitectura modular por dominio habilita la reutilización en la SPL porque:
 
 ---
 
+## Autenticación y Roles | Authentication and Roles
+
+El sistema implementa **RBAC (Role-Based Access Control)** con tres roles: `admin`, `doctor`, `patient`. La autenticación usa `AuthContext` + `ProtectedRoute`.
+
+The system implements **RBAC (Role-Based Access Control)** with three roles: `admin`, `doctor`, `patient`. Authentication uses `AuthContext` + `ProtectedRoute`.
+
+<details>
+<summary>🔧 Ver diagrama de autenticación (Mermaid)</summary>
+
+```mermaid
+sequenceDiagram
+    actor U as Usuario — User
+    participant LP as Login Page
+    participant AC as AuthContext
+    participant AS as authService
+    participant PR as ProtectedRoute
+    participant PG as Page
+
+    U->>LP: Ingresa credenciales — Enter credentials
+    LP->>AC: login(email, password)
+    AC->>AS: login(email, password)
+    AS->>AS: db.collection('users').where(email).find()
+    AS-->>AC: { user, token }
+    AC->>AC: setUser(user) — localStorage.setItem(token)
+    AC-->>LP: user (con role)
+    LP->>LP: navigate según role — navigate by role
+
+    U->>PR: Accede a ruta protegida — Access protected route
+    PR->>AC: useAuth()
+    AC-->>PR: { isAuthenticated, hasRole }
+    alt No autenticado — Not authenticated
+        PR-->>U: <Navigate to="/login" />
+    else Rol no permitido — Role not allowed
+        PR-->>U: Página 403 inline
+    else Autorizado — Authorized
+        PR->>PG: Renderiza hijos — Render children
+    end
+```
+
+</details>
+
+### Rutas por Rol | Routes by Role
+
+| Ruta — Route | Admin | Doctor | Patient |
+|:---|:---:|:---:|:---:|
+| `/` Dashboard | ✓ | ✓ | — |
+| `/patients` | ✓ | ✓ | — |
+| `/appointments` | ✓ | ✓ | — |
+| `/reminders` | ✓ | ✓ | — |
+| `/admin/branches` | ✓ | — | — |
+| `/admin/billing` | ✓ | — | — |
+| `/admin/supplies` | ✓ | — | — |
+| `/doctor/console` | — | ✓ | — |
+| `/patient/portal` | — | — | ✓ |
+
+---
+
+## Adapter Pattern para Pagos | Adapter Pattern for Payments
+
+El patrón **Adapter** desacopla el código de negocio del proveedor de pagos QR concreto. Cambiar de PagoFácil a otro proveedor requiere solo un nuevo adaptador.
+
+The **Adapter** pattern decouples business code from the concrete QR payment provider. Switching from PagoFácil to another provider requires only a new adapter.
+
+<details>
+<summary>🔧 Ver diagrama del Adapter Pattern (Mermaid)</summary>
+
+```mermaid
+classDiagram
+    class IPaymentAdapter {
+        <<interface>>
+        +generateQR(data) Promise
+        +checkPaymentStatus(transactionId) Promise
+    }
+
+    class SimulatedQRAdapter {
+        +generateQR(data) Promise~qrCode, transactionId~
+        +checkPaymentStatus(transactionId) Promise~status~
+    }
+
+    class PagoFacilAdapter {
+        -apiUrl: string
+        -apiKey: string
+        +generateQR(data) Promise~qrCode, transactionId~
+        +checkPaymentStatus(transactionId) Promise~status~
+    }
+
+    class BillingService {
+        -adapter: IPaymentAdapter
+        +calculateTotal(amount) object
+        +generatePaymentQR(data) Promise
+        +checkPaymentStatus(transactionId) Promise
+    }
+
+    IPaymentAdapter <|-- SimulatedQRAdapter : implements
+    IPaymentAdapter <|-- PagoFacilAdapter : implements
+    BillingService --> IPaymentAdapter : uses
+    BillingService ..> SimulatedQRAdapter : dev
+    BillingService ..> PagoFacilAdapter : prod
+```
+
+</details>
+
+---
+
 <div align="center">
 
 [🧩 Siguiente: Componentes →](02-componentes.md) &nbsp;|&nbsp; [← Volver al README](../README.es.md)

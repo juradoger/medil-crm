@@ -1,12 +1,10 @@
-// Página de gestión de recordatorios — Reminder management page
-import React from 'react';
-
+// Gestión de recordatorios — Reminder management
+// TODO Etapa 3 — implementar lista de recordatorios pendientes — implement pending reminder list
 export default function Reminders() {
-  // TODO Etapa 1 — implementar lógica / implement logic
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-semibold text-primary-dark">Recordatorios</h1>
-      <p className="text-gray-500 mt-1">Reminders</p>
+      <h1 className="text-2xl font-semibold text-[#0E4A8A]">Recordatorios</h1>
+      <p className="text-gray-500 mt-1">Reminders — TODO: implementar — implement</p>
     </div>
   );
 }

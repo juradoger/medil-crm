@@ -1,15 +1,10 @@
-// Página de listado y búsqueda de pacientes — Patient listing and search page
-import React from 'react';
-import { usePatients } from '../hooks/usePatients';
-
+// Listado de pacientes — Patient listing
+// TODO Etapa 3 — implementar listado, búsqueda y CRUD — implement listing, search and CRUD
 export default function Patients() {
-  const { patients, loading, error } = usePatients();
-
-  // TODO Etapa 1 — implementar lógica / implement logic
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-semibold text-primary-dark">Pacientes</h1>
-      <p className="text-gray-500 mt-1">Patients</p>
+      <h1 className="text-2xl font-semibold text-[#0E4A8A]">Pacientes</h1>
+      <p className="text-gray-500 mt-1">Patients — TODO: implementar — implement</p>
     </div>
   );
 }

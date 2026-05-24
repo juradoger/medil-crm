@@ -243,6 +243,121 @@ En fisioterapia o psicología, solo se modifica `appointmentService.js`. El hook
 
 ---
 
+## Componente 8 — BillingService + Adapter Pattern
+
+![Tipo](https://img.shields.io/badge/Tipo-Servicio_con_Adapter_Pattern-0E4A8A?style=flat-square)
+![Ubicación](https://img.shields.io/badge/frontend/src/billing/billingService.js-grey?style=flat-square&logo=files)
+
+### Problema que resuelve — Problem it solves
+
+Sin este patrón, el código de negocio estaría acoplado directamente al proveedor PagoFácil. Si Bolivia adopta un nuevo sistema QR, habría que refactorizar toda la lógica de pagos. El Adapter Pattern aísla ese cambio.
+
+Without this pattern, business code would be directly coupled to the PagoFácil provider. If Bolivia adopts a new QR system, the entire payment logic would need refactoring. The Adapter Pattern isolates that change.
+
+### Interfaz pública — Public interface
+
+```js
+// Cálculo — Calculation
+const { subtotal, commission, total } = billingService.calculateTotal(amount);
+
+// Generación QR — QR generation
+const { qrCode, transactionId } = await billingService.generatePaymentQR({ appointmentId, amount, branchId });
+
+// Verificación — Verification
+const { status } = await billingService.checkPaymentStatus(transactionId);
+```
+
+### Adaptadores disponibles — Available adapters
+
+| Adaptador — Adapter | Entorno — Environment | Descripción |
+|:---|:---|:---|
+| `SimulatedQRAdapter` | `development` | QR simulado con delays — Simulated QR with delays |
+| `PagoFacilAdapter` | `production` | API real PagoFácil Bolivia |
+
+### Reutilizabilidad en SPL
+
+Agregar un proveedor (ej. Tigo Money) solo requiere crear `TigoMoneyAdapter extends IPaymentAdapter`. El resto del sistema no cambia.
+
+Adding a provider (e.g., Tigo Money) only requires creating `TigoMoneyAdapter extends IPaymentAdapter`. The rest of the system stays unchanged.
+
+---
+
+## Componente 9 — PaymentModal + useBilling
+
+![Tipo](https://img.shields.io/badge/Tipo-Componente_React_+_Hook-61DAFB?style=flat-square&logo=react&logoColor=black)
+![Ubicación](https://img.shields.io/badge/frontend/src/components/payments/-grey?style=flat-square&logo=files)
+
+### Problema que resuelve — Problem it solves
+
+El flujo de pago QR requiere generación de imagen, polleo periódico y manejo de estados complejos (idle→loading→polling→success/error). Sin estos componentes, esta lógica se duplicaría en cada módulo que acepte pagos.
+
+The QR payment flow requires image generation, periodic polling and complex state handling (idle→loading→polling→success/error). Without these components, this logic would duplicate across every module that accepts payments.
+
+### Props de PaymentModal — PaymentModal props
+
+| Prop | Tipo — Type | Descripción — Description |
+|:---|:---|:---|
+| `isOpen` | `boolean` | Controla visibilidad — Controls visibility |
+| `onClose` | `Function` | Callback al cerrar — Close callback |
+| `appointmentId` | `string` | ID de la cita — Appointment ID |
+| `amount` | `number` | Monto base en Bs — Base amount in Bs |
+| `branchId` | `string` | Sucursal — Branch |
+| `onPaymentSuccess` | `Function` | Callback al aprobar — Approval callback |
+
+### Interfaz de useBilling — useBilling interface
+
+```js
+const { generateQR, paymentState, qrData, error, loading, resetPayment } = useBilling();
+```
+
+| Valor — Value | Tipo — Type | Descripción — Description |
+|:---|:---|:---|
+| `paymentState` | `string` | `idle` / `loading` / `polling` / `success` / `error` |
+| `qrData` | `object\|null` | `{ qrCode, transactionId }` |
+| `generateQR(data)` | `Function` | Inicia el ciclo — Starts the cycle |
+| `resetPayment()` | `Function` | Limpia el estado — Clears state |
+
+---
+
+## Componente 10 — AuthContext + ProtectedRoute
+
+![Tipo](https://img.shields.io/badge/Tipo-Context_+_Componente_React-61DAFB?style=flat-square&logo=react&logoColor=black)
+![Ubicación](https://img.shields.io/badge/frontend/src/context/-grey?style=flat-square&logo=files)
+
+### Problema que resuelve — Problem it solves
+
+Sin AuthContext, cada componente que necesite verificar el rol del usuario accedería directamente a localStorage, duplicando lógica y rompiendo el principio DRY. AuthContext centraliza el estado de sesión.
+
+Without AuthContext, every component needing to check the user's role would directly access localStorage, duplicating logic and breaking DRY. AuthContext centralizes session state.
+
+### API del hook useAuth — useAuth hook API
+
+```js
+const { user, login, logout, isAuthenticated, hasRole, currentBranchId, loading } = useAuth();
+```
+
+| Valor — Value | Tipo — Type | Descripción — Description |
+|:---|:---|:---|
+| `user` | `object\|null` | Usuario autenticado — Authenticated user |
+| `isAuthenticated` | `boolean` | Hay sesión activa — Active session |
+| `hasRole(roles)` | `Function` | Verifica rol — Verifies role |
+| `currentBranchId` | `string\|null` | Sucursal activa — Active branch |
+| `loading` | `boolean` | Cargando sesión — Loading session |
+
+### ProtectedRoute
+
+```jsx
+<ProtectedRoute allowedRoles={['admin', 'doctor']}>
+  <Dashboard />
+</ProtectedRoute>
+```
+
+Redirige a `/login` si no autenticado. Muestra 403 inline si rol no permitido.
+
+Redirects to `/login` if not authenticated. Shows inline 403 if role not allowed.
+
+---
+
 <div align="center">
 
 [← 🏗️ Arquitectura](01-arquitectura.md) &nbsp;|&nbsp; [♻️ Refactorizaciones →](03-refactorizacion.md) &nbsp;|&nbsp; [← Volver al README](../README.es.md)
