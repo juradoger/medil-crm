@@ -1,10 +1,78 @@
 // Panel de control — Dashboard
-// TODO Etapa 3 — implementar métricas y resumen — implement metrics and summary
-export default function Dashboard() {
+import React, { useMemo } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { usePatients } from '../hooks/usePatients';
+import { useAppointments } from '../hooks/useAppointments';
+import { useReminders } from '../hooks/useReminders';
+import { StatusBadge } from '../components/ui/StatusBadge';
+import { FullPageSpinner } from '../components/ui/LoadingSpinner';
+import { APPOINTMENT_STATUS, PATIENT_STATUS } from '../core/constants';
+
+function MetricCard({ label, value, color = 'text-[#0E4A8A]', bg = 'bg-white' }) {
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-semibold text-[#0E4A8A]">Panel de Control</h1>
-      <p className="text-gray-500 mt-1">Dashboard — TODO: implementar — implement</p>
+    <div className={`${bg} rounded-xl border border-gray-100 shadow-sm p-5 flex flex-col gap-1`}>
+      <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">{label}</p>
+      <p className={`text-3xl font-bold ${color}`}>{value}</p>
+    </div>
+  );
+}
+
+export default function Dashboard() {
+  const { currentBranchId } = useAuth();
+  const { patients, loading: loadP }      = usePatients(currentBranchId);
+  const { appointments, loading: loadA }  = useAppointments(currentBranchId);
+  const { reminders, loading: loadR }     = useReminders(currentBranchId);
+
+  const today = new Date().toISOString().slice(0, 10);
+
+  const todayAppointments = useMemo(
+    () => appointments.filter(a => a.scheduledAt?.slice(0, 10) === today),
+    [appointments, today]
+  );
+
+  const activePatients    = useMemo(() => patients.filter(p => p.status === PATIENT_STATUS.ACTIVE).length, [patients]);
+  const scheduledToday    = useMemo(() => todayAppointments.filter(a => a.status === APPOINTMENT_STATUS.SCHEDULED).length, [todayAppointments]);
+  const pendingReminders  = useMemo(() => reminders.length, [reminders]);
+
+  if (loadP || loadA || loadR) return <FullPageSpinner />;
+
+  return (
+    <div className="p-6 max-w-6xl mx-auto space-y-8">
+      <div>
+        <h1 className="text-2xl font-bold text-[#0E4A8A]">Panel de Control — Dashboard</h1>
+        <p className="text-sm text-gray-400 mt-0.5">{today}</p>
+      </div>
+
+      {/* Tarjetas de métricas — Metric cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <MetricCard label="Pacientes activos — Active patients" value={activePatients} />
+        <MetricCard label="Citas hoy — Today's appointments" value={todayAppointments.length} color="text-[#00B4D8]" />
+        <MetricCard label="Agendadas hoy — Scheduled today" value={scheduledToday} color="text-green-600" />
+        <MetricCard label="Recordatorios — Reminders" value={pendingReminders} color="text-yellow-600" />
+      </div>
+
+      {/* Citas del día — Today's appointments */}
+      <div>
+        <h2 className="text-base font-semibold text-gray-700 mb-3">Citas de hoy — Today's Appointments</h2>
+        {todayAppointments.length === 0 ? (
+          <p className="text-sm text-gray-400 py-8 text-center">Sin citas para hoy — No appointments today</p>
+        ) : (
+          <div className="space-y-2">
+            {todayAppointments.map(a => (
+              <div key={a.id ?? a._id} className="bg-white rounded-lg border border-gray-100 px-4 py-3 flex items-center justify-between shadow-sm">
+                <div>
+                  <p className="text-sm font-medium text-gray-800">
+                    {a.scheduledAt ? new Date(a.scheduledAt).toLocaleTimeString('es-BO', { hour: '2-digit', minute: '2-digit' }) : '—'}
+                    {' · '}{a.patientName ?? a.patientId}
+                  </p>
+                  <p className="text-xs text-gray-400">{a.professionalName ?? a.professionalId}</p>
+                </div>
+                <StatusBadge status={a.status} />
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

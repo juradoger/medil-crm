@@ -41,6 +41,7 @@ export default defineConfig([
       globals: {
         ...globals.browser,
         ...globals.jest, // Vitest es compatible con globals de Jest — Vitest is Jest-globals compatible
+        vi: true,        // Global específico de Vitest — Vitest-specific global
       },
     },
   },
