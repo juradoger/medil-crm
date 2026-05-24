@@ -4,10 +4,13 @@ import { PATIENT_STATUS } from '../core/constants';
 
 const COL = 'patients'; // Nombre de colección — Collection name
 
+// Campos reales en InsForge: id, name, email, phone, status, createdAt
+// Real InsForge fields: id, name, email, phone, status, createdAt
+
 export const patientService = {
-  /** Lista todos los pacientes de una sucursal — Lists all patients for a branch */
-  async getAll(branchId) {
-    const result = await db.collection(COL).where('branchId', '==', branchId).find();
+  /** Lista todos los pacientes activos — Lists all active patients */
+  async getAll(_branchId) {
+    const result = await db.collection(COL).find();
     return Array.isArray(result) ? result : (result.data ?? []);
   },
 
@@ -18,34 +21,35 @@ export const patientService = {
     return rows[0] ?? null;
   },
 
-  /** Busca pacientes por nombre o CI — Searches patients by name or ID number */
-  async search(branchId, query) {
-    const all = await patientService.getAll(branchId);
+  /** Busca pacientes por nombre — Searches patients by name */
+  async search(_branchId, query) {
+    const all = await patientService.getAll();
     const q = query.toLowerCase();
-    return all.filter(p =>
-      p.fullName?.toLowerCase().includes(q) ||
-      p.ci?.toLowerCase().includes(q)
-    );
+    return all.filter(p => p.name?.toLowerCase().includes(q));
   },
 
   /** Crea un paciente nuevo — Creates a new patient */
   async create(data) {
     const patient = {
-      ...data,
+      name:   data.fullName ?? data.name ?? '',
+      email:  data.email  ?? null,
+      phone:  data.phone  ?? null,
       status: PATIENT_STATUS.ACTIVE,
-      createdAt: new Date().toISOString(),
     };
-    const result = await db.collection(COL).create(patient);
-    return result;
+    return db.collection(COL).create(patient);
   },
 
   /** Actualiza datos de un paciente — Updates patient data */
   async update(id, data) {
-    const result = await db.collection(COL).where('id', '==', id).update(data);
-    return result;
+    const patch = {};
+    if (data.fullName ?? data.name) patch.name  = data.fullName ?? data.name;
+    if (data.email  !== undefined)  patch.email  = data.email;
+    if (data.phone  !== undefined)  patch.phone  = data.phone;
+    if (data.status !== undefined)  patch.status = data.status;
+    return db.collection(COL).where('id', '==', id).update(patch);
   },
 
-  /** Elimina un paciente (soft delete: marca inactivo) — Soft-deletes a patient */
+  /** Desactiva un paciente — Deactivates a patient */
   async remove(id) {
     return patientService.update(id, { status: PATIENT_STATUS.INACTIVE });
   },

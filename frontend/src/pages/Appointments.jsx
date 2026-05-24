@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useAppointments } from '../hooks/useAppointments';
 import { usePatients } from '../hooks/usePatients';
-import { useProfessionals } from '../hooks/useProfessionals';
 import { DataTable } from '../components/ui/DataTable';
 import { StatusBadge } from '../components/ui/StatusBadge';
 import { ConfirmModal } from '../components/ui/ConfirmModal';
@@ -11,25 +10,31 @@ import { FullPageSpinner } from '../components/ui/LoadingSpinner';
 import { FormField, inputClass } from '../components/ui/FormField';
 import { APPOINTMENT_STATUS } from '../core/constants';
 
-const EMPTY_FORM = { patientId: '', professionalId: '', scheduledAt: '', reason: '' };
+const EMPTY_FORM = { patientId: '', patientName: '', professional: '', professionalId: '', date: '', time: '', reason: '' };
 
-function AppointmentModal({ patients, professionals, onSave, onClose }) {
+function AppointmentModal({ patients, onSave, onClose }) {
   const [form, setForm] = useState(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError]   = useState('');
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
+  const pickPatient = (id) => {
+    const p = patients.find(pt => (pt.id ?? pt._id) === id);
+    setForm(f => ({ ...f, patientId: id, patientName: p?.name ?? '' }));
+  };
+
   const submit = async (e) => {
     e.preventDefault();
-    if (!form.patientId || !form.professionalId || !form.scheduledAt) {
-      setError('Todos los campos son obligatorios — All fields are required');
+    if (!form.patientId || !form.date || !form.time) {
+      setError('Paciente, fecha y hora son obligatorios — Patient, date and time are required');
       return;
     }
     setSaving(true);
     setError('');
     try {
-      await onSave(form);
+      // Pasar scheduledAt como combinación para el servicio — Pass scheduledAt combo to service
+      await onSave({ ...form, scheduledAt: `${form.date}T${form.time}` });
       onClose();
     } catch (err) {
       setError(err.message);
@@ -45,23 +50,21 @@ function AppointmentModal({ patients, professionals, onSave, onClose }) {
         <h2 className="text-lg font-semibold text-gray-800 mb-4">Nueva Cita — New Appointment</h2>
         <form onSubmit={submit} className="space-y-4">
           <FormField label="Paciente — Patient">
-            <select className={inputClass} value={form.patientId} onChange={e => set('patientId', e.target.value)}>
+            <select className={inputClass} value={form.patientId} onChange={e => pickPatient(e.target.value)}>
               <option value="">Seleccionar — Select…</option>
               {patients.map(p => (
-                <option key={p.id ?? p._id} value={p.id ?? p._id}>{p.fullName}</option>
+                <option key={p.id ?? p._id} value={p.id ?? p._id}>{p.name}</option>
               ))}
             </select>
           </FormField>
-          <FormField label="Profesional — Professional">
-            <select className={inputClass} value={form.professionalId} onChange={e => set('professionalId', e.target.value)}>
-              <option value="">Seleccionar — Select…</option>
-              {professionals.map(p => (
-                <option key={p.id ?? p._id} value={p.id ?? p._id}>{p.fullName}</option>
-              ))}
-            </select>
+          <FormField label="Profesional — Professional name">
+            <input className={inputClass} value={form.professional} onChange={e => set('professional', e.target.value)} placeholder="Ej: Dra. Carmen Solís" />
           </FormField>
-          <FormField label="Fecha y hora — Date & time">
-            <input className={inputClass} type="datetime-local" value={form.scheduledAt} onChange={e => set('scheduledAt', e.target.value)} />
+          <FormField label="Fecha — Date">
+            <input className={inputClass} type="date" value={form.date} onChange={e => set('date', e.target.value)} />
+          </FormField>
+          <FormField label="Hora — Time">
+            <input className={inputClass} type="time" value={form.time} onChange={e => set('time', e.target.value)} />
           </FormField>
           <FormField label="Motivo — Reason">
             <input className={inputClass} value={form.reason} onChange={e => set('reason', e.target.value)} />
@@ -84,12 +87,11 @@ const STATUS_FILTERS = ['Todas — All', APPOINTMENT_STATUS.SCHEDULED, APPOINTME
 export default function Appointments() {
   const { currentBranchId } = useAuth();
   const { appointments, loading, create, cancel, markAttended } = useAppointments(currentBranchId);
-  const { patients, loading: loadP }           = usePatients(currentBranchId);
-  const { professionals, loading: loadPr }     = useProfessionals(currentBranchId);
+  const { patients, loading: loadP } = usePatients(currentBranchId);
 
-  const [showModal, setShowModal]   = useState(false);
+  const [showModal, setShowModal]       = useState(false);
   const [cancelTarget, setCancelTarget] = useState(null);
-  const [filterStatus, setFilter]   = useState('Todas — All');
+  const [filterStatus, setFilter]       = useState('Todas — All');
 
   const filtered = filterStatus === 'Todas — All'
     ? appointments
@@ -97,17 +99,12 @@ export default function Appointments() {
 
   const columns = [
     {
-      key: 'scheduledAt', label: 'Fecha — Date',
-      render: r => r.scheduledAt ? new Date(r.scheduledAt).toLocaleString('es-BO') : '—',
+      key: 'datetime', label: 'Fecha y hora — Date & time',
+      render: r => `${r.date ?? '—'} ${r.time?.slice(0, 5) ?? ''}`,
     },
-    { key: 'patientId', label: 'Paciente — Patient', render: r => {
-      const p = patients.find(pt => (pt.id ?? pt._id) === r.patientId);
-      return p?.fullName ?? r.patientId;
-    }},
-    { key: 'professionalId', label: 'Profesional', render: r => {
-      const p = professionals.find(pr => (pr.id ?? pr._id) === r.professionalId);
-      return p?.fullName ?? r.professionalId;
-    }},
+    { key: 'patientName',   label: 'Paciente — Patient' },
+    { key: 'professional',  label: 'Profesional' },
+    { key: 'reason',        label: 'Motivo — Reason' },
     { key: 'status', label: 'Estado — Status', render: r => <StatusBadge status={r.status} /> },
     {
       key: 'actions', label: '',
@@ -115,8 +112,8 @@ export default function Appointments() {
         <div className="flex gap-2">
           {r.status === APPOINTMENT_STATUS.SCHEDULED && (
             <>
-              <button onClick={() => markAttended(r.id ?? r._id)} className="text-xs text-green-600 hover:underline">Atendida — Attended</button>
-              <button onClick={() => setCancelTarget(r)} className="text-xs text-red-400 hover:underline">Cancelar — Cancel</button>
+              <button onClick={() => markAttended(r.id ?? r._id)} className="text-xs text-green-600 hover:underline">Atendida</button>
+              <button onClick={() => setCancelTarget(r)} className="text-xs text-red-400 hover:underline">Cancelar</button>
             </>
           )}
         </div>
@@ -124,21 +121,17 @@ export default function Appointments() {
     },
   ];
 
-  if (loading || loadP || loadPr) return <FullPageSpinner />;
+  if (loading || loadP) return <FullPageSpinner />;
 
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-[#0E4A8A]">Citas — Appointments</h1>
-        <button
-          onClick={() => setShowModal(true)}
-          className="px-4 py-2 text-sm text-white bg-[#00B4D8] rounded-lg hover:bg-[#0096B4] transition-colors"
-        >
+        <button onClick={() => setShowModal(true)} className="px-4 py-2 text-sm text-white bg-[#00B4D8] rounded-lg hover:bg-[#0096B4]">
           + Nueva Cita — New
         </button>
       </div>
 
-      {/* Filtros de estado — Status filters */}
       <div className="flex gap-2 flex-wrap">
         {STATUS_FILTERS.map(s => (
           <button
@@ -156,12 +149,7 @@ export default function Appointments() {
       <DataTable columns={columns} rows={filtered} emptyTitle="Sin citas — No appointments" />
 
       {showModal && (
-        <AppointmentModal
-          patients={patients}
-          professionals={professionals}
-          onSave={create}
-          onClose={() => setShowModal(false)}
-        />
+        <AppointmentModal patients={patients} onSave={create} onClose={() => setShowModal(false)} />
       )}
 
       <ConfirmModal

@@ -69,8 +69,8 @@ export default function PatientDetail() {
   const patientAppointments = appointments.filter(a => a.patientId === id);
 
   const apptColumns = [
-    { key: 'scheduledAt', label: 'Fecha — Date', render: r => r.scheduledAt ? new Date(r.scheduledAt).toLocaleString('es-BO') : '—' },
-    { key: 'professionalName', label: 'Profesional' },
+    { key: 'date', label: 'Fecha — Date', render: r => r.date ? `${r.date} ${r.time?.slice(0,5) ?? ''}` : '—' },
+    { key: 'professional', label: 'Profesional', render: r => r.professional ?? r.professionalId ?? '—' },
     { key: 'status', label: 'Estado — Status', render: r => <StatusBadge status={r.status} /> },
   ];
 
@@ -97,8 +97,7 @@ export default function PatientDetail() {
         <div className="md:col-span-2 bg-white rounded-xl border border-gray-100 shadow-sm p-6 space-y-3">
           <div className="flex items-start justify-between">
             <div>
-              <h1 className="text-xl font-bold text-[#0E4A8A]">{patient.fullName}</h1>
-              <p className="text-sm text-gray-400">CI: {patient.ci}</p>
+              <h1 className="text-xl font-bold text-[#0E4A8A]">{patient.name}</h1>
             </div>
             <StatusBadge status={patient.status} />
           </div>

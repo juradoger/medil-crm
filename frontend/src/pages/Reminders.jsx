@@ -12,13 +12,10 @@ export default function Reminders() {
 
   const columns = [
     {
-      key: 'reminderAt', label: 'Enviar a las — Send at',
-      render: r => r.reminderAt ? new Date(r.reminderAt).toLocaleString('es-BO') : '—',
+      key: 'sendAt', label: 'Enviar a las — Send at',
+      render: r => r.sendAt ? new Date(r.sendAt).toLocaleString('es-BO') : '—',
     },
-    {
-      key: 'scheduledAt', label: 'Cita — Appointment',
-      render: r => r.scheduledAt ? new Date(r.scheduledAt).toLocaleString('es-BO') : '—',
-    },
+    { key: 'message',   label: 'Mensaje — Message' },
     { key: 'patientId', label: 'Paciente — Patient' },
     { key: 'status', label: 'Estado — Status', render: r => <StatusBadge status={r.status} /> },
     {
