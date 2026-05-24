@@ -1,10 +1,6 @@
-// Modal de confirmación — Confirmation modal
+// Modal de confirmación
 import React from 'react';
 
-/**
- * Modal de confirmación destructiva — Destructive confirmation modal
- * @param {{ open: boolean, title: string, description?: string, onConfirm: fn, onCancel: fn, danger?: boolean }} props
- */
 export function ConfirmModal({ open, title, description, onConfirm, onCancel, danger = true }) {
   if (!open) return null;
   return (
@@ -16,17 +12,17 @@ export function ConfirmModal({ open, title, description, onConfirm, onCancel, da
         <div className="flex justify-end gap-3 mt-2">
           <button
             onClick={onCancel}
-            className="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+            className="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200"
           >
-            Cancelar — Cancel
+            Cancelar
           </button>
           <button
             onClick={onConfirm}
-            className={`px-4 py-2 text-sm font-medium text-white rounded-lg transition-colors ${
+            className={`px-4 py-2 text-sm font-medium text-white rounded-lg ${
               danger ? 'bg-red-500 hover:bg-red-600' : 'bg-[#00B4D8] hover:bg-[#0096B4]'
             }`}
           >
-            Confirmar — Confirm
+            Confirmar
           </button>
         </div>
       </div>

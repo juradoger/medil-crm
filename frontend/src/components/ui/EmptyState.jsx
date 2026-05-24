@@ -1,10 +1,6 @@
-// Estado vacío reutilizable — Reusable empty state
+// Estado vacío reutilizable
 import React from 'react';
 
-/**
- * Muestra un estado vacío con mensaje — Shows empty state with message
- * @param {{ title: string, description?: string, action?: React.ReactNode }} props
- */
 export function EmptyState({ title, description, action }) {
   return (
     <div className="flex flex-col items-center justify-center py-16 gap-4 text-center">

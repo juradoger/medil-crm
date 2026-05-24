@@ -1,15 +1,9 @@
-// Tabla de datos reutilizable — Reusable data table
+// Tabla de datos reutilizable
 import React from 'react';
 import { EmptyState } from './EmptyState';
 
-/**
- * Tabla de datos genérica — Generic data table
- * @param {{ columns: Array<{key,label,render?}>, rows: Array, emptyTitle?: string }} props
- */
-export function DataTable({ columns, rows, emptyTitle = 'Sin datos — No data' }) {
-  if (rows.length === 0) {
-    return <EmptyState title={emptyTitle} />;
-  }
+export function DataTable({ columns, rows, emptyTitle = 'Sin datos' }) {
+  if (rows.length === 0) return <EmptyState title={emptyTitle} />;
 
   return (
     <div className="overflow-x-auto rounded-xl border border-gray-100">
@@ -17,10 +11,7 @@ export function DataTable({ columns, rows, emptyTitle = 'Sin datos — No data' 
         <thead className="bg-gray-50">
           <tr>
             {columns.map(col => (
-              <th
-                key={col.key}
-                className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide"
-              >
+              <th key={col.key} className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">
                 {col.label}
               </th>
             ))}

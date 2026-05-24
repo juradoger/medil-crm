@@ -1,52 +1,33 @@
-// Servicio de autenticación — Authentication service
+// Servicio de autenticación
 import { db } from '../lib/insforge';
 
 const TOKEN_KEY = 'medil_token';
 
 export const authService = {
-  /**
-   * Autentica al usuario por email y password — Authenticates user by email and password
-   * @param {string} email
-   * @param {string} password
-   * @returns {Promise<{ user: object, token: string }>}
-   */
   async login(email, password) {
-    const result = await db.collection('users')
-      .where('email', '==', email)
-      .where('isActive', '==', true)
-      .find();
+    const { data, error } = await db.from('users')
+      .select('*')
+      .eq('email', email)
+      .eq('isActive', true);
 
-    const users = Array.isArray(result) ? result : (result.data ?? []);
-    const user  = users[0] ?? null;
+    if (error) throw new Error('Error de conexión');
 
-    if (!user) {
-      throw new Error('Credenciales inválidas — Invalid credentials');
-    }
-
-    // Comparación simple — Simple comparison (producción usa bcrypt — production uses bcrypt)
-    if (user.passwordHash !== password) {
-      throw new Error('Credenciales inválidas — Invalid credentials');
-    }
+    const user = data?.[0] ?? null;
+    if (!user) throw new Error('Credenciales inválidas');
+    if (user.passwordHash !== password) throw new Error('Credenciales inválidas');
 
     const payload = { id: user.id, email: user.email, role: user.role, branchId: user.branchId };
-    const token   = btoa(JSON.stringify(payload));
-    localStorage.setItem(TOKEN_KEY, token);
+    localStorage.setItem(TOKEN_KEY, btoa(JSON.stringify(payload)));
 
     const { passwordHash, ...safeUser } = user;
-    return { user: safeUser, token };
+    return { user: safeUser, token: btoa(JSON.stringify(payload)) };
   },
 
-  /**
-   * Obtiene el usuario actual desde el token — Gets current user from token
-   * @param {string} token
-   * @returns {Promise<object|null>}
-   */
   async getCurrentUser(token) {
     try {
       const payload = JSON.parse(atob(token));
-      const result  = await db.collection('users').where('id', '==', payload.id).find();
-      const users   = Array.isArray(result) ? result : (result.data ?? []);
-      const user    = users[0] ?? null;
+      const { data } = await db.from('users').select('*').eq('id', payload.id);
+      const user = data?.[0] ?? null;
       if (!user) return null;
       const { passwordHash, ...safeUser } = user;
       return safeUser;
@@ -55,13 +36,6 @@ export const authService = {
     }
   },
 
-  // Cierra sesión limpiando localStorage — Logs out by clearing localStorage
-  logout() {
-    localStorage.removeItem(TOKEN_KEY);
-  },
-
-  // Retorna el token almacenado — Returns stored token
-  getToken() {
-    return localStorage.getItem(TOKEN_KEY);
-  },
+  logout() { localStorage.removeItem(TOKEN_KEY); },
+  getToken() { return localStorage.getItem(TOKEN_KEY); },
 };

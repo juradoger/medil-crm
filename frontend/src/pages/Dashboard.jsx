@@ -1,4 +1,4 @@
-// Panel de control — Dashboard
+// Panel de control
 import React, { useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { usePatients } from '../hooks/usePatients';
@@ -23,9 +23,8 @@ export default function Dashboard() {
   const { appointments, loading: loadA } = useAppointments(currentBranchId);
   const { reminders, loading: loadR }    = useReminders(currentBranchId);
 
-  const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+  const today = new Date().toISOString().slice(0, 10);
 
-  // Citas de hoy — Today's appointments (field: date = 'YYYY-MM-DD')
   const todayAppointments = useMemo(
     () => appointments.filter(a => a.date === today),
     [appointments, today]
@@ -40,21 +39,21 @@ export default function Dashboard() {
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-[#0E4A8A]">Panel de Control — Dashboard</h1>
+        <h1 className="text-2xl font-bold text-[#0E4A8A]">Panel de Control</h1>
         <p className="text-sm text-gray-400 mt-0.5">{today}</p>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <MetricCard label="Pacientes activos — Active patients" value={activePatients} />
-        <MetricCard label="Citas hoy — Today's appointments" value={todayAppointments.length} color="text-[#00B4D8]" />
-        <MetricCard label="Agendadas hoy — Scheduled today" value={scheduledToday} color="text-green-600" />
-        <MetricCard label="Recordatorios — Reminders" value={pendingReminders} color="text-yellow-600" />
+        <MetricCard label="Pacientes activos" value={activePatients} />
+        <MetricCard label="Citas hoy" value={todayAppointments.length} color="text-[#00B4D8]" />
+        <MetricCard label="Agendadas hoy" value={scheduledToday} color="text-green-600" />
+        <MetricCard label="Recordatorios pendientes" value={pendingReminders} color="text-yellow-600" />
       </div>
 
       <div>
-        <h2 className="text-base font-semibold text-gray-700 mb-3">Citas de hoy — Today's Appointments</h2>
+        <h2 className="text-base font-semibold text-gray-700 mb-3">Citas de hoy</h2>
         {todayAppointments.length === 0 ? (
-          <p className="text-sm text-gray-400 py-8 text-center">Sin citas para hoy — No appointments today</p>
+          <p className="text-sm text-gray-400 py-8 text-center">Sin citas para hoy</p>
         ) : (
           <div className="space-y-2">
             {todayAppointments.map(a => (
