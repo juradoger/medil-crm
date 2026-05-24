@@ -16,7 +16,7 @@ export class IPaymentAdapter {
    * @param {string} data.branchId
    * @returns {Promise<{ qrCode: string, transactionId: string }>}
    */
-  async generateQR(data) {
+  async generateQR(_data) {
     throw new Error('Not implemented — No implementado: generateQR');
   }
 
@@ -25,7 +25,7 @@ export class IPaymentAdapter {
    * @param {string} transactionId
    * @returns {Promise<{ status: string }>} status: 'pending' | 'approved' | 'rejected'
    */
-  async checkPaymentStatus(transactionId) {
+  async checkPaymentStatus(_transactionId) {
     throw new Error('Not implemented — No implementado: checkPaymentStatus');
   }
 }

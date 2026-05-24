@@ -14,15 +14,18 @@ export function AuthProvider({ children }) {
 
   // Restaura sesión desde localStorage al montar — Restores session from localStorage on mount
   useEffect(() => {
-    const token = authService.getToken();
-    if (token) {
-      authService.getCurrentUser(token)
-        .then(u => setUser(u))
-        .catch(() => authService.logout())
-        .finally(() => setLoading(false));
-    } else {
+    (async () => {
+      const token = authService.getToken();
+      if (token) {
+        try {
+          const u = await authService.getCurrentUser(token);
+          setUser(u);
+        } catch {
+          authService.logout();
+        }
+      }
       setLoading(false);
-    }
+    })();
   }, []);
 
   /**
@@ -73,6 +76,7 @@ export function AuthProvider({ children }) {
  * Hook para acceder al contexto de autenticación — Hook to access auth context
  * @returns {{ user, login, logout, isAuthenticated, hasRole, currentBranchId, loading }}
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error('useAuth debe usarse dentro de AuthProvider — must be used within AuthProvider');
