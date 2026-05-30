@@ -29,7 +29,7 @@ export class BillingService {
   calculateTotal(amount) {
     if (amount <= 0) {
       throw new Error(
-        'El monto debe ser mayor a cero — Amount must be greater than zero'
+        'El monto debe ser mayor a cero'
       );
     }
 

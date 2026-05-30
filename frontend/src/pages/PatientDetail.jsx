@@ -1,4 +1,4 @@
-// Detalle del paciente — Patient detail
+// Detalle del paciente
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { patientService } from '../services/patientService';
@@ -10,7 +10,7 @@ import { DataTable } from '../components/ui/DataTable';
 import { FullPageSpinner } from '../components/ui/LoadingSpinner';
 import { FormField, inputClass } from '../components/ui/FormField';
 
-const TABS = ['Citas — Appointments', 'Historial — Medical History'];
+const TABS = ['Citas', 'Historial'];
 
 function RecordModal({ onSave, onClose }) {
   const [form, setForm] = useState({ diagnosis: '', treatment: '', notes: '' });
@@ -27,21 +27,21 @@ function RecordModal({ onSave, onClose }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
       <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-md p-6">
-        <h2 className="text-lg font-semibold text-gray-800 mb-4">Nueva entrada — New record</h2>
+        <h2 className="text-lg font-semibold text-gray-800 mb-4">Nueva entrada</h2>
         <form onSubmit={submit} className="space-y-4">
-          <FormField label="Diagnóstico — Diagnosis">
+          <FormField label="Diagnóstico">
             <input className={inputClass} value={form.diagnosis} onChange={e => setForm(f => ({ ...f, diagnosis: e.target.value }))} required />
           </FormField>
-          <FormField label="Tratamiento — Treatment">
+          <FormField label="Tratamiento">
             <input className={inputClass} value={form.treatment} onChange={e => setForm(f => ({ ...f, treatment: e.target.value }))} />
           </FormField>
-          <FormField label="Notas — Notes">
+          <FormField label="Notas">
             <textarea className={`${inputClass} resize-none`} rows={3} value={form.notes} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))} />
           </FormField>
           <div className="flex justify-end gap-3 pt-2">
             <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200">Cancelar</button>
             <button type="submit" disabled={saving} className="px-4 py-2 text-sm text-white bg-[#00B4D8] rounded-lg hover:bg-[#0096B4] disabled:opacity-50">
-              {saving ? 'Guardando…' : 'Guardar — Save'}
+              {saving ? 'Guardando…' : 'Guardar'}
             </button>
           </div>
         </form>
@@ -69,30 +69,30 @@ export default function PatientDetail() {
   const patientAppointments = appointments.filter(a => a.patientId === id);
 
   const apptColumns = [
-    { key: 'date', label: 'Fecha — Date', render: r => r.date ? `${r.date} ${r.time?.slice(0,5) ?? ''}` : '—' },
+    { key: 'date', label: 'Fecha', render: r => r.date ? `${r.date} ${r.time?.slice(0,5) ?? ''}` : '—' },
     { key: 'professional', label: 'Profesional', render: r => r.professional ?? r.professionalId ?? '—' },
-    { key: 'status', label: 'Estado — Status', render: r => <StatusBadge status={r.status} /> },
+    { key: 'status', label: 'Estado', render: r => <StatusBadge status={r.status} /> },
   ];
 
   const recordColumns = [
-    { key: 'createdAt', label: 'Fecha — Date', render: r => r.createdAt ? new Date(r.createdAt).toLocaleDateString('es-BO') : '—' },
-    { key: 'diagnosis', label: 'Diagnóstico — Diagnosis' },
-    { key: 'treatment', label: 'Tratamiento — Treatment' },
-    { key: 'notes', label: 'Notas — Notes' },
+    { key: 'createdAt', label: 'Fecha', render: r => r.createdAt ? new Date(r.createdAt).toLocaleDateString('es-BO') : '—' },
+    { key: 'diagnosis', label: 'Diagnóstico' },
+    { key: 'treatment', label: 'Tratamiento' },
+    { key: 'notes', label: 'Notas' },
   ];
 
   if (loadP || loadA || loadR) return <FullPageSpinner />;
   if (!patient) return (
     <div className="p-6 text-center text-gray-500">
-      Paciente no encontrado — Patient not found. <Link to="/patients" className="text-[#00B4D8] hover:underline">Volver — Back</Link>
+      Paciente no encontrado. <Link to="/patients" className="text-[#00B4D8] hover:underline">Volver</Link>
     </div>
   );
 
   return (
     <div className="p-6 max-w-5xl mx-auto space-y-6">
-      <Link to="/patients" className="text-sm text-[#00B4D8] hover:underline">← Volver a Pacientes — Back to Patients</Link>
+      <Link to="/patients" className="text-sm text-[#00B4D8] hover:underline">← Volver a Pacientes</Link>
 
-      {/* Columnas: info + stats — Two columns: info + stats */}
+      {/* Columnas: info + stats */}
       <div className="grid md:grid-cols-3 gap-6">
         <div className="md:col-span-2 bg-white rounded-xl border border-gray-100 shadow-sm p-6 space-y-3">
           <div className="flex items-start justify-between">
@@ -102,25 +102,25 @@ export default function PatientDetail() {
             <StatusBadge status={patient.status} />
           </div>
           <div className="grid grid-cols-2 gap-3 text-sm text-gray-600">
-            <div><span className="font-medium">Teléfono — Phone:</span> {patient.phone || '—'}</div>
+            <div><span className="font-medium">Teléfono:</span> {patient.phone || '—'}</div>
             <div><span className="font-medium">Email:</span> {patient.email || '—'}</div>
-            <div><span className="font-medium">Nacimiento — Birth:</span> {patient.birthDate || '—'}</div>
+            <div><span className="font-medium">Nacimiento:</span> {patient.birthDate || '—'}</div>
           </div>
         </div>
 
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 flex flex-col gap-4">
           <div className="text-center">
             <p className="text-3xl font-bold text-[#00B4D8]">{patientAppointments.length}</p>
-            <p className="text-xs text-gray-400 mt-1">Citas totales — Total appointments</p>
+            <p className="text-xs text-gray-400 mt-1">Citas totales</p>
           </div>
           <div className="text-center">
             <p className="text-3xl font-bold text-green-600">{records.length}</p>
-            <p className="text-xs text-gray-400 mt-1">Registros médicos — Medical records</p>
+            <p className="text-xs text-gray-400 mt-1">Registros médicos</p>
           </div>
         </div>
       </div>
 
-      {/* Tabs — Tabs */}
+      {/* Tabs */}
       <div>
         <div className="flex gap-1 border-b border-gray-200 mb-4">
           {TABS.map((t, i) => (
@@ -137,7 +137,7 @@ export default function PatientDetail() {
         </div>
 
         {tab === 0 && (
-          <DataTable columns={apptColumns} rows={patientAppointments} emptyTitle="Sin citas — No appointments" />
+          <DataTable columns={apptColumns} rows={patientAppointments} emptyTitle="Sin citas" />
         )}
 
         {tab === 1 && (
@@ -147,10 +147,10 @@ export default function PatientDetail() {
                 onClick={() => setShowRecord(true)}
                 className="px-4 py-2 text-sm text-white bg-[#00B4D8] rounded-lg hover:bg-[#0096B4]"
               >
-                + Nueva entrada — New record
+                + Nueva entrada
               </button>
             </div>
-            <DataTable columns={recordColumns} rows={records} emptyTitle="Sin registros — No records" />
+            <DataTable columns={recordColumns} rows={records} emptyTitle="Sin registros" />
           </div>
         )}
       </div>

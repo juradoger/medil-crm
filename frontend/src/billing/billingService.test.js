@@ -24,7 +24,7 @@ describe('BillingService', () => {
 
   it('lanza error con monto negativo — throws error for negative amount', () => {
     expect(() => service.calculateTotal(-50)).toThrow(
-      'El monto debe ser mayor a cero — Amount must be greater than zero'
+      'El monto debe ser mayor a cero'
     );
   });
 

@@ -48,7 +48,7 @@ export function useBilling() {
       if (attemptsRef.current >= QR_MAX_POLLING_ATTEMPTS) {
         stopPolling();
         setPaymentState('error');
-        setError('Tiempo de espera agotado — Payment timeout');
+        setError('Tiempo de espera agotado');
         return;
       }
 
@@ -61,7 +61,7 @@ export function useBilling() {
         } else if (statusResult.status === PAYMENT_STATUS.REJECTED) {
           stopPolling();
           setPaymentState('error');
-          setError('Pago rechazado — Payment rejected');
+          setError('Pago rechazado');
         }
       } catch {
         // Continúa polleando en errores transitorios — Continue polling on transient errors
@@ -82,7 +82,7 @@ export function useBilling() {
       startPolling(result.transactionId);
     } catch (err) {
       setPaymentState('error');
-      setError(err.message || 'Error al generar QR — Error generating QR');
+      setError(err.message || 'Error al generar QR');
     } finally {
       setLoading(false);
     }

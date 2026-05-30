@@ -1,4 +1,4 @@
-// Adaptador para PagoFácil Bolivia (producción) — PagoFácil Bolivia adapter (production)
+// Adaptador para PagoFácil Bolivia (producción)
 import { IPaymentAdapter } from './IPaymentAdapter';
 
 export class PagoFacilAdapter extends IPaymentAdapter {
@@ -9,8 +9,7 @@ export class PagoFacilAdapter extends IPaymentAdapter {
 
     if (!apiUrl || !apiKey) {
       throw new Error(
-        'PagoFácil no configurado — PagoFácil not configured: ' +
-        'VITE_PAGOFACIL_API_URL y VITE_PAGOFACIL_API_KEY son requeridas — are required'
+        'PagoFácil no configurado: VITE_PAGOFACIL_API_URL y VITE_PAGOFACIL_API_KEY son requeridas'
       );
     }
 
@@ -33,7 +32,7 @@ export class PagoFacilAdapter extends IPaymentAdapter {
     });
 
     if (!response.ok) {
-      throw new Error(`PagoFácil error al generar QR — error generating QR: ${response.status}`);
+      throw new Error(`PagoFácil error al generar QR: ${response.status}`);
     }
 
     return response.json();
@@ -49,7 +48,7 @@ export class PagoFacilAdapter extends IPaymentAdapter {
     });
 
     if (!response.ok) {
-      throw new Error(`PagoFácil error al verificar — error checking: ${response.status}`);
+      throw new Error(`PagoFácil error al verificar estado: ${response.status}`);
     }
 
     return response.json();
