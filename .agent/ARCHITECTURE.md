@@ -418,3 +418,65 @@ repositories/  ← IAppointmentRepository, IPatientRepository, IReminderReposito
 rules/         ← appointmentRules
 infrastructure/  ← insforge.js
 usecases/        ← CreateAppointment, CancelAppointment, GenerateReminder
+
+---
+
+## 8. Módulo Branches — Raíz del Sistema Multiclínica
+
+### ¿Por qué branches es especial?
+Branches no es un módulo más. Es la raíz del sistema.
+Todos los datos del sistema tienen branchId como campo obligatorio.
+Sin branchId el sistema multiclínica no funciona.
+
+### Estructura completa del módulo branches
+
+Frontend (ya implementado):
+  pages/admin/Branches.jsx        ← vista (solo admin)
+  hooks/useBranches.js            ← hook de estado
+  services/branchService.js       ← acceso a InsForge
+
+Backend (completar en Etapa siguiente):
+  backend/domain/entities/Branch.js
+  backend/domain/repositories/IBranchRepository.js
+  backend/adapters/InsForgeBranchRepository.js
+  backend/usecases/CreateBranch.js
+  backend/usecases/UpdateBranch.js
+  backend/usecases/DeactivateBranch.js
+
+### Comportamiento por rol
+
+admin:
+  - currentBranchId viene de AuthContext
+  - puede ver datos de TODAS las sucursales
+  - puede filtrar por sucursal específica
+  - es el único rol que puede crear/editar/desactivar sucursales
+
+doctor:
+  - currentBranchId fijo: el branchId de su perfil en professionals
+  - todos sus datos filtrados automáticamente por ese branchId
+  - no puede ver datos de otras sucursales
+
+patient:
+  - currentBranchId fijo: el branchId de su registro en patients
+  - solo ve sus propios datos
+  - no puede ver datos de otros pacientes ni de otras sucursales
+
+### Cómo se usa branchId en servicios
+
+Todo servicio que consulta datos DEBE recibir branchId:
+
+  getAll(branchId)          ← siempre filtrar por sucursal
+  create(data)              ← data siempre incluye branchId
+  getByDate(date, branchId) ← filtrar fecha Y sucursal
+
+Excepción: branchService no filtra por branchId
+porque maneja las sucursales en sí mismas.
+
+### AuthContext — fuente del branchId
+
+  const { currentBranchId } = useAuth();
+  const { patients } = usePatients(currentBranchId);
+  const { appointments } = useAppointments(currentBranchId);
+
+Nunca hardcodear un branchId en un componente o hook.
+Siempre viene de AuthContext.
