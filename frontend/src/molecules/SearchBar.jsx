@@ -1,23 +1,22 @@
 // Barra de búsqueda con debounce y botón limpiar
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 
 export function SearchBar({ value, onChange, placeholder = 'Buscar…', onClear }) {
+  // Estado de visualización independiente — la notificación al padre se hace con debounce
   const [internal, setInternal] = useState(value ?? '');
   const timer = useRef(null);
-
-  // Sincroniza valor externo
-  useEffect(() => { setInternal(value ?? ''); }, [value]);
 
   function handleChange(e) {
     const val = e.target.value;
     setInternal(val);
-    // Debounce de 300ms antes de notificar
+    // Debounce de 300ms antes de notificar al padre
     clearTimeout(timer.current);
     timer.current = setTimeout(() => onChange(val), 300);
   }
 
   function handleClear() {
     setInternal('');
+    clearTimeout(timer.current);
     onChange('');
     if (onClear) onClear();
   }
