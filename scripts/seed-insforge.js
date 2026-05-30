@@ -10,12 +10,11 @@ import { fileURLToPath } from 'url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 function loadEnv() {
-  const envPath = resolve(__dirname, '../frontend/.env');
-  const lines = readFileSync(envPath, 'utf8').split('\n');
+  const lines = readFileSync(resolve(__dirname, '../frontend/.env'), 'utf8').split('\n');
   const env = {};
   for (const line of lines) {
-    const [key, ...rest] = line.split('=');
-    if (key && key.trim()) env[key.trim()] = rest.join('=').trim();
+    const [k, ...rest] = line.split('=');
+    if (k?.trim()) env[k.trim()] = rest.join('=').trim();
   }
   return env;
 }
@@ -41,137 +40,169 @@ async function post(collection, data) {
   });
   const body = await res.json().catch(() => ({}));
   if (!res.ok) {
-    console.warn(`  ${collection} HTTP ${res.status}:`, JSON.stringify(body).slice(0, 150));
+    const msg = JSON.stringify(body);
+    if (msg.includes('duplicate') || msg.includes('unique') || msg.includes('already exists')) {
+      console.log(`   i   ${collection}: registro duplicado, omitiendo`);
+      return null;
+    }
+    console.warn(`   !   ${collection} HTTP ${res.status}:`, msg.slice(0, 200));
     return null;
   }
   return Array.isArray(body) ? body[0] : body;
 }
 
-const today    = new Date().toISOString().slice(0, 10);
-const tomorrow = new Date(Date.now() + 86_400_000).toISOString().slice(0, 10);
+const today = new Date().toISOString().slice(0, 10);
 
-console.log('\nSembrando datos de prueba en InsForge — Seeding test data in InsForge');
-console.log(`   URL: ${BASE_URL}\n`);
+// scheduledDate = 24 hs antes de la cita
+function minus24h(time) {
+  const [h, m] = time.split(':').map(Number);
+  const d = new Date();
+  d.setDate(d.getDate() - 1);
+  d.setHours(h, m, 0, 0);
+  return d.toISOString();
+}
 
-// ── 1. Sucursal ──────────────────────────────────────────────────────────────
+console.log('\nSembrando datos de prueba en InsForge');
+console.log(`URL: ${BASE_URL}\n`);
+
+// ── 1. BRANCH ────────────────────────────────────────────────────────────────
 console.log('branches (1)');
 const branch = await post('branches', {
-  name:    'Clínica Central MedIL',
-  address: 'Av. 6 de Agosto 1234',
+  name:    'Clinica Central MedIL',
+  address: 'Av. Arce 123',
   city:    'La Paz',
-  phone:   '2-2441000',
-  email:   'central@medil.com',
+  phone:   '+591 2 2123456',
   status:  'active',
 });
-if (branch) console.log('   Clínica Central ->', branch.id);
-const branchId = branch?.id ?? 'branch-seed';
+if (branch) console.log('   OK  Clinica Central MedIL ->', branch.id);
 
-// ── 2. Usuarios ──────────────────────────────────────────────────────────────
-console.log('users (2)');
+// ── 2. USERS ─────────────────────────────────────────────────────────────────
+console.log('users (3)');
 const adminUser = await post('users', {
   email:        'admin@medil.com',
   passwordHash: 'admin123',
   role:         'admin',
-  branchId,
+  fullName:     'Admin MedIL',
   isActive:     true,
 });
-if (adminUser) console.log('   Admin ->', adminUser.id);
+if (adminUser) console.log('   OK  admin@medil.com ->', adminUser.id);
 
 const doctorUser = await post('users', {
   email:        'doctor@medil.com',
   passwordHash: 'doctor123',
   role:         'doctor',
-  branchId,
+  fullName:     'Dra. Carmen Solis',
   isActive:     true,
 });
-if (doctorUser) console.log('   Doctor ->', doctorUser.id);
+if (doctorUser) console.log('   OK  doctor@medil.com ->', doctorUser.id);
 
-// ── 3. Profesional vinculado al doctor ───────────────────────────────────────
+const patientUser = await post('users', {
+  email:        'paciente@medil.com',
+  passwordHash: 'paciente123',
+  role:         'patient',
+  fullName:     'Carmen Solis Vega',
+  isActive:     true,
+});
+if (patientUser) console.log('   OK  paciente@medil.com ->', patientUser.id);
+
+// ── 3. PROFESSIONAL ──────────────────────────────────────────────────────────
 console.log('professionals (1)');
-const professional = await post('professionals', {
-  fullName:  'Dra. Carmen Solís',
+const prof = await post('professionals', {
+  fullName:  'Dra. Carmen Solis',
   specialty: 'Medicina General',
-  phone:     '70099001',
+  phone:     '+591 70011223',
   email:     'doctor@medil.com',
-  branchId,
-  userId:    doctorUser?.id ?? null,
-  isActive:  true,
 });
-if (professional) console.log('   Dra. Carmen Solís ->', professional.id);
+if (prof) console.log('   OK  Dra. Carmen Solis ->', prof.id);
 
-// ── 4. Pacientes ─────────────────────────────────────────────────────────────
-console.log('patients (2)');
-const patient1 = await post('patients', {
-  fullName:   'María López Quispe',
-  documentId: '12345678',
-  phone:      '70011001',
-  email:      'maria@example.com',
-  birthDate:  '1985-03-15',
-  status:     'active',
-  branchId,
-  userId:     null,
+// ── 4. PATIENTS ──────────────────────────────────────────────────────────────
+// El schema real de InsForge usa 'name', no 'fullName'
+console.log('patients (3)');
+const p1 = await post('patients', {
+  name:   'Carmen Solis Vega',
+  email:  'carmen@gmail.com',
+  phone:  '+591 70011223',
+  status: 'active',
 });
-if (patient1) console.log('   María López ->', patient1.id);
+if (p1) console.log('   OK  Carmen Solis Vega ->', p1.id);
 
-const patient2 = await post('patients', {
-  fullName:   'Carlos Mamani Flores',
-  documentId: '87654321',
-  phone:      '70022002',
-  email:      'carlos@example.com',
-  birthDate:  '1990-07-22',
-  status:     'active',
-  branchId,
-  userId:     null,
+const p2 = await post('patients', {
+  name:   'Marco Antonio Ruiz',
+  email:  'm.ruiz@outlook.com',
+  phone:  '+591 71288904',
+  status: 'active',
 });
-if (patient2) console.log('   Carlos Mamani ->', patient2.id);
+if (p2) console.log('   OK  Marco Antonio Ruiz ->', p2.id);
 
-// ── 5. Citas de ejemplo ──────────────────────────────────────────────────────
-console.log('appointments (2)');
-const appt1 = await post('appointments', {
-  patientId:      patient1?.id,
-  professionalId: professional?.id,
-  branchId,
-  date:   today,
-  time:   '09:00',
-  reason: 'Control general',
-  status: 'scheduled',
+const p3 = await post('patients', {
+  name:   'Lucia Fernandez Paz',
+  email:  'lucia.fp@gmail.com',
+  phone:  '+591 76540117',
+  status: 'active',
 });
-if (appt1) console.log('   Cita María hoy ->', appt1.id);
+if (p3) console.log('   OK  Lucia Fernandez Paz ->', p3.id);
 
-const appt2 = await post('appointments', {
-  patientId:      patient2?.id,
-  professionalId: professional?.id,
-  branchId,
-  date:   tomorrow,
-  time:   '11:00',
-  reason: 'Seguimiento pediatría',
-  status: 'scheduled',
+// ── 5. APPOINTMENTS ──────────────────────────────────────────────────────────
+console.log('appointments (3)');
+const a1 = await post('appointments', {
+  patientId:      p1?.id ?? null,
+  patientName:    'Carmen Solis Vega',
+  professionalId: prof?.id ?? null,
+  professional:   'Dra. Carmen Solis',
+  date:           today,
+  time:           '08:30',
+  reason:         'Control de presion arterial',
+  status:         'scheduled',
 });
-if (appt2) console.log('   Cita Carlos mañana ->', appt2.id);
+if (a1) console.log('   OK  Cita Carmen 08:30 ->', a1.id);
 
-// ── 6. Recordatorios ─────────────────────────────────────────────────────────
+const a2 = await post('appointments', {
+  patientId:      p2?.id ?? null,
+  patientName:    'Marco Antonio Ruiz',
+  professionalId: prof?.id ?? null,
+  professional:   'Dra. Carmen Solis',
+  date:           today,
+  time:           '09:15',
+  reason:         'Consulta dermatologica',
+  status:         'scheduled',
+});
+if (a2) console.log('   OK  Cita Marco 09:15 ->', a2.id);
+
+const a3 = await post('appointments', {
+  patientId:      p3?.id ?? null,
+  patientName:    'Lucia Fernandez Paz',
+  professionalId: prof?.id ?? null,
+  professional:   'Dra. Carmen Solis',
+  date:           today,
+  time:           '10:00',
+  reason:         'Resultados de laboratorio',
+  status:         'attended',
+});
+if (a3) console.log('   OK  Cita Lucia 10:00 (atendida) ->', a3.id);
+
+// ── 6. REMINDERS ─────────────────────────────────────────────────────────────
+// El schema real usa 'sendAt', no 'scheduledDate'
 console.log('reminders (2)');
-const rem1 = await post('reminders', {
-  appointmentId: appt1?.id,
-  patientId:     patient1?.id,
-  branchId,
-  message:       `Recordatorio: tiene una cita el ${today} a las 09:00`,
-  scheduledDate: new Date(new Date(`${today}T09:00:00`).getTime() - 24 * 3_600_000).toISOString(),
+const r1 = await post('reminders', {
+  appointmentId: a1?.id ?? null,
+  patientId:     p1?.id ?? null,
+  message:       `Recordatorio: tiene una cita el ${today} a las 08:30`,
+  sendAt:        minus24h('08:30'),
   status:        'pending',
 });
-if (rem1) console.log('   Recordatorio María ->', rem1.id);
+if (r1) console.log('   OK  Recordatorio Carmen ->', r1.id);
 
-const rem2 = await post('reminders', {
-  appointmentId: appt2?.id,
-  patientId:     patient2?.id,
-  branchId,
-  message:       `Recordatorio: tiene una cita el ${tomorrow} a las 11:00`,
-  scheduledDate: new Date(new Date(`${tomorrow}T11:00:00`).getTime() - 24 * 3_600_000).toISOString(),
+const r2 = await post('reminders', {
+  appointmentId: a2?.id ?? null,
+  patientId:     p2?.id ?? null,
+  message:       `Recordatorio: tiene una cita el ${today} a las 09:15`,
+  sendAt:        minus24h('09:15'),
   status:        'pending',
 });
-if (rem2) console.log('   Recordatorio Carlos ->', rem2.id);
+if (r2) console.log('   OK  Recordatorio Marco ->', r2.id);
 
-console.log('\nDatos de acceso al sistema:');
-console.log('  Admin  — admin@medil.com  / admin123');
-console.log('  Doctor — doctor@medil.com / doctor123');
-console.log('\nListo.\n');
+console.log('\nListo!\n');
+console.log('Credenciales de acceso:');
+console.log('  Admin    - admin@medil.com    / admin123');
+console.log('  Doctor   - doctor@medil.com   / doctor123');
+console.log('  Paciente - paciente@medil.com / paciente123\n');
