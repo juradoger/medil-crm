@@ -2,9 +2,9 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useReminders } from '../hooks/useReminders';
-import { DataTable } from '../components/ui/DataTable';
-import { StatusBadge } from '../components/ui/StatusBadge';
-import { FullPageSpinner } from '../components/ui/LoadingSpinner';
+import { DataTable } from '../organisms/DataTable';
+import { StatusBadge } from '../molecules/StatusBadge';
+import { FullPageSpinner } from '../atoms/Spinner';
 
 export default function Reminders() {
   const { currentBranchId } = useAuth();

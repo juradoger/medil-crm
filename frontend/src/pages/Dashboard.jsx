@@ -4,8 +4,8 @@ import { useAuth } from '../context/AuthContext';
 import { usePatients } from '../hooks/usePatients';
 import { useAppointments } from '../hooks/useAppointments';
 import { useReminders } from '../hooks/useReminders';
-import { StatusBadge } from '../components/ui/StatusBadge';
-import { FullPageSpinner } from '../components/ui/LoadingSpinner';
+import { StatusBadge } from '../molecules/StatusBadge';
+import { FullPageSpinner } from '../atoms/Spinner';
 import { APPOINTMENT_STATUS, PATIENT_STATUS } from '../core/constants';
 
 function MetricCard({ label, value, color = 'text-[#0E4A8A]' }) {

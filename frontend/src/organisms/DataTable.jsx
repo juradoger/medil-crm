@@ -6,27 +6,31 @@ import { EmptyState } from './EmptyState';
 
 export function DataTable({
   columns,
-  data = [],
+  data,
+  rows,         // alias backward-compat (páginas existentes usan rows)
   loading = false,
-  emptyMessage = 'Sin datos',
+  emptyMessage,
+  emptyTitle,   // alias backward-compat
   onRowClick,
   searchable = false,
   sortable = false,
 }) {
-  const [search, setSearch]     = useState('');
-  const [sortKey, setSortKey]   = useState(null);
-  const [sortDir, setSortDir]   = useState('asc');
+  // Estabiliza el array fuente — evita que useMemo cambie en cada render
+  const items = useMemo(() => data ?? rows ?? [], [data, rows]);
+  const emptyText  = emptyMessage ?? emptyTitle ?? 'Sin datos';
 
-  // Filtrado por búsqueda
+  const [search, setSearch]   = useState('');
+  const [sortKey, setSortKey] = useState(null);
+  const [sortDir, setSortDir] = useState('asc');
+
   const filtered = useMemo(() => {
-    if (!search.trim()) return data;
+    if (!search.trim()) return items;
     const q = search.toLowerCase();
-    return data.filter(row =>
+    return items.filter(row =>
       columns.some(col => String(row[col.key] ?? '').toLowerCase().includes(q))
     );
-  }, [data, search, columns]);
+  }, [items, search, columns]);
 
-  // Ordenamiento por columna
   const sorted = useMemo(() => {
     if (!sortKey) return filtered;
     return [...filtered].sort((a, b) => {
@@ -58,7 +62,7 @@ export function DataTable({
       )}
 
       {sorted.length === 0 ? (
-        <EmptyState title={emptyMessage} />
+        <EmptyState title={emptyText} />
       ) : (
         <div className="overflow-x-auto rounded-xl border border-gray-100">
           <table className="min-w-full divide-y divide-gray-100">

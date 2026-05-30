@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Script de siembra de datos — Data seeding script
+// Script de siembra de datos de prueba — Test data seeding script
 // Uso: node scripts/seed-insforge.js
 // Lee las credenciales de frontend/.env
 
@@ -25,7 +25,7 @@ const BASE_URL = env.VITE_INSFORGE_API_URL;
 const API_KEY  = env.VITE_INSFORGE_API_KEY;
 
 if (!BASE_URL || !API_KEY) {
-  console.error('❌  Faltan VITE_INSFORGE_API_URL o VITE_INSFORGE_API_KEY en frontend/.env');
+  console.error('Faltan VITE_INSFORGE_API_URL o VITE_INSFORGE_API_KEY en frontend/.env');
   process.exit(1);
 }
 
@@ -41,99 +41,137 @@ async function post(collection, data) {
   });
   const body = await res.json().catch(() => ({}));
   if (!res.ok) {
-    console.warn(`  ⚠  ${collection} HTTP ${res.status}:`, JSON.stringify(body).slice(0, 150));
+    console.warn(`  ${collection} HTTP ${res.status}:`, JSON.stringify(body).slice(0, 150));
     return null;
   }
   return Array.isArray(body) ? body[0] : body;
 }
 
-// Fecha de hoy y mañana — today and tomorrow
 const today    = new Date().toISOString().slice(0, 10);
 const tomorrow = new Date(Date.now() + 86_400_000).toISOString().slice(0, 10);
 
-// ─── Schemas reales en InsForge ───────────────────────────────────────────────
-// patients:       id, name, email, phone, status, createdAt
-// appointments:   id, patientId, patientName, professionalId, professional, date, time, reason, status, createdAt
-// reminders:      id, appointmentId, patientId, message, sendAt, status
-// medical_records:id, patientId, appointmentId, notes, diagnosis, createdAt
-// users, branches, professionals: deben crearse en el panel de InsForge
-// ─────────────────────────────────────────────────────────────────────────────
-
-console.log('\n🌱  Sembrando datos en InsForge — Seeding data in InsForge');
+console.log('\nSembrando datos de prueba en InsForge — Seeding test data in InsForge');
 console.log(`   URL: ${BASE_URL}\n`);
 
-// ── Pacientes ──
-console.log('📦  patients (3)');
-const p1 = await post('patients', { name: 'María López',    email: 'maria@example.com',  phone: '70011001', status: 'active' });
-const p2 = await post('patients', { name: 'Carlos Mamani',  email: 'carlos@example.com', phone: '70022002', status: 'active' });
-const p3 = await post('patients', { name: 'Ana Quispe',     email: 'ana@example.com',    phone: '70033003', status: 'active' });
-if (p1) console.log('   ✅  María López →', p1.id);
-if (p2) console.log('   ✅  Carlos Mamani →', p2.id);
-if (p3) console.log('   ✅  Ana Quispe →', p3.id);
+// ── 1. Sucursal ──────────────────────────────────────────────────────────────
+console.log('branches (1)');
+const branch = await post('branches', {
+  name:    'Clínica Central MedIL',
+  address: 'Av. 6 de Agosto 1234',
+  city:    'La Paz',
+  phone:   '2-2441000',
+  email:   'central@medil.com',
+  status:  'active',
+});
+if (branch) console.log('   Clínica Central ->', branch.id);
+const branchId = branch?.id ?? 'branch-seed';
 
-// ── Citas ──
-console.log('📦  appointments (3)');
-const a1 = await post('appointments', {
-  patientId: p1?.id, patientName: 'María López',
-  professional: 'Dra. Carmen Solís',
-  date: today, time: '09:00', reason: 'Control general',
+// ── 2. Usuarios ──────────────────────────────────────────────────────────────
+console.log('users (2)');
+const adminUser = await post('users', {
+  email:        'admin@medil.com',
+  passwordHash: 'admin123',
+  role:         'admin',
+  branchId,
+  isActive:     true,
 });
-const a2 = await post('appointments', {
-  patientId: p2?.id, patientName: 'Carlos Mamani',
-  professional: 'Dr. Roberto Quiroga',
-  date: today, time: '11:00', reason: 'Pediatría - seguimiento',
-});
-const a3 = await post('appointments', {
-  patientId: p3?.id, patientName: 'Ana Quispe',
-  professional: 'Dra. Carmen Solís',
-  date: tomorrow, time: '10:00', reason: 'Revisión',
-});
-if (a1) console.log('   ✅  Cita María →', a1.id);
-if (a2) console.log('   ✅  Cita Carlos →', a2.id);
-if (a3) console.log('   ✅  Cita Ana (mañana) →', a3.id);
+if (adminUser) console.log('   Admin ->', adminUser.id);
 
-// ── Recordatorios ──
-console.log('📦  reminders (2)');
-const r1 = await post('reminders', {
-  appointmentId: a1?.id, patientId: p1?.id,
-  message: `Recuerde su cita el ${today} a las 09:00`,
-  sendAt: new Date(Date.now() - 3_600_000).toISOString(), // hace 1h
+const doctorUser = await post('users', {
+  email:        'doctor@medil.com',
+  passwordHash: 'doctor123',
+  role:         'doctor',
+  branchId,
+  isActive:     true,
 });
-const r2 = await post('reminders', {
-  appointmentId: a3?.id, patientId: p3?.id,
-  message: `Recuerde su cita el ${tomorrow} a las 10:00`,
-  sendAt: new Date(new Date(`${tomorrow}T10:00:00`).getTime() - 24 * 3_600_000).toISOString(),
-});
-if (r1) console.log('   ✅  Recordatorio María →', r1.id);
-if (r2) console.log('   ✅  Recordatorio Ana →', r2.id);
+if (doctorUser) console.log('   Doctor ->', doctorUser.id);
 
-// ── Historial médico ──
-console.log('📦  medical_records (1)');
-const rec1 = await post('medical_records', {
-  patientId: p3?.id, appointmentId: null,
-  diagnosis: 'Hipertensión leve',
-  notes: 'PA: 140/90 mmHg — Enalapril 5mg, control en 1 mes',
+// ── 3. Profesional vinculado al doctor ───────────────────────────────────────
+console.log('professionals (1)');
+const professional = await post('professionals', {
+  fullName:  'Dra. Carmen Solís',
+  specialty: 'Medicina General',
+  phone:     '70099001',
+  email:     'doctor@medil.com',
+  branchId,
+  userId:    doctorUser?.id ?? null,
+  isActive:  true,
 });
-if (rec1) console.log('   ✅  Registro Ana →', rec1.id);
+if (professional) console.log('   Dra. Carmen Solís ->', professional.id);
 
-console.log('\n✨  Listo — Done!\n');
-console.log('─────────────────────────────────────────────────────');
-console.log('⚠️   Aún necesitas crear estas 3 tablas en InsForge:');
-console.log('');
-console.log('   1. TABLA: users');
-console.log('      Columnas: email (text), passwordHash (text),');
-console.log('                role (text), fullName (text), isActive (boolean)');
-console.log('');
-console.log('   2. TABLA: branches');
-console.log('      Columnas: name (text), city (text), address (text), phone (text)');
-console.log('');
-console.log('   3. TABLA: professionals');
-console.log('      Columnas: fullName (text), specialty (text)');
-console.log('');
-console.log('   Luego insertá un admin en users:');
-console.log('      email: admin@medil.com');
-console.log('      passwordHash: admin123');
-console.log('      role: admin');
-console.log('      fullName: Admin MedIL');
-console.log('      isActive: true');
-console.log('─────────────────────────────────────────────────────\n');
+// ── 4. Pacientes ─────────────────────────────────────────────────────────────
+console.log('patients (2)');
+const patient1 = await post('patients', {
+  fullName:   'María López Quispe',
+  documentId: '12345678',
+  phone:      '70011001',
+  email:      'maria@example.com',
+  birthDate:  '1985-03-15',
+  status:     'active',
+  branchId,
+  userId:     null,
+});
+if (patient1) console.log('   María López ->', patient1.id);
+
+const patient2 = await post('patients', {
+  fullName:   'Carlos Mamani Flores',
+  documentId: '87654321',
+  phone:      '70022002',
+  email:      'carlos@example.com',
+  birthDate:  '1990-07-22',
+  status:     'active',
+  branchId,
+  userId:     null,
+});
+if (patient2) console.log('   Carlos Mamani ->', patient2.id);
+
+// ── 5. Citas de ejemplo ──────────────────────────────────────────────────────
+console.log('appointments (2)');
+const appt1 = await post('appointments', {
+  patientId:      patient1?.id,
+  professionalId: professional?.id,
+  branchId,
+  date:   today,
+  time:   '09:00',
+  reason: 'Control general',
+  status: 'scheduled',
+});
+if (appt1) console.log('   Cita María hoy ->', appt1.id);
+
+const appt2 = await post('appointments', {
+  patientId:      patient2?.id,
+  professionalId: professional?.id,
+  branchId,
+  date:   tomorrow,
+  time:   '11:00',
+  reason: 'Seguimiento pediatría',
+  status: 'scheduled',
+});
+if (appt2) console.log('   Cita Carlos mañana ->', appt2.id);
+
+// ── 6. Recordatorios ─────────────────────────────────────────────────────────
+console.log('reminders (2)');
+const rem1 = await post('reminders', {
+  appointmentId: appt1?.id,
+  patientId:     patient1?.id,
+  branchId,
+  message:       `Recordatorio: tiene una cita el ${today} a las 09:00`,
+  scheduledDate: new Date(new Date(`${today}T09:00:00`).getTime() - 24 * 3_600_000).toISOString(),
+  status:        'pending',
+});
+if (rem1) console.log('   Recordatorio María ->', rem1.id);
+
+const rem2 = await post('reminders', {
+  appointmentId: appt2?.id,
+  patientId:     patient2?.id,
+  branchId,
+  message:       `Recordatorio: tiene una cita el ${tomorrow} a las 11:00`,
+  scheduledDate: new Date(new Date(`${tomorrow}T11:00:00`).getTime() - 24 * 3_600_000).toISOString(),
+  status:        'pending',
+});
+if (rem2) console.log('   Recordatorio Carlos ->', rem2.id);
+
+console.log('\nDatos de acceso al sistema:');
+console.log('  Admin  — admin@medil.com  / admin123');
+console.log('  Doctor — doctor@medil.com / doctor123');
+console.log('\nListo.\n');

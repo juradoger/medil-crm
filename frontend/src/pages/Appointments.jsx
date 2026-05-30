@@ -3,11 +3,11 @@ import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useAppointments } from '../hooks/useAppointments';
 import { usePatients } from '../hooks/usePatients';
-import { DataTable } from '../components/ui/DataTable';
-import { StatusBadge } from '../components/ui/StatusBadge';
-import { ConfirmModal } from '../components/ui/ConfirmModal';
-import { FullPageSpinner } from '../components/ui/LoadingSpinner';
-import { FormField, inputClass } from '../components/ui/FormField';
+import { DataTable } from '../organisms/DataTable';
+import { StatusBadge } from '../molecules/StatusBadge';
+import { ConfirmModal } from '../molecules/ConfirmModal';
+import { FullPageSpinner } from '../atoms/Spinner';
+import { FormField, inputClass } from '../molecules/FormField';
 import { APPOINTMENT_STATUS } from '../core/constants';
 
 const EMPTY_FORM = { patientId: '', patientName: '', professional: '', date: '', time: '', reason: '' };

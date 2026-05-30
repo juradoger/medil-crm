@@ -3,7 +3,8 @@
 
 @theme {
   /* Paleta oficial MedIL CRM — Official MedIL CRM palette */
-  --color-primary:    #0E4A8A;   /* Azul Corporativo — Corporate Blue */
+  --color-primary:    #00B4D8;   /* Aqua principal — Primary Aqua */
+  --color-navy:       #0E4A8A;   /* Azul Corporativo — Corporate Blue */
   --color-accent:     #00A896;   /* Verde Aqua — Aqua Green */
   --color-alert:      #FFD100;   /* Amarillo — Yellow */
   --color-background: #FFFFFF;   /* Blanco Puro — Pure White */

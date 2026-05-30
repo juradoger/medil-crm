@@ -23,6 +23,11 @@ describe('StatusBadge', () => {
     expect(screen.getByText('Activo').className).toContain('green');
   });
 
+  it('permite sobreescribir la etiqueta con prop label', () => {
+    render(<StatusBadge status="active" label="En servicio" />);
+    expect(screen.getByText('En servicio')).toBeTruthy();
+  });
+
   it('prueba de estrés: status desconocido muestra el valor raw', () => {
     render(<StatusBadge status="unknown_xyz" />);
     expect(screen.getByText('unknown_xyz')).toBeTruthy();

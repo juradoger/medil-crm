@@ -16,3 +16,12 @@ export function Spinner({ size = 'md' }) {
     />
   );
 }
+
+// Spinner centrado para pantalla completa
+export function FullPageSpinner() {
+  return (
+    <div className="flex items-center justify-center min-h-[60vh]">
+      <Spinner size="lg" />
+    </div>
+  );
+}

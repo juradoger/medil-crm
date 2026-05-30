@@ -1,9 +1,9 @@
 // Gestión de sucursales (solo admin)
 import React, { useState } from 'react';
 import { useBranches } from '../../hooks/useBranches';
-import { DataTable } from '../../components/ui/DataTable';
-import { FullPageSpinner } from '../../components/ui/LoadingSpinner';
-import { FormField, inputClass } from '../../components/ui/FormField';
+import { DataTable } from '../../organisms/DataTable';
+import { FullPageSpinner } from '../../atoms/Spinner';
+import { FormField, inputClass } from '../../molecules/FormField';
 
 const EMPTY_FORM = { name: '', address: '', phone: '', city: '' };
 

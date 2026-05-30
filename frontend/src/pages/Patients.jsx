@@ -3,12 +3,12 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { usePatients } from '../hooks/usePatients';
-import { DataTable } from '../components/ui/DataTable';
-import { SearchBar } from '../components/ui/SearchBar';
-import { StatusBadge } from '../components/ui/StatusBadge';
-import { ConfirmModal } from '../components/ui/ConfirmModal';
-import { FullPageSpinner } from '../components/ui/LoadingSpinner';
-import { FormField, inputClass } from '../components/ui/FormField';
+import { DataTable } from '../organisms/DataTable';
+import { SearchBar } from '../molecules/SearchBar';
+import { StatusBadge } from '../molecules/StatusBadge';
+import { ConfirmModal } from '../molecules/ConfirmModal';
+import { FullPageSpinner } from '../atoms/Spinner';
+import { FormField, inputClass } from '../molecules/FormField';
 import { PATIENT_STATUS } from '../core/constants';
 
 const EMPTY_FORM = { fullName: '', phone: '', email: '' };

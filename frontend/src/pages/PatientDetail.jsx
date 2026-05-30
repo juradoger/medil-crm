@@ -5,10 +5,10 @@ import { patientService } from '../services/patientService';
 import { useAppointments } from '../hooks/useAppointments';
 import { useMedicalRecords } from '../hooks/useMedicalRecords';
 import { useAuth } from '../context/AuthContext';
-import { StatusBadge } from '../components/ui/StatusBadge';
-import { DataTable } from '../components/ui/DataTable';
-import { FullPageSpinner } from '../components/ui/LoadingSpinner';
-import { FormField, inputClass } from '../components/ui/FormField';
+import { StatusBadge } from '../molecules/StatusBadge';
+import { DataTable } from '../organisms/DataTable';
+import { FullPageSpinner } from '../atoms/Spinner';
+import { FormField, inputClass } from '../molecules/FormField';
 
 const TABS = ['Citas', 'Historial'];
 

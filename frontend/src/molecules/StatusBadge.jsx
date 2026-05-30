@@ -19,7 +19,8 @@ const STATUS_CONFIG = {
   rejected:        { color: 'red',    label: 'Rechazado' },
 };
 
-export function StatusBadge({ status }) {
+export function StatusBadge({ status, label }) {
   const config = STATUS_CONFIG[status] ?? { color: 'gray', label: status };
-  return <Badge text={config.label} color={config.color} />;
+  // label prop permite sobreescribir el texto (backward-compat)
+  return <Badge text={label ?? config.label} color={config.color} />;
 }
