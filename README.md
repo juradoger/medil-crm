@@ -1,225 +1,191 @@
-[![English](https://img.shields.io/badge/Language-English-0E4A8A?style=flat-square&logo=googletranslate&logoColor=white)](README.md)
-[![Español](https://img.shields.io/badge/Idioma-Español-00A896?style=flat-square&logo=googletranslate&logoColor=white)](README.es.md)
-
 <div align="center">
 
-<img src="docs/assets/logo.png" alt="MediL CRM" width="280"/>
+<img src="docs/assets/logo.png" alt="MedIL CRM" width="260"/>
 
-<h1>MediL CRM</h1>
+# MedIL — Sistema de Gestión Clínica CRM/ERP
 
-**Patient Relationship Management System for Medical Clinics**  
-*Modular · Scalable · Adaptable to multiple healthcare specialties*
+**Gestión integral de clínicas médicas multisurcursal**  
+*Modular · Escalable · Adaptable a múltiples especialidades de salud*
 
-<br/>
-
-![Version](https://img.shields.io/badge/version-1.0.0--stage1-0E4A8A?style=flat-square)
-![React](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react&logoColor=black)
-![Vite](https://img.shields.io/badge/Vite-5-646CFF?style=flat-square&logo=vite&logoColor=white)
-![TailwindCSS](https://img.shields.io/badge/TailwindCSS-v4-00A896?style=flat-square&logo=tailwindcss&logoColor=white)
-![React Router](https://img.shields.io/badge/React_Router-v6-CA4245?style=flat-square&logo=reactrouter&logoColor=white)
-![Status](https://img.shields.io/badge/status-in%20development-FFD100?style=flat-square&logoColor=black)
+![Versión](https://img.shields.io/badge/versión-1.0.0-00B4D8?style=flat-square)
+![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=black)
+![Vite](https://img.shields.io/badge/Vite-8-646CFF?style=flat-square&logo=vite&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/TailwindCSS-v4-00B4D8?style=flat-square&logo=tailwindcss&logoColor=white)
+![Estado](https://img.shields.io/badge/estado-en%20desarrollo-FFD100?style=flat-square&logoColor=black)
 
 </div>
 
 ---
 
-## 📖 Description
+## Descripción
 
-**MediL CRM** is a web application built as a **Software Product Line (SPL)** for the healthcare sector. It enables medical clinics to manage their complete operation from a single platform — and can be adapted to different medical specialties without rewriting the core logic.
+**MedIL CRM/ERP** es una aplicación web construida como **Línea de Producto de Software (SPL)** para el sector salud. Permite a clínicas médicas gestionar su operación completa desde una única plataforma — y puede adaptarse a distintas especialidades médicas sin reescribir la lógica central.
 
-> 📚 **Academic context:** Software Engineering II &nbsp;·&nbsp; SPL #2 — Business Management Systems
-
----
-
-## ✨ Key Features
-
-| Module | Functionality | Status |
-|:---|:---|:---:|
-| 👤 **Patients** | Full registration, search, and profile management | ✅ MVP |
-| 📅 **Appointments** | Scheduling with automatic time-conflict detection | ✅ MVP |
-| 🗂️ **Medical Records** | Immutable chronological entries with append-only policy | ✅ MVP |
-| 🔔 **Reminders** | Configurable automatic notifications (default: 24h before) | ✅ MVP |
-| 📊 **Dashboard** | Executive summary with key metrics and quick access | 🔄 In progress |
+> **Contexto académico:** Ingeniería de Software II · SPL #2 — Sistemas de Gestión Empresarial  
+> **Autora:** Ordoñez Choque Nayeli Zharit
 
 ---
 
-## 🛠️ Tech Stack
+## Stack tecnológico
 
-<div align="center">
-
-[![React](https://img.shields.io/badge/React-18.x-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
-[![Vite](https://img.shields.io/badge/Vite-5.x-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev)
-[![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-v4-00A896?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
-[![React Router](https://img.shields.io/badge/React_Router-v6-CA4245?style=for-the-badge&logo=reactrouter&logoColor=white)](https://reactrouter.com)
-[![Vercel](https://img.shields.io/badge/Vercel-Deploy-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://vercel.com)
-
-</div>
-
-<br/>
-
-| Layer | Technology | Role in the system |
+| Capa | Tecnología | Rol en el sistema |
 |:---|:---|:---|
-| **Frontend** | React 18 + Vite 5 | Component-based UI with HMR for fast iteration |
-| **Styles** | TailwindCSS v4 | Design system with centralized tokens via `@theme` |
-| **Routing** | React Router v6 | Declarative client-side navigation per domain module |
-| **Backend / DB** | InsForge | Integrated persistence behind a uniform service interface |
-| **Deployment** | Vercel | Automatic deploy on every push to `main`, preview per PR |
-| **Documentation** | Mermaid | Architecture diagrams as code within the repository |
+| **Frontend** | React 19 + Vite 8 | UI basada en componentes con HMR para iteración rápida |
+| **Estilos** | TailwindCSS v4 | Sistema de diseño con tokens centralizados vía `@theme` |
+| **Ruteo** | React Router v7 | Navegación declarativa del lado del cliente por módulo |
+| **Backend / BD** | InsForge SDK | Persistencia integrada detrás de una interfaz de servicios uniforme |
+| **Testing** | Vitest + Testing Library | Tests unitarios e integración con cobertura por capa |
+| **Deploy** | Vercel | Deploy automático en cada push a `main`, preview por PR |
 
 ---
 
-## 🏗️ System Architecture
+## Arquitectura
 
-<div align="center">
+El sistema implementa tres capas de arquitectura combinadas:
 
-<img src="docs/assets/diagrama-en.png" alt="MediL CRM Architecture Diagram" width="100%"/>
+**Atomic Design (frontend)**
+```
+atoms/ → molecules/ → organisms/ → templates/ → pages/
+```
+Cada nivel solo importa del nivel inferior, garantizando cohesión y bajo acoplamiento.
 
-</div>
+**Clean Architecture (backend)**
+```
+domain/ (puro) ← usecases/ ← adapters/ ← infrastructure/ (InsForge)
+```
+InsForge vive únicamente en `adapters/` e `infrastructure/`. El dominio no conoce la BD.
 
-The system adopts **Domain-Driven Modular Architecture**: each domain is a closed module with its own service and InsForge repository, ensuring high cohesion, low coupling, and SPL reusability.
-
-→ [View full technical architecture documentation](docs/01-arquitectura.md)
-
----
-
-## 📊 MVP Sequence Flow
-
-<div align="center">
-
-<img src="docs/assets/secuencia-en.png" alt="MediL CRM MVP Sequence Diagram" width="100%"/>
-
-</div>
-
-<details>
-<summary>📋 Description of the 4 main flows</summary>
-
-| # | Flow | Description |
-|:---:|:---|:---|
-| **1** | 🧑‍⚕️ Patient Management | Registration, search, and real-time listing via InsForge |
-| **2** | 📅 Appointment Scheduling | Scheduling with conflict validation before confirmation |
-| **3** | 🔔 Automatic Reminders | Reminder generated 24h before each appointment |
-| **4** | ✅ Cycle Closure | Mark appointment as attended and create clinical history |
-
-</details>
+**SPL (Línea de Producto de Software)**  
+Constantes configurables por especialidad (`HOURS_BEFORE_REMINDER`, estados de citas, roles) permiten adaptar el sistema a odontología, fisioterapia, pediatría, etc., sin cambiar el núcleo.
 
 ---
 
-## 📦 Installation & Setup
+## Módulos del sistema
 
-### Prerequisites
+| Módulo | Funcionalidad | Roles |
+|:---|:---|:---|
+| Pacientes | Registro, búsqueda y perfil completo | Admin, Doctor |
+| Citas | Agendamiento con validación de conflictos | Admin, Doctor |
+| Historial clínico | Entradas inmutables con política append-only | Doctor |
+| Recordatorios | Notificaciones automáticas configurables (24 hs por defecto) | Admin, Doctor |
+| Facturación | Pago QR con polleo automático y comisión 2% | Admin |
+| Insumos | Control de stock con estados OK / bajo / crítico | Admin |
+| Sucursales | Gestión multiclínica con aislamiento de datos por `branchId` | Admin |
+| Portal paciente | Vista de citas e historial propio | Paciente |
+| Consola médica | Agenda del día y registro de consultas | Doctor |
 
-- **Node.js** ≥ 18.x
-- **npm** ≥ 9.x
+---
 
-### Quick start
+## Cómo correr el proyecto localmente
+
+**Requisitos previos:** Node.js ≥ 18 · npm ≥ 9
 
 ```bash
-# 1. Clone the repository
+# 1. Clonar el repositorio
 git clone https://github.com/juradoger/medil-crm.git
 cd medil-crm
 
-# 2. Install frontend dependencies
+# 2. Instalar dependencias del frontend
 cd frontend
 npm install
 
-# 3. Start the development server
+# 3. Configurar variables de entorno
+cp .env.example .env
+# Completar VITE_INSFORGE_API_URL y VITE_INSFORGE_API_KEY
+
+# 4. Levantar el servidor de desarrollo
 npm run dev
+# → http://localhost:5173
+
+# 5. Correr los tests
+npm run test
 ```
 
-> The application will be available at **`http://localhost:5173`**
-
-<details>
-<summary>⚙️ Color palette & design tokens</summary>
-
-#### Brand palette (`frontend/src/index.css`)
-
-```css
-@import "tailwindcss";
-
-@theme {
-  --color-primary:    #0E4A8A;   /* Corporate Blue  — titles and primary buttons */
-  --color-accent:     #00A896;   /* Aqua Green      — active elements and icons */
-  --color-alert:      #FFD100;   /* Yellow          — alerts and reminder highlights */
-  --color-background: #FFFFFF;   /* Pure White      — card backgrounds and panels */
-}
+**Sembrar datos de prueba:**
+```bash
+# Desde la raíz del proyecto
+node scripts/seed-insforge.js
+# Crea: 1 sucursal, 1 admin, 1 doctor, 2 pacientes, 2 citas, 2 recordatorios
 ```
 
-#### Configurable constants per specialty (`frontend/src/core/constants.js`)
-
-```js
-// Adjust per CRM variant:
-// 48h → psychology  |  24h → general medicine  |  2h → dental emergencies
-export const HOURS_BEFORE_REMINDER = 24;
-
-export const APPOINTMENT_STATUS = {
-  SCHEDULED:  'scheduled',
-  ATTENDED:   'attended',
-  CANCELLED:  'cancelled',
-};
-```
-
-</details>
+**Credenciales de prueba (tras ejecutar el seed):**
+- Admin: `admin@medil.com` / `admin123`
+- Doctor: `doctor@medil.com` / `doctor123`
 
 ---
 
-## 📁 Project Structure
+## Estructura de carpetas
 
 ```
 medil-crm/
-│
-├── frontend/
-│   └── src/
-│       ├── pages/              # Dashboard · Patients · Appointments
-│       │                       # Reminders · PatientDetail
-│       ├── components/
-│       │   └── StatusBadge.jsx # Reusable status component (OCP)
-│       ├── hooks/
-│       │   ├── usePatients.js
-│       │   └── useAppointments.js
-│       ├── services/           # patientService · appointmentService
-│       │                       # recordService · reminderService
-│       └── core/
-│           └── constants.js
-│
+├── .agent/              # Documentación técnica para agentes IA
 ├── backend/
-│   ├── patients/               # PatientService + InsForge repository
-│   ├── appointments/           # AppointmentService + InsForge repository
-│   ├── records/                # MedicalRecordService + InsForge repository
-│   └── reminders/              # ReminderService + InsForge repository
-│
-└── docs/
-    ├── assets/                 # Images and visual resources
-    ├── 01-arquitectura.md
-    ├── 02-componentes.md
-    ├── 03-refactorizacion.md
-    └── 04-stack.md
+│   ├── adapters/        # InsForgePatientRepository, InsForgeAppointmentRepository, ...
+│   ├── domain/
+│   │   ├── entities/    # Patient, Appointment, Reminder, Payment
+│   │   ├── factories/   # AppointmentFactory, PatientFactory, ...
+│   │   ├── repositories/# Interfaces: IPatientRepository, IAppointmentRepository, ...
+│   │   └── rules/       # appointmentRules (lógica de negocio pura)
+│   ├── infrastructure/  # insforge.js — único punto de contacto con la BD
+│   └── usecases/        # CreateAppointment, CancelAppointment, GenerateReminder
+├── docs/
+│   ├── evidence/        # Archivos BEFORE de refactorizaciones
+│   └── 01-arquitectura.md ... 05-database-schema.md
+├── frontend/src/
+│   ├── atoms/           # Button, Input, Label, Badge, Spinner, Avatar
+│   ├── molecules/       # FormField, SearchBar, StatusBadge, Toast, ConfirmModal
+│   ├── organisms/       # DataTable, PatientForm, AppointmentForm, EmptyState, PaymentModal
+│   ├── templates/       # DashboardLayout, AuthLayout, SplitScreenLayout
+│   ├── pages/           # Dashboard, Patients, Appointments, Reminders, admin/*, doctor/*, patient/*
+│   ├── billing/         # BillingService + adaptadores de pago (Adapter Pattern)
+│   ├── components/      # ProtectedRoute, Sidebar, TopBar (layout y auth)
+│   ├── context/         # AuthContext
+│   ├── core/            # constants.js, messages.js, strategies/
+│   ├── domain/          # factories/, validators/, rules/ (lógica de negocio frontend)
+│   ├── hooks/           # usePatients, useAppointments, useBilling, ...
+│   └── services/        # patientService, appointmentService, ...
+└── scripts/
+    ├── seed-insforge.js  # Datos de prueba
+    └── create-tables.js  # Creación de tablas en InsForge
 ```
 
 ---
 
-## 📚 Technical Documentation
+## Etapas del proyecto
 
-| # | Document | Content |
-|:---:|:---|:---|
-| 01 | [🏗️ Architecture](docs/01-arquitectura.en.md) | Domain modular pattern · architecture and MVP flow diagrams |
-| 02 | [🧩 Components](docs/02-componentes.en.md) | Catalog of 7 reusable components with methods and SPL analysis |
-| 03 | [♻️ Refactorings](docs/03-refactorizacion.en.md) | R1–R2 applied and R3–R5 planned with technical justification |
-| 04 | [🛠️ Stack](docs/04-stack.en.md) | Technical justification for each technology with SE principles |
-
----
-
-## 👥 Contributing
-
-This is a closed academic project. For suggestions or corrections, please open an **Issue** in this repository using the format:
-
-```
-[TYPE] Descriptive title
-Types: [BUG] · [ENHANCEMENT] · [DOCS] · [QUESTION]
-```
+| Etapa | Descripción | Estado |
+|:---:|:---|:---:|
+| 0 | Setup inicial: Vite + React + TailwindCSS v4 + InsForge | ✅ |
+| 1 | Módulos base: Pacientes, Citas, Historial, Recordatorios | ✅ |
+| 2 | Refactorizaciones R1–R5: servicios, hooks, patrones | ✅ |
+| 3 | Adapter Pattern: BillingService + PagoFácil + PaymentModal | ✅ |
+| 4 | Portal Admin completo: Sucursales, Facturación, Insumos | ✅ |
+| 5 | Reestructuración: Atomic Design + Clean Architecture backend | ✅ |
+| 6 | Domain layer: Factories, Validators, Rules, Strategies | ✅ |
+| 7 | Documentación técnica `.agent/` completa | ✅ |
+| 8 | Consola médica (Doctor) + Portal paciente | 🔄 |
+| 9 | Reportes, notificaciones reales y deploy producción | 🔄 |
 
 ---
 
-## 📄 License
+## Documentación técnica
 
-Academic project — Software Engineering II.  
-© 2025 Ordoñez Choque Nayeli Zharit. All rights reserved.
+| Archivo | Contenido |
+|:---|:---|
+| `docs/01-arquitectura.md` | Diagramas de arquitectura y flujo MVP |
+| `docs/02-componentes.md` | Catálogo de componentes reutilizables |
+| `docs/03-refactorizacion.md` | Técnicas R1–R5 con ejemplos reales |
+| `docs/04-stack.md` | Justificación técnica del stack |
+| `docs/05-database-schema.md` | Schema completo de la base de datos |
+| `.agent/SKILLS.md` | Índice inteligente: qué leer según la tarea |
+| `.agent/ARCHITECTURE.md` | Atomic Design + Clean Architecture explicados |
+| `.agent/PATTERNS.md` | Adapter, Factory, Strategy, Observer en el proyecto |
+| `.agent/TESTING.md` | TDD, cobertura mínima por capa, reglas de mocks |
+
+---
+
+## Autora
+
+**Ordoñez Choque Nayeli Zharit**  
+Materia: Ingeniería de Software II  
+Proyecto académico — © 2025. Todos los derechos reservados.

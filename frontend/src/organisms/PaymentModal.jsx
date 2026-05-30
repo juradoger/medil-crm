@@ -1,7 +1,7 @@
 // Modal de pago QR
 import React, { useEffect } from 'react';
-import { useBilling } from '../../hooks/useBilling';
-import { QR_COMMISSION_PERCENTAGE } from '../../core/constants';
+import { useBilling } from '../hooks/useBilling';
+import { QR_COMMISSION_PERCENTAGE } from '../core/constants';
 
 /**
  * Modal de pago QR con polleo automático — QR payment modal with automatic polling

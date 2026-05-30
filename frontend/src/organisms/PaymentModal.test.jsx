@@ -5,7 +5,7 @@ import { vi } from 'vitest';
 import { PaymentModal } from './PaymentModal';
 
 // Mock del hook useBilling — useBilling hook mock
-vi.mock('../../hooks/useBilling', () => ({
+vi.mock('../hooks/useBilling', () => ({
   useBilling: () => ({
     generateQR:    vi.fn(),
     paymentState:  'idle',
