@@ -60,6 +60,8 @@ export const MESSAGES = {
       rejected:  'El pago fue rechazado. Verificá tu cuenta',
       timeout:   'No recibimos confirmación del pago. Si ya pagaste, contactá al administrador',
     },
+    whatsappNotConfigured: 'WhatsApp simulado — configurar Twilio para envío real',
+    whatsappFailed:        'No se pudo enviar el WhatsApp. Intentá de nuevo.',
   },
   success: {
     patientCreated:      'Paciente registrado correctamente',
@@ -77,6 +79,8 @@ export const MESSAGES = {
     recordCreated:       'Consulta registrada en el historial',
     branchCreated:       'Sucursal creada correctamente',
     professionalCreated: 'Profesional registrado correctamente',
+    whatsappSent:        (phone) => `WhatsApp enviado correctamente a ${phone}`,
+    reminderScheduled:   'Recordatorio programado correctamente',
   },
   confirm: {
     cancelAppointment:  '¿Cancelar esta cita? El recordatorio también se cancelará. Esta acción no se puede deshacer',
@@ -85,5 +89,6 @@ export const MESSAGES = {
     markAttended:       '¿Marcar esta cita como atendida?',
     deactivateBranch:   '¿Desactivar esta sucursal?',
     paymentCash:        '¿Confirmar que el paciente pagó en efectivo?',
+    sendWhatsApp:       (name) => `¿Enviar recordatorio por WhatsApp a ${name}?`,
   },
 };

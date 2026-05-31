@@ -62,6 +62,7 @@ export const appointmentService = {
     const scheduledAt = data.scheduledAt ?? '';
     const date = toDate(scheduledAt);
     const time = toTime(scheduledAt);
+    const reminderConfig = data.reminderConfig ?? null; // timing del recordatorio (AppointmentForm)
 
     // 1. La cita no puede crearse en el pasado
     if (!appointmentRules.isFutureDate(date, time)) {
@@ -97,7 +98,7 @@ export const appointmentService = {
         branchId:  data.branchId,
         date,
         time,
-      });
+      }, reminderConfig);
       await reminderService.create(reminder).catch(() => {});
     }
 

@@ -1,6 +1,7 @@
 // Hook de recordatorios — Reminders hook
 import { useState, useEffect, useCallback } from 'react';
 import { reminderService } from '../services/reminderService';
+import { REMINDER_STATUS } from '../core/constants';
 
 export function useReminders(branchId) {
   const [reminders, setReminders] = useState([]);
@@ -39,5 +40,22 @@ export function useReminders(branchId) {
     await fetchReminders();
   });
 
-  return { reminders, loading, error, markSent, reload: load };
+  // Envía el recordatorio por WhatsApp y actualiza el estado local
+  const sendWhatsAppReminder = (reminder) => withLoading(async () => {
+    const result = await reminderService.sendWhatsAppForReminder(reminder);
+    if (result.success || result.simulated) {
+      setReminders(prev => prev.map(r =>
+        r.id === reminder.id
+          ? { ...r, status: REMINDER_STATUS.SENT, sentAt: new Date().toISOString() }
+          : r
+      ));
+    }
+    return result;
+  });
+
+  return {
+    reminders, loading, error,
+    markSent, sendWhatsAppReminder,
+    refreshReminders: load, reload: load,
+  };
 }

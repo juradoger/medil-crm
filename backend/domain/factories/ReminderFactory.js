@@ -1,17 +1,36 @@
 import { REMINDER_STATUS, HOURS_BEFORE_REMINDER } from '../../core/constants.js';
 
 export const ReminderFactory = {
-  createFromAppointment(appointment) {
+  // reminderConfig (opcional): { timing: '24h'|'1h'|'now'|'custom', customTime: 'HH:MM'|null }
+  createFromAppointment(appointment, reminderConfig = null) {
     const appointmentDateTime = new Date(`${appointment.date}T${appointment.time}`);
-    const sendAt = new Date(
-      appointmentDateTime.getTime() - HOURS_BEFORE_REMINDER * 60 * 60 * 1000
-    );
+
+    let sendAt;
+
+    if (!reminderConfig || reminderConfig.timing === '24h') {
+      sendAt = new Date(appointmentDateTime.getTime() - HOURS_BEFORE_REMINDER * 3600000);
+    } else if (reminderConfig.timing === '1h') {
+      sendAt = new Date(appointmentDateTime.getTime() - 1 * 3600000);
+    } else if (reminderConfig.timing === 'now') {
+      sendAt = new Date();
+    } else if (reminderConfig.timing === 'custom' && reminderConfig.customTime) {
+      const [hours, minutes] = reminderConfig.customTime.split(':');
+      sendAt = new Date(appointmentDateTime);
+      sendAt.setHours(parseInt(hours, 10), parseInt(minutes, 10), 0, 0);
+    } else {
+      sendAt = new Date(appointmentDateTime.getTime() - HOURS_BEFORE_REMINDER * 3600000);
+    }
+
     return {
       appointmentId: appointment.id,
       patientId:     appointment.patientId,
+      branchId:      appointment.branchId,
       message:       ReminderFactory.generateMessage(appointment),
       sendAt:        sendAt.toISOString(),
       status:        REMINDER_STATUS.PENDING,
+      sentBy:        null,
+      sentAt:        null,
+      createdAt:     new Date().toISOString(),
     };
   },
   generateMessage(appointment) {

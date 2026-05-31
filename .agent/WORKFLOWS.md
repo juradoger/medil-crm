@@ -95,6 +95,33 @@ El recordatorio desaparece de la lista de pendientes
 
 ---
 
+## Flujo 4b — Recordatorios con WhatsApp (Twilio)
+
+Automático (job cada 5 min en producción):
+  1. Job verifica recordatorios con sendAt <= ahora
+  2. Obtiene datos del paciente y cita
+  3. Formatea el número boliviano (+591)
+  4. Envía mensaje por Twilio WhatsApp
+  5. Marca reminder como SENT en InsForge
+  6. El admin ve el estado actualizado en Reminders
+
+Manual (admin desde la vista):
+  1. Admin ve lista de recordatorios pendientes
+  2. Cada uno muestra "Envío automático en X horas"
+     o "⚡ Listo para enviar" si ya llegó la hora
+  3. Admin puede hacer click en "Enviar por WhatsApp"
+  4. Sistema llama POST /api/notify/reminder
+  5. Twilio envía el mensaje
+  6. Estado cambia a SENT con timestamp
+
+Sin Twilio configurado (desarrollo):
+  El endpoint retorna { simulated: true }
+  La UI muestra Toast naranja informativo
+  El estado se marca igual como enviado
+
+
+---
+
 ## Flujo 5 — Procesar pago por QR
 
 Admin selecciona la cita a cobrar
