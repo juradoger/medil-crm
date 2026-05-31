@@ -7,32 +7,42 @@ export function useProfessionals(branchId) {
   const [loading, setLoading]             = useState(true);
   const [error, setError]                 = useState(null);
 
-  const load = useCallback(async () => {
-    if (!branchId) return;
+  // withLoading canónico — envuelve TODA operación async (loading + error)
+  const withLoading = useCallback(async (fn) => {
     setLoading(true);
     setError(null);
     try {
-      const data = await professionalService.getByBranch(branchId);
-      setProfessionals(data);
-    } catch (e) {
-      setError(e.message);
+      return await fn();
+    } catch (err) {
+      setError(err.message);
+      throw err;
     } finally {
       setLoading(false);
     }
+  }, []);
+
+  const fetchProfessionals = useCallback(async () => {
+    const data = await professionalService.getByBranch(branchId);
+    setProfessionals(data);
   }, [branchId]);
 
+  const load = useCallback(() => {
+    if (!branchId) return Promise.resolve();
+    return withLoading(fetchProfessionals);
+  }, [branchId, withLoading, fetchProfessionals]);
+
   // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => { load().catch(() => {}); }, [load]);
 
-  const create = async (data) => {
+  const create = (data) => withLoading(async () => {
     await professionalService.create({ ...data, branchId });
-    await load();
-  };
+    await fetchProfessionals();
+  });
 
-  const update = async (id, data) => {
+  const update = (id, data) => withLoading(async () => {
     await professionalService.update(id, data);
-    await load();
-  };
+    await fetchProfessionals();
+  });
 
   return { professionals, loading, error, create, update, reload: load };
 }

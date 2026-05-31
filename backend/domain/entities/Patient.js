@@ -1,3 +1,5 @@
+import { PATIENT_STATUS } from '../../core/constants.js';
+
 export class Patient {
   constructor({ id, fullName, documentId, phone, email,
                 birthDate, status, branchId, userId, createdAt }) {
@@ -13,5 +15,5 @@ export class Patient {
     this.createdAt  = createdAt;
   }
 
-  isActive() { return this.status === 'active'; }
+  isActive() { return this.status === PATIENT_STATUS.ACTIVE; }
 }

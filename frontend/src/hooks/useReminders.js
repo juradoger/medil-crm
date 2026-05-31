@@ -7,27 +7,37 @@ export function useReminders(branchId) {
   const [loading, setLoading]     = useState(true);
   const [error, setError]         = useState(null);
 
-  const load = useCallback(async () => {
-    if (!branchId) return;
+  // withLoading canónico — envuelve TODA operación async (loading + error)
+  const withLoading = useCallback(async (fn) => {
     setLoading(true);
     setError(null);
     try {
-      const data = await reminderService.getAll(branchId);
-      setReminders(data);
-    } catch (e) {
-      setError(e.message);
+      return await fn();
+    } catch (err) {
+      setError(err.message);
+      throw err;
     } finally {
       setLoading(false);
     }
+  }, []);
+
+  const fetchReminders = useCallback(async () => {
+    const data = await reminderService.getAll(branchId);
+    setReminders(data);
   }, [branchId]);
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => { load(); }, [load]);
+  const load = useCallback(() => {
+    if (!branchId) return Promise.resolve();
+    return withLoading(fetchReminders);
+  }, [branchId, withLoading, fetchReminders]);
 
-  const markSent = async (id) => {
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { load().catch(() => {}); }, [load]);
+
+  const markSent = (id) => withLoading(async () => {
     await reminderService.markSent(id);
-    await load();
-  };
+    await fetchReminders();
+  });
 
   return { reminders, loading, error, markSent, reload: load };
 }

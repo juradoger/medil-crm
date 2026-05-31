@@ -1,24 +1,35 @@
 import { IReminderRepository } from '../domain/repositories/IReminderRepository.js';
 import { db }                  from '../infrastructure/insforge.js';
 import { Reminder }            from '../domain/entities/Reminder.js';
+import { REMINDER_STATUS }     from '../core/constants.js';
 
 export class InsForgeReminderRepository extends IReminderRepository {
   async findPending(branchId) {
-    const data = await db.from('reminders').select('*')
-      .eq('status', 'pending');
+    const { data, error } = await db.from('reminders').select('*')
+      .eq('status', REMINDER_STATUS.PENDING);
+    if (error) throw new Error(error.message);
     return (data ?? []).map(d => new Reminder(d));
   }
 
   async save(reminder) {
-    return await db.from('reminders').insert(reminder).select().single();
+    const { data, error } = await db.from('reminders').insert(reminder).select().single();
+    if (error) throw new Error(error.message);
+    return data;
   }
 
   async markAsSent(id, sentBy) {
-    return await db.from('reminders').update({ status: 'sent' }).eq('id', id).select().single();
+    const { data, error } = await db.from('reminders')
+      .update({ status: REMINDER_STATUS.SENT, sentBy, sentAt: new Date().toISOString() })
+      .eq('id', id).select().single();
+    if (error) throw new Error(error.message);
+    return data;
   }
 
   async cancelByAppointment(appointmentId) {
-    return await db.from('reminders').update({ status: 'cancelled' }).eq('appointmentId', appointmentId);
+    const { data, error } = await db.from('reminders')
+      .update({ status: REMINDER_STATUS.CANCELLED })
+      .eq('appointmentId', appointmentId);
+    if (error) throw new Error(error.message);
+    return data;
   }
 }
-

@@ -1,4 +1,4 @@
-const QR_COMMISSION_PERCENTAGE = 0.02;
+import { PAYMENT_STATUS, QR_COMMISSION_PERCENTAGE } from '../../core/constants.js';
 
 export const PaymentFactory = {
   create(data) {
@@ -8,7 +8,7 @@ export const PaymentFactory = {
       ...data,
       commission,
       totalAmount,
-      status:    'pending',
+      status:    PAYMENT_STATUS.PENDING,
       createdAt: new Date().toISOString(),
     };
   },

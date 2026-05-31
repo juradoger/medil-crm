@@ -1,4 +1,4 @@
-const HOURS_BEFORE_REMINDER = 24;
+import { REMINDER_STATUS, HOURS_BEFORE_REMINDER } from '../../core/constants.js';
 
 export const ReminderFactory = {
   createFromAppointment(appointment) {
@@ -11,11 +11,10 @@ export const ReminderFactory = {
       patientId:     appointment.patientId,
       message:       ReminderFactory.generateMessage(appointment),
       sendAt:        sendAt.toISOString(),
-      status:        'pending',
+      status:        REMINDER_STATUS.PENDING,
     };
   },
   generateMessage(appointment) {
     return `Recordatorio: tiene una cita el ${appointment.date} a las ${appointment.time}`;
   },
 };
-

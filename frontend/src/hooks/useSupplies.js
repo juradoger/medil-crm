@@ -7,42 +7,52 @@ export function useSupplies(branchId) {
   const [loading, setLoading]   = useState(true);
   const [error, setError]       = useState(null);
 
-  const load = useCallback(async () => {
-    if (!branchId) return;
+  // withLoading canónico — envuelve TODA operación async (loading + error)
+  const withLoading = useCallback(async (fn) => {
     setLoading(true);
     setError(null);
     try {
-      const data = await supplyService.getAll(branchId);
-      setSupplies(data);
-    } catch (e) {
-      setError(e.message);
+      return await fn();
+    } catch (err) {
+      setError(err.message);
+      throw err;
     } finally {
       setLoading(false);
     }
+  }, []);
+
+  const fetchSupplies = useCallback(async () => {
+    const data = await supplyService.getAll(branchId);
+    setSupplies(data);
   }, [branchId]);
 
+  const load = useCallback(() => {
+    if (!branchId) return Promise.resolve();
+    return withLoading(fetchSupplies);
+  }, [branchId, withLoading, fetchSupplies]);
+
   // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => { load().catch(() => {}); }, [load]);
 
-  const create = async (data) => {
+  const create = (data) => withLoading(async () => {
     await supplyService.create(branchId, data);
-    await load();
-  };
+    await fetchSupplies();
+  });
 
-  const update = async (id, data) => {
+  const update = (id, data) => withLoading(async () => {
     await supplyService.update(id, data);
-    await load();
-  };
+    await fetchSupplies();
+  });
 
-  const adjustStock = async (id, newStock, minimum) => {
+  const adjustStock = (id, newStock, minimum) => withLoading(async () => {
     await supplyService.adjustStock(id, newStock, minimum);
-    await load();
-  };
+    await fetchSupplies();
+  });
 
-  const remove = async (id) => {
+  const remove = (id) => withLoading(async () => {
     await supplyService.remove(id);
-    await load();
-  };
+    await fetchSupplies();
+  });
 
   return { supplies, loading, error, create, update, adjustStock, remove, reload: load };
 }

@@ -7,27 +7,37 @@ export function useMedicalRecords(patientId, branchId) {
   const [loading, setLoading] = useState(false);
   const [error, setError]     = useState(null);
 
-  const load = useCallback(async () => {
-    if (!patientId) { setRecords([]); return; }
+  // withLoading canónico — envuelve TODA operación async (loading + error)
+  const withLoading = useCallback(async (fn) => {
     setLoading(true);
     setError(null);
     try {
-      const data = await recordService.getByPatient(patientId);
-      setRecords(data);
-    } catch (e) {
-      setError(e.message);
+      return await fn();
+    } catch (err) {
+      setError(err.message);
+      throw err;
     } finally {
       setLoading(false);
     }
+  }, []);
+
+  const fetchRecords = useCallback(async () => {
+    const data = await recordService.getByPatient(patientId);
+    setRecords(data);
   }, [patientId]);
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => { load(); }, [load]);
+  const load = useCallback(() => {
+    if (!patientId) { setRecords([]); return Promise.resolve(); }
+    return withLoading(fetchRecords);
+  }, [patientId, withLoading, fetchRecords]);
 
-  const create = async (data) => {
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { load().catch(() => {}); }, [load]);
+
+  const create = (data) => withLoading(async () => {
     await recordService.create({ ...data, patientId, branchId });
-    await load();
-  };
+    await fetchRecords();
+  });
 
   return { records, loading, error, create, reload: load };
 }

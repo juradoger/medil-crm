@@ -7,37 +7,47 @@ export function useAppointments(branchId) {
   const [loading, setLoading]           = useState(true);
   const [error, setError]               = useState(null);
 
-  const load = useCallback(async () => {
-    if (!branchId) return;
+  // withLoading canónico — envuelve TODA operación async (loading + error)
+  const withLoading = useCallback(async (fn) => {
     setLoading(true);
     setError(null);
     try {
-      const data = await appointmentService.getAll(branchId);
-      setAppointments(data);
-    } catch (e) {
-      setError(e.message);
+      return await fn();
+    } catch (err) {
+      setError(err.message);
+      throw err;
     } finally {
       setLoading(false);
     }
+  }, []);
+
+  const fetchAppointments = useCallback(async () => {
+    const data = await appointmentService.getAll(branchId);
+    setAppointments(data);
   }, [branchId]);
 
+  const load = useCallback(() => {
+    if (!branchId) return Promise.resolve();
+    return withLoading(fetchAppointments);
+  }, [branchId, withLoading, fetchAppointments]);
+
   // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => { load().catch(() => {}); }, [load]);
 
-  const create = async (data) => {
+  const create = (data) => withLoading(async () => {
     await appointmentService.create({ ...data, branchId });
-    await load();
-  };
+    await fetchAppointments();
+  });
 
-  const cancel = async (id) => {
+  const cancel = (id) => withLoading(async () => {
     await appointmentService.cancel(id);
-    await load();
-  };
+    await fetchAppointments();
+  });
 
-  const markAttended = async (id) => {
+  const markAttended = (id) => withLoading(async () => {
     await appointmentService.markAttended(id);
-    await load();
-  };
+    await fetchAppointments();
+  });
 
   return { appointments, loading, error, create, cancel, markAttended, reload: load };
 }

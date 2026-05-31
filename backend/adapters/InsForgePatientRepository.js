@@ -4,25 +4,32 @@ import { Patient }             from '../domain/entities/Patient.js';
 
 export class InsForgePatientRepository extends IPatientRepository {
   async findAll(branchId) {
-    const data = await db.from('patients').select('*').eq('branchId', branchId);
+    const { data, error } = await db.from('patients').select('*').eq('branchId', branchId);
+    if (error) throw new Error(error.message);
     return (data ?? []).map(d => new Patient(d));
   }
 
   async findById(id) {
-    const data = await db.from('patients').select('*').eq('id', id).single();
+    const { data, error } = await db.from('patients').select('*').eq('id', id).maybeSingle();
+    if (error) throw new Error(error.message);
     return data ? new Patient(data) : null;
   }
 
   async findByDocumentId(documentId) {
-    const data = await db.from('patients').select('*').eq('documentId', documentId).maybeSingle();
+    const { data, error } = await db.from('patients').select('*').eq('documentId', documentId).maybeSingle();
+    if (error) throw new Error(error.message);
     return data ? new Patient(data) : null;
   }
 
   async save(patient) {
-    return await db.from('patients').insert(patient).select().single();
+    const { data, error } = await db.from('patients').insert(patient).select().single();
+    if (error) throw new Error(error.message);
+    return data;
   }
 
-  async update(id, data) {
-    return await db.from('patients').update(data).eq('id', id).select().single();
+  async update(id, patch) {
+    const { data, error } = await db.from('patients').update(patch).eq('id', id).select().single();
+    if (error) throw new Error(error.message);
+    return data;
   }
 }

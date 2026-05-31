@@ -1,7 +1,9 @@
+import { APPOINTMENT_STATUS } from '../../core/constants.js';
+
 export class Appointment {
   constructor(data) { Object.assign(this, data); }
 
-  isScheduled()    { return this.status === 'scheduled'; }
-  canBeAttended()  { return this.status === 'scheduled'; }
-  canBeCancelled() { return this.status === 'scheduled'; }
+  isScheduled()    { return this.status === APPOINTMENT_STATUS.SCHEDULED; }
+  canBeAttended()  { return this.status === APPOINTMENT_STATUS.SCHEDULED; }
+  canBeCancelled() { return this.status === APPOINTMENT_STATUS.SCHEDULED; }
 }

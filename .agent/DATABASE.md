@@ -17,38 +17,59 @@ backend/infrastructure/insforge.js
 
 ## 2. Patrón de acceso — InsForge SDK
 
-Siempre usar estos patrones. Nunca usar fetch directo a InsForge.
+⚠️ Sintaxis verificada contra el código real en
+ frontend/src/services/ y backend/adapters/
+ Actualizada post-auditoría.
+
+El SDK `@insforge/sdk` expone un **PostgrestQueryBuilder estilo Supabase/PostgREST**.
+Toda llamada resuelve a un objeto `{ data, error }`: SIEMPRE desestructurar y lanzar
+`new Error(error.message)` cuando `error` no es null. Nunca usar fetch directo a InsForge.
 
 ```js
 import { db } from '../lib/insforge';
 
 // Obtener todos (con filtro de sucursal)
-const result = await db.collection('patients')
-  .where('branchId', '==', branchId)
-  .find();
+const { data, error } = await db.from('patients')
+  .select('*')
+  .eq('branchId', branchId);
+if (error) throw new Error(error.message);
+const patients = data ?? [];
 
-// Obtener por ID
-const result = await db.collection('patients')
-  .where('id', '==', id)
-  .find();
-const patient = result[0] ?? null;
+// Obtener por ID (una fila o null)
+const { data, error } = await db.from('patients')
+  .select('*')
+  .eq('id', id);
+if (error) throw new Error(error.message);
+const patient = data?.[0] ?? null;
 
-// Insertar
-const created = await db.collection('patients')
-  .insert(patientData);
+// Insertar (devuelve las filas creadas)
+const { data: rows, error } = await db.from('patients')
+  .insert(patientData)
+  .select();
+if (error) throw new Error(error.message);
+const created = rows?.[0];
 
-// Actualizar
-const updated = await db.collection('patients')
-  .where('id', '==', id)
-  .update(updatedData);
+// Actualizar por filtro
+const { error } = await db.from('patients')
+  .update(updatedData)
+  .eq('id', id);
+if (error) throw new Error(error.message);
 
-// Filtros múltiples
-const result = await db.collection('appointments')
-  .where('branchId', '==', branchId)
-  .where('date', '==', date)
-  .where('status', '==', 'scheduled')
-  .find();
+// Filtros múltiples (encadenar .eq())
+const { data, error } = await db.from('appointments')
+  .select('*')
+  .eq('branchId', branchId)
+  .eq('date', date)
+  .eq('status', 'scheduled');
+if (error) throw new Error(error.message);
+
+// Helpers de fila única (PostgREST)
+const { data } = await db.from('patients').select('*').eq('id', id).single();      // error si ≠ 1 fila
+const { data } = await db.from('patients').select('*').eq('id', id).maybeSingle();  // null si no existe
 ```
+
+> ❌ La sintaxis antigua `db.collection('x').where('campo', '==', valor).find()` **no existe**
+> en el SDK y fue eliminada de esta documentación.
 
 ---
 
