@@ -61,7 +61,7 @@ No se puede eliminar una sucursal con datos asociados
 
 ### PACIENTES (Patient)
 
-El documentId (CI) debe ser único en todo el sistema
+name es el identificador principal del paciente en el sistema
 Un paciente inactivo no puede tener nuevas citas
 El historial clínico nunca se elimina ni modifica
 Un paciente puede tener userId para acceder al portal
@@ -97,7 +97,7 @@ consultationReason, diagnosis, treatment
 ### RECORDATORIOS (Reminder)
 
 Se generan automáticamente al crear una cita
-scheduledDate = fechaHoraCita - HOURS_BEFORE_REMINDER (24hs)
+sendAt = fechaHoraCita - HOURS_BEFORE_REMINDER (24hs)
 Solo el admin puede marcarlos como enviados
 Al cancelar una cita su recordatorio se cancela también
 Al marcar enviado se registra sentBy y sentAt

@@ -10,10 +10,12 @@ export const recordService = {
 
   async create(data) {
     const { data: rows, error } = await db.from('medical_records').insert({
-      patientId:     data.patientId     ?? null,
-      appointmentId: data.appointmentId ?? null,
-      diagnosis:     data.diagnosis     ?? null,
-      notes:         data.notes         ?? null,
+      patientId:      data.patientId      ?? null,
+      appointmentId:  data.appointmentId  ?? null,
+      branchId:       data.branchId       ?? null,
+      attendanceDate: data.attendanceDate ?? null,
+      diagnosis:      data.diagnosis      ?? null,
+      notes:          data.notes          ?? null,
     }).select();
     if (error) throw new Error(error.message);
     return rows?.[0];

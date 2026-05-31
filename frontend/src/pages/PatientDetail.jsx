@@ -10,10 +10,11 @@ import { DataTable } from '../organisms/DataTable';
 import { FullPageSpinner } from '../atoms/Spinner';
 import { FormField, inputClass } from '../molecules/FormField';
 
-const TABS = ['Citas', 'Historial'];
+const TABS  = ['Citas', 'Historial'];
+const TODAY = new Date().toISOString().slice(0, 10);
 
 function RecordModal({ onSave, onClose }) {
-  const [form, setForm] = useState({ diagnosis: '', treatment: '', notes: '' });
+  const [form, setForm] = useState({ attendanceDate: TODAY, diagnosis: '', notes: '' });
   const [saving, setSaving] = useState(false);
 
   const submit = async (e) => {
@@ -29,14 +30,19 @@ function RecordModal({ onSave, onClose }) {
       <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-md p-6">
         <h2 className="text-lg font-semibold text-gray-800 mb-4">Nueva entrada</h2>
         <form onSubmit={submit} className="space-y-4">
-          <FormField label="Diagnóstico">
-            <input className={inputClass} value={form.diagnosis} onChange={e => setForm(f => ({ ...f, diagnosis: e.target.value }))} required />
+          <FormField label="Fecha de atención" htmlFor="attendanceDate" required>
+            <input id="attendanceDate" type="date" className={inputClass}
+              value={form.attendanceDate}
+              onChange={e => setForm(f => ({ ...f, attendanceDate: e.target.value }))} />
           </FormField>
-          <FormField label="Tratamiento">
-            <input className={inputClass} value={form.treatment} onChange={e => setForm(f => ({ ...f, treatment: e.target.value }))} />
+          <FormField label="Diagnóstico" htmlFor="diagnosis" required>
+            <input id="diagnosis" className={inputClass} value={form.diagnosis}
+              onChange={e => setForm(f => ({ ...f, diagnosis: e.target.value }))} required />
           </FormField>
-          <FormField label="Notas">
-            <textarea className={`${inputClass} resize-none`} rows={3} value={form.notes} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))} />
+          <FormField label="Notas" htmlFor="notes">
+            <textarea id="notes" className={`${inputClass} resize-none`} rows={3}
+              value={form.notes}
+              onChange={e => setForm(f => ({ ...f, notes: e.target.value }))} />
           </FormField>
           <div className="flex justify-end gap-3 pt-2">
             <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200">Cancelar</button>
@@ -60,7 +66,7 @@ export default function PatientDetail() {
   const [showRecord, setShowRecord] = useState(false);
 
   const { appointments, loading: loadA } = useAppointments(currentBranchId);
-  const { records, loading: loadR, create: createRecord } = useMedicalRecords(id);
+  const { records, loading: loadR, create: createRecord } = useMedicalRecords(id, currentBranchId);
 
   useEffect(() => {
     patientService.getById(id).then(p => { setPatient(p); setLoadP(false); });
@@ -70,15 +76,14 @@ export default function PatientDetail() {
 
   const apptColumns = [
     { key: 'date', label: 'Fecha', render: r => r.date ? `${r.date} ${r.time?.slice(0,5) ?? ''}` : '—' },
-    { key: 'professional', label: 'Profesional', render: r => r.professional ?? r.professionalId ?? '—' },
+    { key: 'professionalId', label: 'Profesional', render: r => r.professionalId ?? '—' },
     { key: 'status', label: 'Estado', render: r => <StatusBadge status={r.status} /> },
   ];
 
   const recordColumns = [
     { key: 'createdAt', label: 'Fecha', render: r => r.createdAt ? new Date(r.createdAt).toLocaleDateString('es-BO') : '—' },
     { key: 'diagnosis', label: 'Diagnóstico' },
-    { key: 'treatment', label: 'Tratamiento' },
-    { key: 'notes', label: 'Notas' },
+    { key: 'notes',     label: 'Notas' },
   ];
 
   if (loadP || loadA || loadR) return <FullPageSpinner />;
@@ -104,7 +109,6 @@ export default function PatientDetail() {
           <div className="grid grid-cols-2 gap-3 text-sm text-gray-600">
             <div><span className="font-medium">Teléfono:</span> {patient.phone || '—'}</div>
             <div><span className="font-medium">Email:</span> {patient.email || '—'}</div>
-            <div><span className="font-medium">Nacimiento:</span> {patient.birthDate || '—'}</div>
           </div>
         </div>
 

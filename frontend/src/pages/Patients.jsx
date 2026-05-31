@@ -11,11 +11,11 @@ import { FullPageSpinner } from '../atoms/Spinner';
 import { FormField, inputClass } from '../molecules/FormField';
 import { PATIENT_STATUS } from '../core/constants';
 
-const EMPTY_FORM = { fullName: '', phone: '', email: '' };
+const EMPTY_FORM = { name: '', phone: '', email: '' };
 
 function PatientModal({ initial, onSave, onClose }) {
   const [form, setForm] = useState(
-    initial ? { fullName: initial.name ?? '', phone: initial.phone ?? '', email: initial.email ?? '' } : EMPTY_FORM
+    initial ? { name: initial.name ?? '', phone: initial.phone ?? '', email: initial.email ?? '' } : EMPTY_FORM
   );
   const [saving, setSaving] = useState(false);
   const [error, setError]   = useState('');
@@ -24,7 +24,7 @@ function PatientModal({ initial, onSave, onClose }) {
 
   const submit = async (e) => {
     e.preventDefault();
-    if (!form.fullName.trim()) { setError('El nombre es obligatorio'); return; }
+    if (!form.name.trim()) { setError('El nombre es obligatorio'); return; }
     setSaving(true);
     try { await onSave(form); onClose(); }
     catch (err) { setError(err.message); }
@@ -40,7 +40,7 @@ function PatientModal({ initial, onSave, onClose }) {
         </h2>
         <form onSubmit={submit} className="space-y-4">
           <FormField label="Nombre completo">
-            <input className={inputClass} value={form.fullName} onChange={e => set('fullName', e.target.value)} required />
+            <input className={inputClass} value={form.name} onChange={e => set('name', e.target.value)} required />
           </FormField>
           <FormField label="Teléfono">
             <input className={inputClass} value={form.phone} onChange={e => set('phone', e.target.value)} />

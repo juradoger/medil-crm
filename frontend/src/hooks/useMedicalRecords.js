@@ -2,13 +2,13 @@
 import { useState, useEffect, useCallback } from 'react';
 import { recordService } from '../services/recordService';
 
-export function useMedicalRecords(patientId) {
+export function useMedicalRecords(patientId, branchId) {
   const [records, setRecords] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError]     = useState(null);
 
   const load = useCallback(async () => {
-    if (!patientId) return;
+    if (!patientId) { setRecords([]); return; }
     setLoading(true);
     setError(null);
     try {
@@ -25,7 +25,7 @@ export function useMedicalRecords(patientId) {
   useEffect(() => { load(); }, [load]);
 
   const create = async (data) => {
-    await recordService.create({ ...data, patientId });
+    await recordService.create({ ...data, patientId, branchId });
     await load();
   };
 
