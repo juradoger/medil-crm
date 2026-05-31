@@ -1,5 +1,6 @@
 // Gestión de sucursales (solo admin)
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useBranches } from '../../hooks/useBranches';
 import { DataTable } from '../../organisms/DataTable';
 import { FullPageSpinner } from '../../atoms/Spinner';
@@ -68,7 +69,11 @@ export default function Branches() {
     {
       key: 'actions', label: '',
       render: r => (
-        <button onClick={() => setModal(r)} className="text-xs text-[#00B4D8] hover:underline">Editar</button>
+        <button onClick={() => setModal(r)} className="text-gray-400 hover:text-[#00B4D8] transition-colors" title="Editar">
+          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          </svg>
+        </button>
       ),
     },
   ];
@@ -82,6 +87,15 @@ export default function Branches() {
 
   return (
     <div className="p-6 max-w-5xl mx-auto space-y-6">
+      <div>
+        <Link to="/" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#00B4D8] hover:text-[#0096B4] transition-colors">
+          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Volver al Dashboard
+        </Link>
+      </div>
+
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-[#0E4A8A]">Sucursales</h1>
         <button onClick={() => setModal('create')} className="px-4 py-2 text-sm text-white bg-[#00B4D8] rounded-lg hover:bg-[#0096B4]">

@@ -1,5 +1,6 @@
 // Gestión de citas
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useAppointments } from '../hooks/useAppointments';
 import { usePatients } from '../hooks/usePatients';
@@ -9,6 +10,8 @@ import { ConfirmModal } from '../molecules/ConfirmModal';
 import { FullPageSpinner } from '../atoms/Spinner';
 import { FormField, inputClass } from '../molecules/FormField';
 import { APPOINTMENT_STATUS } from '../core/constants';
+import { MESSAGES } from '../core/messages';
+
 
 const EMPTY_FORM = { patientId: '', patientName: '', professional: '', date: '', time: '', reason: '' };
 
@@ -106,11 +109,19 @@ export default function Appointments() {
     {
       key: 'actions', label: '',
       render: r => (
-        <div className="flex gap-2">
+        <div className="flex gap-3">
           {r.status === APPOINTMENT_STATUS.SCHEDULED && (
             <>
-              <button onClick={() => markAttended(r.id)} className="text-xs text-green-600 hover:underline">Atendida</button>
-              <button onClick={() => setCancelTarget(r)} className="text-xs text-red-400 hover:underline">Cancelar</button>
+              <button onClick={() => markAttended(r.id)} className="text-gray-400 hover:text-green-600 transition-colors" title="Marcar como atendida">
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </button>
+              <button onClick={() => setCancelTarget(r)} className="text-gray-400 hover:text-red-500 transition-colors" title="Cancelar cita">
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </button>
             </>
           )}
         </div>
@@ -122,6 +133,15 @@ export default function Appointments() {
 
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-6">
+      <div>
+        <Link to="/" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#00B4D8] hover:text-[#0096B4] transition-colors">
+          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Volver al Dashboard
+        </Link>
+      </div>
+
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-[#0E4A8A]">Citas</h1>
         <button onClick={() => setShowModal(true)} className="px-4 py-2 text-sm text-white bg-[#00B4D8] rounded-lg hover:bg-[#0096B4]">
@@ -152,7 +172,7 @@ export default function Appointments() {
       <ConfirmModal
         open={!!cancelTarget}
         title="¿Cancelar cita?"
-        description="Esta acción no se puede deshacer"
+        description={MESSAGES.confirm.cancelAppointment}
         onConfirm={async () => { await cancel(cancelTarget.id); setCancelTarget(null); }}
         onCancel={() => setCancelTarget(null)}
       />

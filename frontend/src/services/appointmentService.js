@@ -1,7 +1,11 @@
 // Servicio de citas
 import { db } from '../lib/insforge';
-import { APPOINTMENT_STATUS } from '../core/constants';
+import { APPOINTMENT_STATUS, PATIENT_STATUS } from '../core/constants';
+import { MESSAGES } from '../core/messages';
+import { appointmentRules } from '../domain/rules/appointmentRules';
+import { ReminderFactory } from '../domain/factories/ReminderFactory';
 import { reminderService } from './reminderService';
+import { patientService } from './patientService';
 
 function toDate(dt) { return dt?.slice(0, 10) ?? ''; }
 function toTime(dt) { return dt?.slice(11, 16) || '00:00'; }
@@ -18,6 +22,12 @@ export const appointmentService = {
     const { data, error } = await db.from('appointments').select('*');
     if (error) throw new Error(error.message);
     return data ?? [];
+  },
+
+  async getById(id) {
+    const { data, error } = await db.from('appointments').select('*').eq('id', id);
+    if (error) throw new Error(error.message);
+    return data?.[0] ?? null;
   },
 
   async getByDate(_branchId, date) {
@@ -41,42 +51,77 @@ export const appointmentService = {
       .some(a => overlaps(date, time, a.date, a.time?.slice(0, 5)));
   },
 
+  // Verifica que el paciente exista y esté activo (un paciente inactivo no puede tener nuevas citas)
+  async isPatientActive(patientId) {
+    if (!patientId) return false;
+    const patient = await patientService.getById(patientId);
+    return patient?.status !== PATIENT_STATUS.INACTIVE;
+  },
+
   async create(data) {
     const scheduledAt = data.scheduledAt ?? '';
-    const conflict = await appointmentService.checkConflict(null, data.professionalId, scheduledAt);
-    if (conflict) throw new Error('Conflicto de horario: el profesional ya tiene una cita en ese horario');
+    const date = toDate(scheduledAt);
+    const time = toTime(scheduledAt);
+
+    // 1. La cita no puede crearse en el pasado
+    if (!appointmentRules.isFutureDate(date, time)) {
+      throw new Error(MESSAGES.error.validation.futureDate);
+    }
+    // 2. Un paciente inactivo no puede tener nuevas citas
+    if (!await appointmentService.isPatientActive(data.patientId)) {
+      throw new Error(MESSAGES.error.validation.inactivePatient);
+    }
+    // 3. Un profesional no puede tener dos citas en el mismo horario
+    if (await appointmentService.checkConflict(null, data.professionalId, scheduledAt)) {
+      throw new Error(MESSAGES.error.validation.timeConflict);
+    }
 
     const { data: rows, error } = await db.from('appointments').insert({
       patientId:      data.patientId      ?? null,
       patientName:    data.patientName    ?? null,
       professionalId: data.professionalId ?? null,
       professional:   data.professionalName ?? data.professional ?? null,
-      date:           toDate(scheduledAt),
-      time:           toTime(scheduledAt),
+      date,
+      time,
       reason:         data.reason ?? null,
     }).select();
     if (error) throw new Error(error.message);
 
     const created = rows?.[0];
-    const date = toDate(scheduledAt);
-    const time = toTime(scheduledAt);
-    const sendAt = new Date(new Date(`${date}T${time}`).getTime() - 24 * 3_600_000).toISOString();
-    await reminderService.create({
-      appointmentId: created?.id,
-      patientId: data.patientId,
-      message: `Recuerde su cita el ${date} a las ${time}`,
-      sendAt,
-    }).catch(() => {});
+
+    // 4. Efecto secundario: generar recordatorio automático vía ReminderFactory
+    if (created) {
+      const reminder = ReminderFactory.createFromAppointment({
+        id:        created.id,
+        patientId: data.patientId,
+        branchId:  data.branchId,
+        date,
+        time,
+      });
+      await reminderService.create(reminder).catch(() => {});
+    }
 
     return created;
   },
 
   async cancel(id) {
+    // Una cita atendida o ya cancelada no puede cancelarse
+    const appointment = await appointmentService.getById(id);
+    if (appointment && !appointmentRules.canBeCancelled(appointment)) {
+      throw new Error('Solo se pueden cancelar citas agendadas');
+    }
     const { error } = await db.from('appointments').update({ status: APPOINTMENT_STATUS.CANCELLED }).eq('id', id);
     if (error) throw new Error(error.message);
+    // Al cancelar la cita su recordatorio se cancela también
+    await reminderService.cancelByAppointment(id).catch(() => {});
   },
 
   async markAttended(id) {
+    // Una cita cancelada no puede marcarse como atendida
+    const appointment = await appointmentService.getById(id);
+    if (appointment && !appointmentRules.canBeAttended(appointment)) {
+      throw new Error('Solo se pueden atender citas agendadas');
+    }
     const { error } = await db.from('appointments').update({ status: APPOINTMENT_STATUS.ATTENDED }).eq('id', id);
     if (error) throw new Error(error.message);
   },

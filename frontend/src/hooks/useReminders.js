@@ -12,7 +12,7 @@ export function useReminders(branchId) {
     setLoading(true);
     setError(null);
     try {
-      const data = await reminderService.getPending(branchId);
+      const data = await reminderService.getAll(branchId);
       setReminders(data);
     } catch (e) {
       setError(e.message);

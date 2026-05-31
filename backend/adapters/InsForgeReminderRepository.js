@@ -5,7 +5,7 @@ import { Reminder }            from '../domain/entities/Reminder.js';
 export class InsForgeReminderRepository extends IReminderRepository {
   async findPending(branchId) {
     const data = await db.from('reminders').select('*')
-      .eq('branchId', branchId).eq('status', 'pending');
+      .eq('status', 'pending');
     return (data ?? []).map(d => new Reminder(d));
   }
 
@@ -14,10 +14,11 @@ export class InsForgeReminderRepository extends IReminderRepository {
   }
 
   async markAsSent(id, sentBy) {
-    return await db.from('reminders').update({ status: 'sent', sentBy }).eq('id', id).select().single();
+    return await db.from('reminders').update({ status: 'sent' }).eq('id', id).select().single();
   }
 
   async cancelByAppointment(appointmentId) {
     return await db.from('reminders').update({ status: 'cancelled' }).eq('appointmentId', appointmentId);
   }
 }
+

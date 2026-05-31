@@ -81,10 +81,23 @@ export default function Patients() {
     {
       key: 'actions', label: '',
       render: r => (
-        <div className="flex gap-2">
-          <Link to={`/patients/${r.id}`} className="text-xs text-[#00B4D8] hover:underline">Ver</Link>
-          <button onClick={() => setModal(r)} className="text-xs text-gray-500 hover:text-[#0E4A8A]">Editar</button>
-          <button onClick={() => setDelete(r)} className="text-xs text-red-400 hover:text-red-600">Desactivar</button>
+        <div className="flex gap-3">
+          <Link to={`/patients/${r.id}`} className="text-gray-400 hover:text-[#00B4D8] transition-colors" title="Ver detalle">
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            </svg>
+          </Link>
+          <button onClick={() => setModal(r)} className="text-gray-400 hover:text-[#0E4A8A] transition-colors" title="Editar">
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+          </button>
+          <button onClick={() => setDelete(r)} className="text-gray-400 hover:text-red-500 transition-colors" title="Desactivar">
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+            </svg>
+          </button>
         </div>
       ),
     },
@@ -99,6 +112,15 @@ export default function Patients() {
 
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-6">
+      <div>
+        <Link to="/" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#00B4D8] hover:text-[#0096B4] transition-colors">
+          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Volver al Dashboard
+        </Link>
+      </div>
+
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-[#0E4A8A]">Pacientes</h1>
         <button onClick={() => setModal('create')} className="px-4 py-2 text-sm text-white bg-[#00B4D8] rounded-lg hover:bg-[#0096B4]">

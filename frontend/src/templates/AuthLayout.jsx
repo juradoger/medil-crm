@@ -1,5 +1,5 @@
-// Layout para páginas de autenticación
 import React from 'react';
+import { Logo } from '../atoms/Logo';
 
 export function AuthLayout({ children }) {
   return (
@@ -7,7 +7,7 @@ export function AuthLayout({ children }) {
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-8">
         {/* Logo centrado */}
         <div className="flex justify-center mb-6">
-          <img src="/logo.png" alt="MedIL CRM" className="h-16 w-auto" />
+          <Logo className="text-3xl" />
         </div>
         {children}
       </div>

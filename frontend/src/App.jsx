@@ -9,6 +9,9 @@ import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { Sidebar }     from './components/layout/Sidebar';
 import { TopBar }      from './components/layout/TopBar';
 import { USER_ROLES }  from './core/constants';
+import { ErrorBoundary } from './components/ErrorBoundary';
+import { useToast }    from './hooks/useToast';
+import { Toast }        from './molecules/Toast';
 
 // Páginas de la app
 import Login          from './pages/Login';
@@ -30,8 +33,11 @@ import RegisterPage from './pages/public/RegisterPage';
 
 // Ruta raíz: Landing si no autenticado, Dashboard si autenticado
 function HomeRoute() {
-  const { isAuthenticated } = useAuth();
-  if (!isAuthenticated) return <LandingPage />;
+  const { isAuthenticated, user } = useAuth();
+  if (!isAuthenticated) return <Navigate to="/portal" replace />;
+  if (user?.role === USER_ROLES.PATIENT) {
+    return <Navigate to="/patient/portal" replace />;
+  }
   return (
     <ProtectedRoute allowedRoles={[USER_ROLES.ADMIN, USER_ROLES.DOCTOR]}>
       <Dashboard />
@@ -50,7 +56,6 @@ function AppLayout() {
 
       <main className="min-h-screen bg-gray-50">
         <Routes>
-          <Route path="/login"    element={<Login />} />
           <Route path="/"         element={<HomeRoute />} />
 
           <Route path="/patients" element={
@@ -114,22 +119,36 @@ function AppLayout() {
 
 // Rutas públicas sin sidebar + rutas de app
 function AppRoutes() {
+  const { toast, setToast } = useToast();
+
   return (
-    <Routes>
-      <Route path="/portal"      element={<LandingPage />} />
-      <Route path="/clinica/:id" element={<ClinicDetail />} />
-      <Route path="/registro"    element={<RegisterPage />} />
-      <Route path="*"            element={<AppLayout />} />
-    </Routes>
+    <>
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
+      <Routes>
+        <Route path="/portal"      element={<LandingPage />} />
+        <Route path="/clinica/:id" element={<ClinicDetail />} />
+        <Route path="/registro"    element={<RegisterPage />} />
+        <Route path="/login"       element={<Login />} />
+        <Route path="*"            element={<AppLayout />} />
+      </Routes>
+    </>
   );
 }
 
 export default function App() {
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <AppRoutes />
-      </AuthProvider>
+      <ErrorBoundary>
+        <AuthProvider>
+          <AppRoutes />
+        </AuthProvider>
+      </ErrorBoundary>
     </BrowserRouter>
   );
 }

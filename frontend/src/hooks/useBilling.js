@@ -1,6 +1,7 @@
 // Hook personalizado para el ciclo de pago QR — Custom hook for QR payment cycle
 import { useState, useCallback, useRef } from 'react';
 import { billingService } from '../billing/billingService';
+import { eventBus } from '../core/eventBus';
 import {
   QR_POLLING_INTERVAL_MS,
   QR_MAX_POLLING_ATTEMPTS,
@@ -49,6 +50,7 @@ export function useBilling() {
         stopPolling();
         setPaymentState('error');
         setError('Tiempo de espera agotado');
+        eventBus.emit('payment:rejected', { transactionId, error: 'Tiempo de espera agotado' });
         return;
       }
 
@@ -58,10 +60,12 @@ export function useBilling() {
         if (statusResult.status === PAYMENT_STATUS.APPROVED) {
           stopPolling();
           setPaymentState('success');
+          eventBus.emit('payment:approved', { transactionId });
         } else if (statusResult.status === PAYMENT_STATUS.REJECTED) {
           stopPolling();
           setPaymentState('error');
           setError('Pago rechazado');
+          eventBus.emit('payment:rejected', { transactionId, error: 'Pago rechazado' });
         }
       } catch {
         // Continúa polleando en errores transitorios — Continue polling on transient errors

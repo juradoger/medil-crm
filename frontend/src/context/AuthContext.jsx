@@ -47,6 +47,24 @@ export function AuthProvider({ children }) {
   };
 
   /**
+   * Actualiza los datos del usuario en el estado y token local
+   * @param {object} updatedFields 
+   */
+  const updateUser = (updatedFields) => {
+    setUser(prev => prev ? { ...prev, ...updatedFields } : null);
+    const token = authService.getToken();
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token));
+        const newPayload = { ...payload, ...updatedFields };
+        localStorage.setItem('medil_token', btoa(JSON.stringify(newPayload)));
+      } catch (e) {
+        console.error('Error updating token:', e);
+      }
+    }
+  };
+
+  /**
    * Verifica si el usuario tiene alguno de los roles dados — Checks if user has any of the given roles
    * @param {string|string[]} roles
    * @returns {boolean}
@@ -66,11 +84,13 @@ export function AuthProvider({ children }) {
       hasRole,
       currentBranchId:  user?.branchId ?? null,
       loading,
+      updateUser,
     }}>
       {children}
     </AuthContext.Provider>
   );
 }
+
 
 /**
  * Hook para acceder al contexto de autenticación — Hook to access auth context

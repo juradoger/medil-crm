@@ -1,4 +1,9 @@
 {
+  "scripts": {
+    "test:frontend": "npm run test --prefix frontend",
+    "test:backend": "npm run test --prefix backend",
+    "test": "npm run test:frontend && npm run test:backend"
+  },
   "devDependencies": {
     "docx": "^9.6.1"
   },

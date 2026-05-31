@@ -28,7 +28,7 @@ export class CreateAppointment {
       data.professionalId, data.date, data.time, this.appointmentRepo
     );
     if (!noConflict) {
-      throw new Error('El profesional ya tiene una cita a esa hora');
+      throw new Error('conflicto de horario: el profesional ya tiene una cita a esa hora');
     }
 
     // Crear y guardar la cita

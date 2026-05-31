@@ -32,7 +32,7 @@ export default function Dashboard() {
 
   const activePatients   = useMemo(() => patients.filter(p => p.status === PATIENT_STATUS.ACTIVE).length, [patients]);
   const scheduledToday   = useMemo(() => todayAppointments.filter(a => a.status === APPOINTMENT_STATUS.SCHEDULED).length, [todayAppointments]);
-  const pendingReminders = useMemo(() => reminders.length, [reminders]);
+  const pendingReminders = useMemo(() => reminders.filter(r => r.status === 'pending').length, [reminders]);
 
   if (loadP || loadA || loadR) return <FullPageSpinner />;
 

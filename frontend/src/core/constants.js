@@ -17,8 +17,9 @@ export const APPOINTMENT_STATUS = {
 
 // Estados posibles de un recordatorio — Possible reminder statuses
 export const REMINDER_STATUS = {
-  PENDING: 'pending', // Pendiente — Pending
-  SENT:    'sent',    // Enviado — Sent
+  PENDING:   'pending',   // Pendiente — Pending
+  SENT:      'sent',      // Enviado — Sent
+  CANCELLED: 'cancelled', // Cancelado (al cancelar la cita) — Cancelled (when appointment is cancelled)
 };
 
 // Estados posibles de un paciente — Possible patient statuses

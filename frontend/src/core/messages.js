@@ -73,7 +73,7 @@ export const MESSAGES = {
     professionalCreated: 'Profesional registrado correctamente',
   },
   confirm: {
-    cancelAppointment:  '¿Cancelar esta cita? Esta acción no se puede deshacer',
+    cancelAppointment:  '¿Cancelar esta cita? El recordatorio también se cancelará. Esta acción no se puede deshacer',
     deactivatePatient:  '¿Desactivar este paciente?',
     markReminderSent:   '¿Marcar este recordatorio como enviado?',
     markAttended:       '¿Marcar esta cita como atendida?',

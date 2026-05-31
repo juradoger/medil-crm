@@ -25,6 +25,8 @@ export function Button({
   disabled = false,
   loading = false,
   type = 'button',
+  fullWidth = false,
+  className = '',
 }) {
   const isDisabled = disabled || loading;
 
@@ -36,6 +38,8 @@ export function Button({
       className={`inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-colors
         ${VARIANT_MAP[variant] ?? VARIANT_MAP.primary}
         ${SIZE_MAP[size] ?? SIZE_MAP.md}
+        ${fullWidth ? 'w-full' : ''}
+        ${className}
         disabled:opacity-50 disabled:cursor-not-allowed`}
     >
       {/* Spinner visible cuando está cargando */}

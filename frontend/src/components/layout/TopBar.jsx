@@ -2,6 +2,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { Logo } from '../../atoms/Logo';
 
 /**
  * @param {{ onMenuClick: fn }} props
@@ -11,8 +12,8 @@ export function TopBar({ onMenuClick }) {
 
   return (
     <header className="flex items-center justify-between px-5 py-3 bg-white border-b border-gray-200 shadow-sm">
-      <NavLink to="/" onClick={() => {}}>
-        <img src="/logo.png" alt="MedIL CRM" className="h-16 w-auto" />
+      <NavLink to="/" onClick={() => {}} className="flex items-center">
+        <Logo className="text-2xl" />
       </NavLink>
 
       {isAuthenticated && (

@@ -1,87 +1,158 @@
 // Página de inicio de sesión
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { USER_ROLES } from '../core/constants';
+import { AuthLayout } from '../templates/AuthLayout';
+import { FormField } from '../molecules/FormField';
+import { Input } from '../atoms/Input';
+import { Button } from '../atoms/Button';
+import { MESSAGES } from '../core/messages';
 
 export default function Login() {
-  const { login }   = useAuth();
-  const navigate    = useNavigate();
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
   const [email, setEmail]       = useState('');
   const [password, setPassword] = useState('');
   const [error, setError]       = useState('');
   const [loading, setLoading]   = useState(false);
 
+  // Errores de validación locales
+  const [emailError, setEmailError]       = useState('');
+  const [passwordError, setPasswordError] = useState('');
+
+  const handleTestUser = (role) => {
+    setError('');
+    setEmailError('');
+    setPasswordError('');
+    if (role === 'admin') {
+      setEmail('admin@medil.com');
+      setPassword('admin123');
+    } else if (role === 'doctor') {
+      setEmail('doctor@medil.com');
+      setPassword('doctor123');
+    } else if (role === 'patient') {
+      setEmail('paciente@medil.com');
+      setPassword('paciente123');
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setEmailError('');
+    setPasswordError('');
+
+    let isValid = true;
+    if (!email.trim()) {
+      setEmailError(MESSAGES.error.validation.required('Correo electrónico'));
+      isValid = false;
+    }
+    if (!password) {
+      setPasswordError(MESSAGES.error.validation.required('Contraseña'));
+      isValid = false;
+    }
+
+    if (!isValid) return;
+
     setLoading(true);
     try {
       const user = await login(email, password);
-      if (user.role === USER_ROLES.ADMIN)       navigate('/', { replace: true });
-      else if (user.role === USER_ROLES.DOCTOR) navigate('/doctor/console', { replace: true });
-      else                                       navigate('/patient/portal', { replace: true });
+      if (user.role === USER_ROLES.ADMIN) {
+        navigate('/', { replace: true });
+      } else if (user.role === USER_ROLES.DOCTOR) {
+        navigate('/doctor/console', { replace: true });
+      } else {
+        navigate('/patient/portal', { replace: true });
+      }
     } catch (err) {
-      setError(err.message || 'Error al iniciar sesión');
+      setError(err.message || MESSAGES.error.auth.invalidCredentials);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-      <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md">
+    <AuthLayout>
+      <h1 className="text-2xl font-bold text-center text-[#0E4A8A] mb-6">
+        Iniciar sesión
+      </h1>
 
-        <div className="flex justify-center mb-8">
-          <img src="/logo.png" alt="MedIL CRM" className="h-20 w-auto" />
+      {error && (
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+          {error}
         </div>
+      )}
 
-        <h1 className="text-2xl font-bold text-center text-[#0E4A8A] mb-6">
-          Iniciar sesión
-        </h1>
-
-        {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Correo electrónico</label>
-            <input
-              type="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              required
-              autoComplete="email"
-              placeholder="correo@medil.com"
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00B4D8] focus:border-transparent transition"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
-            <input
-              type="password"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              required
-              autoComplete="current-password"
-              placeholder="••••••••"
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00B4D8] focus:border-transparent transition"
-            />
-          </div>
-
-          <button
-            type="submit"
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <FormField label="Correo electrónico" error={emailError}>
+          <Input
+            type="email"
+            value={email}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              if (e.target.value.trim()) setEmailError('');
+            }}
+            placeholder="correo@medil.com"
+            error={!!emailError}
             disabled={loading}
-            className="w-full py-3 bg-[#00B4D8] text-white font-semibold rounded-lg hover:bg-[#0096B4] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            {loading ? 'Ingresando…' : 'Ingresar'}
-          </button>
-        </form>
-      </div>
-    </div>
+          />
+        </FormField>
+
+        <FormField label="Contraseña" error={passwordError}>
+          <Input
+            type="password"
+            value={password}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              if (e.target.value) setPasswordError('');
+            }}
+            placeholder="••••••••"
+            error={!!passwordError}
+            disabled={loading}
+          />
+        </FormField>
+
+        <Button
+          type="submit"
+          label="Ingresar"
+          loading={loading}
+          fullWidth
+        />
+
+        <div className="flex flex-col items-center">
+          <span className="text-xs text-gray-400 text-center my-4">
+            Acceso de prueba — elegí un rol
+          </span>
+          <div className="flex justify-center gap-2 w-full">
+            <Button
+              type="button"
+              label="Administrador"
+              variant="ghost"
+              size="sm"
+              onClick={() => handleTestUser('admin')}
+              disabled={loading}
+            />
+            <Button
+              type="button"
+              label="Médico"
+              variant="ghost"
+              size="sm"
+              onClick={() => handleTestUser('doctor')}
+              disabled={loading}
+            />
+            <Button
+              type="button"
+              label="Paciente"
+              variant="ghost"
+              size="sm"
+              onClick={() => handleTestUser('patient')}
+              disabled={loading}
+            />
+          </div>
+        </div>
+      </form>
+    </AuthLayout>
   );
 }

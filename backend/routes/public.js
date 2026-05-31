@@ -71,9 +71,8 @@ router.post('/register', async (req, res, next) => {
       branchId,
       isActive:     true,
       fullName:     name,
-      photoUrl:     photoUrl || null,
-      createdAt:    now,
-      updatedAt:    now,
+      created_at:   now,
+      updated_at:   now,
     }).select();
     if (userErr) throw new Error(userErr.message);
 
@@ -85,9 +84,6 @@ router.post('/register', async (req, res, next) => {
       phone,
       email,
       status:    'active',
-      branchId,
-      userId,
-      photoUrl:  photoUrl || null,
       createdAt: now,
     }).select();
     if (patientErr) throw new Error(patientErr.message);

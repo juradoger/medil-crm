@@ -15,13 +15,23 @@ function getInitials(name) {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
-export function Avatar({ name, size = 'md' }) {
+export function Avatar({ name, src, size = 'md', className = "" }) {
+  if (src) {
+    return (
+      <img
+        src={src}
+        alt={name}
+        className={`rounded-full object-cover ${SIZE_MAP[size] ?? SIZE_MAP.md} ${className}`}
+      />
+    );
+  }
   return (
     <div
-      className={`flex items-center justify-center rounded-full bg-[#00B4D8] text-white font-semibold ${SIZE_MAP[size] ?? SIZE_MAP.md}`}
+      className={`flex items-center justify-center rounded-full bg-[#00B4D8] text-white font-semibold ${SIZE_MAP[size] ?? SIZE_MAP.md} ${className}`}
       aria-label={name}
     >
       {getInitials(name)}
     </div>
   );
 }
+

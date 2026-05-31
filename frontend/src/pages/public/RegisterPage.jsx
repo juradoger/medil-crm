@@ -3,6 +3,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { PublicLayout } from './PublicLayout';
 import { publicApi, uploadApi } from '../../services/backendService';
+import { Logo } from '../../atoms/Logo';
+
 
 const EMPTY = { name: '', phone: '', email: '', password: '', confirmPassword: '', branchId: '' };
 
@@ -97,9 +99,14 @@ export default function RegisterPage() {
   return (
     <PublicLayout>
       <div className="max-w-md mx-auto">
-        <h1 className="text-2xl font-bold text-[#0E4A8A] mb-6">Crear cuenta de paciente</h1>
+        {/* Logo centrado */}
+        <div className="flex justify-center mb-6">
+          <Logo className="text-3xl" />
+        </div>
+        <h1 className="text-2xl font-bold text-center text-[#0E4A8A] mb-6">Crear cuenta de paciente</h1>
 
         <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 space-y-4">
+
 
           {/* Foto de perfil opcional */}
           <div className="flex flex-col items-center gap-2 mb-2">
