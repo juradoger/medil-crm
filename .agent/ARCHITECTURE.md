@@ -480,3 +480,50 @@ porque maneja las sucursales en sí mismas.
 
 Nunca hardcodear un branchId en un componente o hook.
 Siempre viene de AuthContext.
+
+---
+
+## 9. Servidor Express — Backend API para servicios externos
+
+### Propósito
+El servidor Express NO reemplaza InsForge.
+Existe solo para llamadas a APIs externas que
+no pueden hacerse desde el frontend por seguridad
+(claves API privadas, lógica de negocio sensible).
+
+### Cuándo llamar al servidor (http://localhost:3001)
+→ Claude API (IA — Etapa 8)
+→ Twilio WhatsApp (notificaciones — Etapa 8)
+→ PagoFácil real (pagos — Etapa 7)
+
+### Cuándo llamar InsForge directo (sin pasar por Express)
+→ Todo lo demás: patients, appointments, reminders, etc.
+
+### Endpoints disponibles
+GET  /health                              verificar que el servidor está vivo
+GET  /api                                 lista de endpoints disponibles
+POST /api/ai/suggest-diagnosis            Etapa 8 — Claude API
+POST /api/ai/summarize-history            Etapa 8 — Claude API
+POST /api/ai/generate-reminder-message   Etapa 8 — Claude API
+POST /api/notify/reminder                 Etapa 8 — Twilio WhatsApp
+POST /api/payments/generate-qr           Etapa 7 — PagoFácil
+GET  /api/payments/status/:id            Etapa 7 — PagoFácil
+
+### Estructura de archivos
+backend/
+  server.js              ← entrada del servidor, puerto 3001
+  router.js              ← monta /api/ai, /api/notify, /api/payments
+  middleware/
+    auth.js              ← requireAuth — verifica Bearer token
+    cors.js              ← allowedOrigins: localhost:5173 + FRONTEND_URL
+    errorHandler.js      ← manejo global, oculta stack en producción
+  routes/
+    ai.js                ← /api/ai/*
+    notifications.js     ← /api/notify/*
+    payments.js          ← /api/payments/*
+
+### Cómo correrlo
+cd backend && npm run dev
+
+### Puerto
+3001 (dev), configurable via PORT en backend/.env
