@@ -1,6 +1,7 @@
 // Servicio de pacientes
 import { db } from '../lib/insforge';
 import { PATIENT_STATUS } from '../core/constants';
+import { MESSAGES } from '../core/messages';
 
 export const patientService = {
   async getAll(_branchId) {
@@ -44,5 +45,33 @@ export const patientService = {
 
   async remove(id) {
     return patientService.update(id, { status: PATIENT_STATUS.INACTIVE });
+  },
+
+  // Actualiza el seguro médico del paciente — isInsured se deriva del código
+  async updateInsurance(id, insuranceCode) {
+    const isInsured = insuranceCode
+      ? (insuranceCode.toUpperCase().endsWith('MED') ||
+         insuranceCode.toUpperCase().endsWith('SAL'))
+      : false;
+
+    const { data, error } = await db.from('patients')
+      .update({ insuranceCode, isInsured, updatedAt: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw new Error(MESSAGES.error.connection.server);
+    return data;
+  },
+
+  // Consulta el estado de afiliación de un paciente
+  async checkInsurance(patientId) {
+    const { data, error } = await db.from('patients')
+      .select('insuranceCode, isInsured')
+      .eq('id', patientId)
+      .single();
+
+    if (error) return { isInsured: false, insuranceCode: null };
+    return data;
   },
 };

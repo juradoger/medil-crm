@@ -22,6 +22,8 @@ export function requireAuth(req, res, next) {
     });
   }
 
-  req.token = token;
+  // Por ahora el token es el userId directamente (hasta JWT en Etapa 8)
+  req.userId = token;
+  req.token  = token;
   next();
 }

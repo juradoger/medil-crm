@@ -9,9 +9,12 @@ import { professionalService } from '../../services/professionalService';
 import { StatusBadge } from '../../molecules/StatusBadge';
 import { FormField, inputClass } from '../../molecules/FormField';
 import { ConfirmModal } from '../../molecules/ConfirmModal';
+import { PaymentGate } from '../../organisms/PaymentGate';
 import { FullPageSpinner } from '../../atoms/Spinner';
 import { Avatar } from '../../atoms/Avatar';
-import { APPOINTMENT_STATUS } from '../../core/constants';
+import { APPOINTMENT_STATUS, DEFAULT_CONSULTATION_FEE } from '../../core/constants';
+import { MESSAGES } from '../../core/messages';
+import { eventBus } from '../../core/eventBus';
 
 
 const TODAY = new Date().toISOString().slice(0, 10);
@@ -109,7 +112,7 @@ function BookModal({ professionals, onSave, onClose }) {
 export default function PatientPortal() {
   const { user, currentBranchId } = useAuth();
   const { patients, loading: loadP } = usePatients(currentBranchId);
-  const { appointments, loading: loadA, create: createAppointment, cancel: cancelAppointment } = useAppointments(currentBranchId);
+  const { appointments, loading: loadA, cancel: cancelAppointment, createWithPaymentCheck, createAfterPayment } = useAppointments(currentBranchId);
 
   const [records, setRecords]           = useState([]);
   const [loadR, setLoadR]               = useState(true);
@@ -118,6 +121,7 @@ export default function PatientPortal() {
 
   const [showBook, setShowBook]         = useState(false);
   const [cancelTarget, setCancelTarget] = useState(null);
+  const [pendingAppt, setPendingAppt]   = useState(null); // cita esperando pago
 
   // Encontrar el registro del paciente vinculado al usuario
   const myPatient = useMemo(() => {
@@ -159,11 +163,20 @@ export default function PatientPortal() {
 
   const handleBook = async (formPayload) => {
     if (!myPatient) return;
-    await createAppointment({
-      ...formPayload,
-      patientId: myPatient.id,
-      patientName: myPatient.name,
-    });
+    const data = { ...formPayload, patientId: myPatient.id, patientName: myPatient.name };
+    const result = await createWithPaymentCheck(data);
+    if (result.requiresPayment) {
+      setPendingAppt(data);
+    } else {
+      eventBus.emit('toast:show', { message: MESSAGES.success.appointmentFree, type: 'success' });
+    }
+  };
+
+  // Tras aprobarse el pago, crea la cita definitivamente
+  const handlePaymentSuccess = async (paymentId) => {
+    await createAfterPayment(pendingAppt, paymentId);
+    eventBus.emit('toast:show', { message: MESSAGES.success.appointmentCreated, type: 'success' });
+    setPendingAppt(null);
   };
 
   const handleCancelConfirmed = async () => {
@@ -201,6 +214,16 @@ export default function PatientPortal() {
           Agendar cita
         </button>
       </div>
+
+      {/* Banner de seguro: visible si el paciente no tiene código configurado */}
+      {myPatient && !myPatient.insuranceCode && (
+        <div className="bg-[#00B4D8]/10 border border-[#00B4D8]/20 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <p className="text-sm text-[#0E4A8A]">{MESSAGES.empty.noInsurance}</p>
+          <Link to="/profile" className="text-sm font-semibold text-[#00B4D8] hover:text-[#0096B4] whitespace-nowrap">
+            Ir a mi perfil →
+          </Link>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Próximas Citas */}
@@ -286,6 +309,14 @@ export default function PatientPortal() {
           onClose={() => setShowBook(false)}
         />
       )}
+
+      <PaymentGate
+        isOpen={!!pendingAppt}
+        appointmentData={pendingAppt}
+        amount={DEFAULT_CONSULTATION_FEE}
+        onPaymentSuccess={handlePaymentSuccess}
+        onCancel={() => setPendingAppt(null)}
+      />
 
       <ConfirmModal
         open={!!cancelTarget}

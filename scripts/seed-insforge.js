@@ -5,7 +5,7 @@
 // Schema real detectado (columnas existentes por tabla):
 //   branches:      id, name, city, address, phone, status, created_at, updated_at
 //   users:         id, email, passwordHash, role, fullName, isActive, created_at, updated_at, branchId, photoUrl
-//   patients:      id, name, email, phone, status, createdAt
+//   patients:      id, name, email, phone, status, createdAt, photoUrl, insuranceCode, isInsured, whatsappPhone
 //   professionals: id, fullName, specialty, email, phone, created_at, updated_at
 //   appointments:  id, patientId, patientName, professionalId, professional, date, time, reason, status, createdAt
 //   reminders:     id, appointmentId, patientId, message, sendAt, status
@@ -255,6 +255,20 @@ const APPT_TIMES        = [
   '09:00', '10:00', '11:00',
 ];
 
+// Códigos de seguro para los primeros 10 pacientes:
+// 5 terminan en MED (afiliados/gratis) | 5 sin cobertura
+const SEED_INSURANCE = [
+  'CNSALUD-MED', 'CAJANAC-MED', 'SEGUSALUD-MED', 'CNS-LAPAZ-MED', 'CAJABANCARIA-MED',
+  'PARTICULAR-001', 'SEG-PRIV-123', 'PARTICULAR-002', 'PRIVADO-XYZ', 'SINSEGURO-009',
+];
+
+// Regla de afiliación: el código termina en MED o SAL
+function computeIsInsured(code) {
+  if (!code) return false;
+  const upper = code.toUpperCase();
+  return upper.endsWith('MED') || upper.endsWith('SAL');
+}
+
 // Stock: ok × 2, low × 2, critical × 1
 const STOCK_PATTERNS = [
   { curr: 45, min: 20 },
@@ -367,9 +381,13 @@ try {
     const name   = makeName(i);
     const email  = `${slug(name)}.${i}@gmail.com`;
     const status = (i % 12 === 0) ? 'inactive' : 'active';
+    const phone  = bolivianPhone();
+    const insuranceCode = i < SEED_INSURANCE.length ? SEED_INSURANCE[i] : null;
+    const isInsured     = computeIsInsured(insuranceCode);
 
     const r = await ins('patients', {
-      name, email, phone: bolivianPhone(), status, photoUrl: null,
+      name, email, phone, status, photoUrl: null,
+      insuranceCode, isInsured, whatsappPhone: phone,
     });
     patData.push({ id: r?.id ?? null, name });
     if (r) C.patients++;

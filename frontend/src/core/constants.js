@@ -54,6 +54,9 @@ export const HOURS_BEFORE_REMINDER = 24;
 // Duración por defecto de una cita en minutos — Default appointment duration in minutes
 export const DEFAULT_APPOINTMENT_DURATION_MINUTES = 30;
 
+// Tarifa por defecto de una consulta en Bs — Default consultation fee in Bs
+export const DEFAULT_CONSULTATION_FEE = 150;
+
 // Porcentaje de comisión QR (2%) — QR commission percentage (2%)
 export const QR_COMMISSION_PERCENTAGE = 0.02;
 

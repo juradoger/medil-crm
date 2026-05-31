@@ -16,7 +16,10 @@ vi.mock('../hooks/useAppointments', () => ({
 }));
 vi.mock('../services/patientService', () => ({ patientService: { update: vi.fn() } }));
 vi.mock('../services/professionalService', () => ({ professionalService: { update: vi.fn() } }));
-vi.mock('../services/backendService', () => ({ BACKEND_URL: 'http://localhost:3001' }));
+vi.mock('../services/backendService', () => ({
+  BACKEND_URL: 'http://localhost:3001',
+  userApi: { changePassword: vi.fn().mockResolvedValue({ message: 'ok' }) },
+}));
 
 import UserProfile from './UserProfile';
 

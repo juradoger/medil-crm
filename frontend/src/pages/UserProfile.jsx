@@ -12,6 +12,7 @@ import { MESSAGES } from '../core/messages';
 import { USER_ROLES, APPOINTMENT_STATUS } from '../core/constants';
 import { patientService } from '../services/patientService';
 import { professionalService } from '../services/professionalService';
+import { userApi } from '../services/backendService';
 
 const ROLE_BADGE = {
   [USER_ROLES.ADMIN]:   { text: 'Administrador', color: 'orange' },
@@ -122,13 +123,23 @@ export default function UserProfile() {
   const [pwdError, setPwdError] = useState('');
   const setPwdField = (k, v) => setPwd(p => ({ ...p, [k]: v }));
 
-  function handleChangePassword() {
+  const [savingPwd, setSavingPwd] = useState(false);
+  async function handleChangePassword() {
     if (pwd.next.length < 6) { setPwdError('La nueva contraseña debe tener al menos 6 caracteres'); return; }
     if (pwd.next !== pwd.confirm) { setPwdError('Las contraseñas nuevas no coinciden'); return; }
     setPwdError('');
-    setPwd({ current: '', next: '', confirm: '' });
-    setPwdOpen(false);
-    toast('Contraseña actualizada correctamente', 'success');
+    setSavingPwd(true);
+    try {
+      await userApi.changePassword({ currentPassword: pwd.current, newPassword: pwd.next });
+      setPwd({ current: '', next: '', confirm: '' });
+      setPwdOpen(false);
+      toast('Contraseña actualizada correctamente', 'success');
+    } catch (err) {
+      setPwdError(err.message || MESSAGES.error.connection.server);
+      toast(err.message || MESSAGES.error.connection.server, 'error');
+    } finally {
+      setSavingPwd(false);
+    }
   }
 
   if (!user) return null;
@@ -287,7 +298,7 @@ export default function UserProfile() {
             </FormField>
             {pwdError && <p className="text-xs text-red-500">{pwdError}</p>}
             <div className="flex justify-end">
-              <Button label="Actualizar contraseña" onClick={handleChangePassword} />
+              <Button label="Actualizar contraseña" onClick={handleChangePassword} loading={savingPwd} />
             </div>
           </div>
         )}

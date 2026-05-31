@@ -4,6 +4,7 @@ import notificationRoutes from './routes/notifications.js';
 import paymentRoutes      from './routes/payments.js';
 import uploadRoutes       from './routes/uploads.js';
 import publicRoutes       from './routes/public.js';
+import userRoutes         from './routes/users.js';
 
 const router = Router();
 
@@ -12,6 +13,7 @@ router.use('/notify',   notificationRoutes);
 router.use('/payments', paymentRoutes);
 router.use('/uploads',  uploadRoutes);
 router.use('/public',   publicRoutes);
+router.use('/users',    userRoutes);
 
 router.get('/', (req, res) => {
   res.json({

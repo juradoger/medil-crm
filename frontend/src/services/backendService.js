@@ -31,6 +31,14 @@ export const publicApi = {
   }),
 };
 
+// Operaciones de usuario autenticadas vía Express
+export const userApi = {
+  changePassword: (data) => callBackend('/api/users/change-password', {
+    method: 'POST',
+    body:   JSON.stringify(data),
+  }),
+};
+
 // Uploads de fotos a Cloudinary vía Express
 export const uploadApi = {
   branchPhoto: (id, formData) =>

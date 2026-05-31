@@ -7,10 +7,12 @@ import { usePatients } from '../hooks/usePatients';
 import { DataTable } from '../organisms/DataTable';
 import { StatusBadge } from '../molecules/StatusBadge';
 import { ConfirmModal } from '../molecules/ConfirmModal';
+import { PaymentGate } from '../organisms/PaymentGate';
 import { FullPageSpinner } from '../atoms/Spinner';
 import { FormField, inputClass } from '../molecules/FormField';
-import { APPOINTMENT_STATUS } from '../core/constants';
+import { APPOINTMENT_STATUS, DEFAULT_CONSULTATION_FEE } from '../core/constants';
 import { MESSAGES } from '../core/messages';
+import { eventBus } from '../core/eventBus';
 
 
 const EMPTY_FORM = { patientId: '', patientName: '', professional: '', date: '', time: '', reason: '' };
@@ -89,12 +91,30 @@ const STATUS_LABELS  = { 'Todas': 'Todas', scheduled: 'Agendadas', attended: 'At
 
 export default function Appointments() {
   const { currentBranchId } = useAuth();
-  const { appointments, loading, create, cancel, markAttended } = useAppointments(currentBranchId);
+  const { appointments, loading, cancel, markAttended, createWithPaymentCheck, createAfterPayment } = useAppointments(currentBranchId);
   const { patients, loading: loadP } = usePatients(currentBranchId);
 
   const [showModal, setShowModal]       = useState(false);
   const [cancelTarget, setCancelTarget] = useState(null);
   const [filterStatus, setFilter]       = useState('Todas');
+  const [pendingAppt, setPendingAppt]   = useState(null); // cita esperando pago
+
+  // Verifica seguro: si está afiliado crea directo, si no abre la compuerta de pago
+  const handleCreate = async (data) => {
+    const result = await createWithPaymentCheck(data);
+    if (result.requiresPayment) {
+      setPendingAppt(data);
+    } else {
+      eventBus.emit('toast:show', { message: MESSAGES.success.appointmentFree, type: 'success' });
+    }
+  };
+
+  // Tras aprobarse el pago, crea la cita definitivamente
+  const handlePaymentSuccess = async (paymentId) => {
+    await createAfterPayment(pendingAppt, paymentId);
+    eventBus.emit('toast:show', { message: MESSAGES.success.appointmentCreated, type: 'success' });
+    setPendingAppt(null);
+  };
 
   const filtered = filterStatus === 'Todas'
     ? appointments
@@ -166,8 +186,16 @@ export default function Appointments() {
       <DataTable columns={columns} rows={filtered} emptyTitle="Sin citas registradas" />
 
       {showModal && (
-        <AppointmentModal patients={patients} onSave={create} onClose={() => setShowModal(false)} />
+        <AppointmentModal patients={patients} onSave={handleCreate} onClose={() => setShowModal(false)} />
       )}
+
+      <PaymentGate
+        isOpen={!!pendingAppt}
+        appointmentData={pendingAppt}
+        amount={DEFAULT_CONSULTATION_FEE}
+        onPaymentSuccess={handlePaymentSuccess}
+        onCancel={() => setPendingAppt(null)}
+      />
 
       <ConfirmModal
         open={!!cancelTarget}

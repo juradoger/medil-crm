@@ -29,6 +29,7 @@ export const MESSAGES = {
     agenda: {
       noData: 'No tenés citas programadas para hoy',
     },
+    noInsurance: '¿Tenés seguro médico? Registrá tu código en tu perfil y tus citas serán gratuitas.',
     reports: {
       noData: 'No hay información disponible para ese período',
     },
@@ -41,6 +42,8 @@ export const MESSAGES = {
       futureDate:      'La fecha de la cita debe ser a partir de hoy',
       timeConflict:    'El profesional ya tiene una cita a esa hora',
       inactivePatient: 'Este paciente está inactivo. Activalo antes de agendar una cita',
+      insuranceInvalid: 'Código de seguro no reconocido',
+      paymentRequired:  'Debés completar el pago para confirmar la cita',
     },
     connection: {
       server:       'Algo salió mal. Intentá de nuevo en unos segundos',
@@ -63,6 +66,9 @@ export const MESSAGES = {
     patientUpdated:      'Datos del paciente actualizados',
     patientDeactivated:  'Paciente desactivado',
     appointmentCreated:  'Cita agendada correctamente',
+    appointmentFree:     'Cita agendada correctamente — Paciente afiliado',
+    paymentRequired:     'Se requiere pago para confirmar la cita',
+    paymentCashConfirmed:'Pago en efectivo registrado. Cita confirmada.',
     appointmentCancelled:'Cita cancelada',
     appointmentAttended: 'Consulta registrada correctamente',
     reminderSent:        'Recordatorio marcado como enviado',
@@ -78,5 +84,6 @@ export const MESSAGES = {
     markReminderSent:   '¿Marcar este recordatorio como enviado?',
     markAttended:       '¿Marcar esta cita como atendida?',
     deactivateBranch:   '¿Desactivar esta sucursal?',
+    paymentCash:        '¿Confirmar que el paciente pagó en efectivo?',
   },
 };

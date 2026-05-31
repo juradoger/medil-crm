@@ -13,4 +13,16 @@ export const appointmentRules = {
   canBeCancelled(appointment) {
     return appointment.status === APPOINTMENT_STATUS.SCHEDULED;
   },
+
+  // Una cita requiere pago salvo que el paciente esté afiliado (asegurado)
+  requiresPayment(patient) {
+    return !patient.isInsured;
+  },
+
+  // Valida un código de seguro: afiliado si termina en MED o SAL
+  validateInsuranceCode(code) {
+    if (!code) return false;
+    const upper = code.toUpperCase();
+    return upper.endsWith('MED') || upper.endsWith('SAL');
+  },
 };
