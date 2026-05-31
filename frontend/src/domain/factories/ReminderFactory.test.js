@@ -10,15 +10,26 @@ const APPOINTMENT = {
 };
 
 describe('ReminderFactory', () => {
-  it('createFromAppointment() calcula scheduledDate 24hs antes', () => {
+  it('createFromAppointment() calcula sendAt 24hs antes de la cita', () => {
     const r = ReminderFactory.createFromAppointment(APPOINTMENT);
     const expected = new Date('2026-07-01T10:00').getTime() - HOURS_BEFORE_REMINDER * 3600000;
-    expect(new Date(r.scheduledDate).getTime()).toBe(expected);
+    expect(new Date(r.sendAt).getTime()).toBe(expected);
+  });
+
+  it('createFromAppointment() no incluye scheduledDate (campo renombrado a sendAt)', () => {
+    const r = ReminderFactory.createFromAppointment(APPOINTMENT);
+    expect(r.scheduledDate).toBeUndefined();
   });
 
   it('createFromAppointment() asigna status PENDING', () => {
     const r = ReminderFactory.createFromAppointment(APPOINTMENT);
     expect(r.status).toBe(REMINDER_STATUS.PENDING);
+  });
+
+  it('createFromAppointment() inicializa sentBy y sentAt en null', () => {
+    const r = ReminderFactory.createFromAppointment(APPOINTMENT);
+    expect(r.sentBy).toBeNull();
+    expect(r.sentAt).toBeNull();
   });
 
   it('createFromAppointment() genera mensaje correcto', () => {

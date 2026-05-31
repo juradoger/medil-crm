@@ -1,17 +1,20 @@
 import { patientValidator } from './patientValidator';
 
 const VALID = {
-  fullName: 'Ana García',
-  documentId: '12345678',
+  name:  'Ana García',
   phone: '591-70000000',
   email: 'ana@example.com',
-  birthDate: '1990-05-15',
 };
 
 describe('patientValidator', () => {
-  it('retorna error cuando fullName está vacío', () => {
-    const { errors } = patientValidator.validate({ ...VALID, fullName: '' });
-    expect(errors.fullName).toBeTruthy();
+  it('retorna error cuando name está vacío', () => {
+    const { errors } = patientValidator.validate({ ...VALID, name: '' });
+    expect(errors.name).toBeTruthy();
+  });
+
+  it('retorna error cuando phone está vacío', () => {
+    const { errors } = patientValidator.validate({ ...VALID, phone: '' });
+    expect(errors.phone).toBeTruthy();
   });
 
   it('retorna error cuando email es inválido', () => {
@@ -22,5 +25,11 @@ describe('patientValidator', () => {
   it('retorna isValid=true cuando todos los campos son correctos', () => {
     const { isValid } = patientValidator.validate(VALID);
     expect(isValid).toBe(true);
+  });
+
+  it('no valida documentId ni birthDate (no existen en el schema)', () => {
+    const { errors } = patientValidator.validate(VALID);
+    expect(errors.documentId).toBeUndefined();
+    expect(errors.birthDate).toBeUndefined();
   });
 });

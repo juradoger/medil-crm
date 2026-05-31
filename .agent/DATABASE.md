@@ -1,6 +1,9 @@
 # DATABASE.md — MedIL CRM/ERP
 > Referencia de base de datos del proyecto.
 > Leer antes de crear o modificar servicios que acceden a InsForge.
+>
+> **Schema sincronizado con InsForge real post-seed.**
+> **Ver docs/evidence/ para el schema original planificado.**
 
 ---
 
@@ -62,39 +65,34 @@ status      string    active | inactive
 createdAt   string    ISO date
 
 ### users
-id          string    identificador único
-email       string    correo (único en el sistema)
-passwordHash string   contraseña hasheada
-role        string    admin | doctor | patient
-branchId    string    FK → branches.id
-isActive    boolean   true | false
-fullName    string    nombre completo
-createdAt   string    ISO date
-updatedAt   string    ISO date
+id           string    identificador único
+email        string    correo (único en el sistema)
+passwordHash string    contraseña hasheada
+role         string    admin | doctor | patient
+branchId     string    FK → branches.id
+isActive     boolean   true | false
+fullName     string    nombre completo
+createdAt    string    ISO date
+updatedAt    string    ISO date
 
 ### patients
-id          string    identificador único
-fullName    string    nombre completo
-documentId  string    CI o documento (único en el sistema)
-phone       string    teléfono
-email       string    correo electrónico
-birthDate   string    fecha de nacimiento (YYYY-MM-DD)
-status      string    active | inactive
-branchId    string    FK → branches.id
-userId      string    FK → users.id (nullable, para portal)
-createdAt   string    ISO date
-updatedAt   string    ISO date
+id        string    identificador único
+name      string    nombre completo
+phone     string    teléfono
+email     string    correo electrónico
+status    string    active | inactive
+branchId  string    FK → branches.id
+userId    string    FK → users.id (nullable, para portal)
+createdAt string    ISO date
 
 ### professionals
-id          string    identificador único
-fullName    string    nombre completo
-specialty   string    especialidad médica
-phone       string    teléfono
-email       string    correo electrónico
-branchId    string    FK → branches.id
-userId      string    FK → users.id
-isActive    boolean   true | false
-createdAt   string    ISO date
+id        string    identificador único
+fullName  string    nombre completo
+specialty string    especialidad médica
+phone     string    teléfono
+email     string    correo electrónico
+isActive  boolean   true | false
+createdAt string    ISO date
 
 ### appointments
 id             string    identificador único
@@ -104,21 +102,19 @@ branchId       string    FK → branches.id
 date           string    fecha (YYYY-MM-DD)
 time           string    hora (HH:MM)
 reason         string    motivo de la consulta
-status         string    scheduled | cancelled | attended | pending_payment
+status         string    scheduled | cancelled | attended
 createdAt      string    ISO date
 updatedAt      string    ISO date
 
 ### medical_records
-id                  string    identificador único
-patientId           string    FK → patients.id
-appointmentId       string    FK → appointments.id (nullable)
-branchId            string    FK → branches.id
-attendanceDate      string    fecha de atención (YYYY-MM-DD)
-consultationReason  string    motivo de consulta
-diagnosis           string    diagnóstico
-treatment           string    tratamiento e indicaciones
-observations        string    observaciones adicionales (nullable)
-createdAt           string    ISO date
+id             string    identificador único
+patientId      string    FK → patients.id
+appointmentId  string    FK → appointments.id (nullable)
+branchId       string    FK → branches.id
+attendanceDate string    fecha de atención (YYYY-MM-DD)
+diagnosis      string    diagnóstico
+notes          string    notas clínicas (motivo + tratamiento + observaciones)
+createdAt      string    ISO date
 
 ### reminders
 id            string    identificador único
@@ -126,7 +122,7 @@ appointmentId string    FK → appointments.id
 patientId     string    FK → patients.id
 branchId      string    FK → branches.id
 message       string    texto del recordatorio
-scheduledDate string    fecha programada (ISO date)
+sendAt        string    fecha programada para envío (ISO date)
 status        string    pending | sent | cancelled
 sentBy        string    userId de quien lo marcó (nullable)
 sentAt        string    fecha en que se marcó (nullable)
@@ -166,7 +162,6 @@ Los registros modificables tienen updatedAt
 branchId es obligatorio en todas las colecciones
 excepto branches y users
 El historial clínico (medical_records) nunca se modifica
-documentId es único en patients
 email es único en users
 No pueden existir dos appointments con el mismo
 professionalId + date + time + status: scheduled
@@ -180,13 +175,13 @@ Siempre usar los Factories correspondientes.
 Nunca construir objetos inline en los servicios.
 patients:      PatientFactory.create(data)
 → status: PATIENT_STATUS.ACTIVE
-→ createdAt: now(), updatedAt: now()
+→ createdAt: now()
 appointments:  AppointmentFactory.create(data)
 → status: APPOINTMENT_STATUS.SCHEDULED
 → createdAt: now(), updatedAt: now()
 reminders:     ReminderFactory.createFromAppointment(appointment)
 → status: REMINDER_STATUS.PENDING
-→ scheduledDate: appointmentDateTime - 24hs
+→ sendAt: appointmentDateTime - 24hs
 → createdAt: now()
 payments:      PaymentFactory.create(data)
 → commission: amount * QR_COMMISSION_PERCENTAGE
