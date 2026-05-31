@@ -1,0 +1,167 @@
+/* ============================================================================
+   MedIL — Sistema de Gestión Clínica CRM/ERP
+   colors_and_type.css — Foundational color + type tokens
+   ----------------------------------------------------------------------------
+   Source of truth: frontend/src/index.css (@theme tokens) + Tailwind v4 usage
+   across atoms/molecules/organisms. Typography uses Nunito Sans (variable
+   webfont supplied by the brand owner, self-hosted from fonts/) over the system
+   stack the running app shipped with. UI is 100% Spanish.
+   ============================================================================ */
+
+/* ---- Webfont — Nunito Sans (uploaded by brand owner, self-hosted) -------- */
+@font-face {
+  font-family: "Nunito Sans";
+  src: url("fonts/NunitoSans-VariableFont_YTLC_opsz_wdth_wght.ttf") format("truetype");
+  font-weight: 200 1000;
+  font-stretch: 75% 125%;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Nunito Sans";
+  src: url("fonts/NunitoSans-Italic-VariableFont_YTLC_opsz_wdth_wght.ttf") format("truetype");
+  font-weight: 200 1000;
+  font-stretch: 75% 125%;
+  font-style: italic;
+  font-display: swap;
+}
+
+:root {
+  /* ---- Brand palette (official, from @theme) ---------------------------- */
+  --aqua:            #00B4D8;   /* Primary Aqua — botón primario, activo, foco */
+  --aqua-dark:       #0096B4;   /* Hover de botón primario / estados presionados */
+  --aqua-light:      #90E0EF;   /* Aqua claro — acentos suaves, gráficos        */
+  --aqua-pale:       #CAF0F8;   /* Aqua pálido — fondos de realce muy suaves     */
+  --navy:            #0E4A8A;   /* Azul Corporativo — títulos, nav, texto marca  */
+  --accent-green:    #00A896;   /* Verde Aqua — acento secundario                */
+  --alert-yellow:    #FFD100;   /* Amarillo — el punto de la "i" del logo, avisos*/
+
+  /* ---- Neutrals (Tailwind gray scale as used in app) -------------------- */
+  --white:           #FFFFFF;   /* Superficies de tarjetas / barras              */
+  --bg-app:          #F9FAFB;   /* gray-50 — fondo del área de contenido         */
+  --bg-subtle:       #F3F4F6;   /* gray-100 — botón secundario, hover tenue      */
+  --border:          #F3F4F6;   /* gray-100 — borde de tarjeta                   */
+  --border-strong:   #E5E7EB;   /* gray-200 — borde de input / divisores         */
+  --ink:             #1F2937;   /* gray-800 — texto principal (títulos modales)  */
+  --ink-body:        #374151;   /* gray-700 — texto de tabla / cuerpo            */
+  --ink-muted:       #6B7280;   /* gray-500 — etiquetas, metadatos               */
+  --ink-faint:       #9CA3AF;   /* gray-400 — placeholders, fechas, vacíos       */
+
+  /* ---- Semantic status (StatusBadge + feedback) ------------------------- */
+  --success:         #10B981;   /* green-500 — atendida / activo / aprobado      */
+  --success-bg:      #DCFCE7;   /* green-100 — fondo de badge éxito              */
+  --success-ink:     #15803D;   /* green-700 — texto de badge éxito              */
+  --danger:          #EF4444;   /* red-500 — destructivo / cancelada / error     */
+  --danger-hover:    #DC2626;   /* red-600 — hover destructivo                   */
+  --danger-bg:       #FEE2E2;   /* red-100 — fondo de badge error                */
+  --danger-ink:      #B91C1C;   /* red-700 — texto de badge error                */
+  --warning:         #F59E0B;   /* orange/amber — pendiente / stock bajo         */
+  --warning-bg:      #FFEDD5;   /* orange-100 — fondo de badge advertencia       */
+  --warning-ink:     #C2410C;   /* orange-700 — texto de badge advertencia       */
+  --info:            var(--aqua);
+
+  /* ---- Aqua tints used as backgrounds ----------------------------------- */
+  --aqua-bg-10:      rgba(0, 180, 216, 0.10);  /* badge aqua / ghost hover      */
+  --navy-bg-50:      #EFF6FF;                   /* blue-50 — sidebar user block  */
+
+  /* ---- Typography — Nunito Sans (brand webfont) over system fallback ----- */
+  --font-sans: "Nunito Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+               Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
+               "Apple Color Emoji", "Segoe UI Emoji";
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+               "Liberation Mono", monospace;
+
+  /* Type scale (Tailwind tokens actually used in the app) */
+  --text-xs:    0.75rem;   /* 12px — badges, metadatos, acciones de tabla        */
+  --text-sm:    0.875rem;  /* 14px — cuerpo, inputs, labels, celdas              */
+  --text-base:  1rem;      /* 16px — botón lg                                    */
+  --text-lg:    1.125rem;  /* 18px — títulos de modal                            */
+  --text-xl:    1.25rem;   /* 20px — encabezado de página (stub)                 */
+  --text-2xl:   1.5rem;    /* 24px — H1 de página                                */
+  --text-3xl:   1.875rem;  /* 30px — número de métrica                           */
+
+  --weight-normal:   400;
+  --weight-medium:   500;
+  --weight-semibold: 600;
+  --weight-bold:     700;
+
+  --leading-tight:  1.25;
+  --leading-normal: 1.5;
+  --tracking-wide:  0.025em;  /* etiquetas en mayúsculas                         */
+
+  /* ---- Radii ------------------------------------------------------------- */
+  --radius-lg:   0.5rem;    /* 8px  — botones, inputs, items de nav              */
+  --radius-xl:   0.75rem;   /* 12px — tarjetas, modales, celdas de tabla         */
+  --radius-2xl:  1rem;      /* 16px — tarjeta de login, toast                    */
+  --radius-full: 9999px;    /* badges, avatares, chips de filtro                 */
+
+  /* ---- Shadows (Tailwind) ------------------------------------------------ */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+
+  /* ---- Spacing (4px base — Tailwind scale) ------------------------------- */
+  --space-1: 0.25rem;  --space-2: 0.5rem;  --space-3: 0.75rem;
+  --space-4: 1rem;     --space-5: 1.25rem; --space-6: 1.5rem;
+  --space-8: 2rem;     --space-12: 3rem;   --space-16: 4rem;
+}
+
+/* ============================================================================
+   Semantic helpers — apply the foundations to real elements.
+   ============================================================================ */
+
+body {
+  font-family: var(--font-sans);
+  color: var(--ink-body);
+  background: var(--bg-app);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.medil-h1 {            /* H1 de página — "Pacientes", "Panel de Control" */
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-bold);
+  color: var(--navy);
+  line-height: var(--leading-tight);
+}
+
+.medil-h2 {            /* Sección dentro de una página */
+  font-size: var(--text-base);
+  font-weight: var(--weight-semibold);
+  color: var(--ink-body);
+}
+
+.medil-modal-title {   /* Título de modal */
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
+  color: var(--ink);
+}
+
+.medil-metric {        /* Número grande de tarjeta-métrica */
+  font-size: var(--text-3xl);
+  font-weight: var(--weight-bold);
+  color: var(--navy);
+  line-height: 1;
+}
+
+.medil-label {         /* Etiqueta en mayúsculas sobre métricas / cabeceras */
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  color: var(--ink-muted);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+}
+
+.medil-body {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-normal);
+  color: var(--ink-body);
+  line-height: var(--leading-normal);
+}
+
+.medil-meta {          /* Metadatos secundarios — fechas, subtítulos */
+  font-size: var(--text-xs);
+  color: var(--ink-faint);
+}

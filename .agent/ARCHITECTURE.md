@@ -500,14 +500,21 @@ no pueden hacerse desde el frontend por seguridad
 → Todo lo demás: patients, appointments, reminders, etc.
 
 ### Endpoints disponibles
-GET  /health                              verificar que el servidor está vivo
-GET  /api                                 lista de endpoints disponibles
-POST /api/ai/suggest-diagnosis            Etapa 8 — Claude API
-POST /api/ai/summarize-history            Etapa 8 — Claude API
-POST /api/ai/generate-reminder-message   Etapa 8 — Claude API
-POST /api/notify/reminder                 Etapa 8 — Twilio WhatsApp
-POST /api/payments/generate-qr           Etapa 7 — PagoFácil
-GET  /api/payments/status/:id            Etapa 7 — PagoFácil
+GET  /health                                  verificar que el servidor está vivo
+GET  /api                                     lista de endpoints disponibles
+POST /api/ai/suggest-diagnosis                Etapa 8 — Claude API
+POST /api/ai/summarize-history                Etapa 8 — Claude API
+POST /api/ai/generate-reminder-message       Etapa 8 — Claude API
+POST /api/notify/reminder                     Etapa 8 — Twilio WhatsApp
+POST /api/payments/generate-qr               Etapa 7 — PagoFácil
+GET  /api/payments/status/:id                Etapa 7 — PagoFácil
+POST /api/uploads/branch/:id                 subir hasta 3 fotos de sucursal (Cloudinary)
+POST /api/uploads/professional/:id           subir foto de profesional (Cloudinary)
+POST /api/uploads/patient/:id                subir foto de paciente (Cloudinary)
+POST /api/uploads/public/register-photo      foto en registro público (sin auth)
+GET  /api/public/branches                    lista pública de clínicas activas
+GET  /api/public/branches/:id                detalle de clínica + profesionales
+POST /api/public/register                    registro de nuevo paciente desde portal
 
 ### Estructura de archivos
 backend/

@@ -199,9 +199,24 @@ const UNITS = ['cajas', 'unidades', 'bolsas', 'frascos', 'paquetes'];
 // ── STATIC DEFINITIONS ───────────────────────────────────────────────────────
 
 const BRANCHES_DEF = [
-  { name: 'Clínica Central MedIL', address: 'Av. Arce 2547',          city: 'La Paz',     phone: '+591 2 2441123', status: 'active' },
-  { name: 'Sucursal Norte MedIL',  address: 'Calle 6 de Marzo 123',   city: 'El Alto',    phone: '+591 2 2812456', status: 'active' },
-  { name: 'Sucursal Valle MedIL',  address: 'Av. Blanco Galindo 890', city: 'Cochabamba', phone: '+591 4 4521789', status: 'active' },
+  {
+    name: 'Clínica Central MedIL', address: 'Av. Arce 2547',
+    city: 'La Paz', phone: '+591 2 2441123', status: 'active',
+    description: 'Clínica especializada en atención médica de calidad en el corazón de La Paz.',
+    isPublic: true, coverPhoto: null, photo1: null, photo2: null, photo3: null,
+  },
+  {
+    name: 'Sucursal Norte MedIL',  address: 'Calle 6 de Marzo 123',
+    city: 'El Alto', phone: '+591 2 2812456', status: 'active',
+    description: 'Clínica especializada en atención médica de calidad para la zona norte.',
+    isPublic: true, coverPhoto: null, photo1: null, photo2: null, photo3: null,
+  },
+  {
+    name: 'Sucursal Valle MedIL',  address: 'Av. Blanco Galindo 890',
+    city: 'Cochabamba', phone: '+591 4 4521789', status: 'active',
+    description: 'Clínica especializada en atención médica de calidad en el valle boliviano.',
+    isPublic: true, coverPhoto: null, photo1: null, photo2: null, photo3: null,
+  },
 ];
 
 // 6 doctores: 2 por sucursal, especialidades variadas
@@ -328,6 +343,7 @@ try {
     const p = await ins('professionals', {
       fullName: d.fullName, specialty: d.specialty,
       email: d.email, phone: d.phone,
+      photoUrl: null, bio: null, isPublic: true,
     });
     profIds.push(p?.id ?? null);
     profNames.push(d.fullName);
@@ -353,7 +369,7 @@ try {
     const status = (i % 12 === 0) ? 'inactive' : 'active';
 
     const r = await ins('patients', {
-      name, email, phone: bolivianPhone(), status,
+      name, email, phone: bolivianPhone(), status, photoUrl: null,
     });
     patData.push({ id: r?.id ?? null, name });
     if (r) C.patients++;

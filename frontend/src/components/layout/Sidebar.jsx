@@ -67,6 +67,18 @@ export function Sidebar({ open, onClose }) {
           ))}
         </nav>
 
+        {/* Link al portal público */}
+        <div className="px-4 pb-2">
+          <a
+            href="/portal"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 px-4 py-2 text-sm text-[#00B4D8] hover:bg-[#CAF0F8] rounded-lg transition-colors"
+          >
+            Portal público →
+          </a>
+        </div>
+
         {user && (
           <div className="p-4 border-t border-gray-100">
             <button

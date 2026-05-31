@@ -4,11 +4,13 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import './index.css';
 
 import { AuthProvider } from './context/AuthContext';
+import { useAuth }      from './context/AuthContext';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
-import { Sidebar } from './components/layout/Sidebar';
-import { TopBar } from './components/layout/TopBar';
-import { USER_ROLES } from './core/constants';
+import { Sidebar }     from './components/layout/Sidebar';
+import { TopBar }      from './components/layout/TopBar';
+import { USER_ROLES }  from './core/constants';
 
+// Páginas de la app
 import Login          from './pages/Login';
 import Dashboard      from './pages/Dashboard';
 import Patients       from './pages/Patients';
@@ -21,7 +23,23 @@ import Supplies       from './pages/admin/Supplies';
 import DoctorConsole  from './pages/doctor/DoctorConsole';
 import PatientPortal  from './pages/patient/PatientPortal';
 
-// Layout principal — Main layout
+// Páginas públicas (sin autenticación)
+import LandingPage  from './pages/public/LandingPage';
+import ClinicDetail from './pages/public/ClinicDetail';
+import RegisterPage from './pages/public/RegisterPage';
+
+// Ruta raíz: Landing si no autenticado, Dashboard si autenticado
+function HomeRoute() {
+  const { isAuthenticated } = useAuth();
+  if (!isAuthenticated) return <LandingPage />;
+  return (
+    <ProtectedRoute allowedRoles={[USER_ROLES.ADMIN, USER_ROLES.DOCTOR]}>
+      <Dashboard />
+    </ProtectedRoute>
+  );
+}
+
+// Layout principal con TopBar y Sidebar
 function AppLayout() {
   const [open, setOpen] = useState(false);
 
@@ -32,15 +50,9 @@ function AppLayout() {
 
       <main className="min-h-screen bg-gray-50">
         <Routes>
-          {/* Ruta pública — Public route */}
-          <Route path="/login" element={<Login />} />
+          <Route path="/login"    element={<Login />} />
+          <Route path="/"         element={<HomeRoute />} />
 
-          {/* Admin + Doctor */}
-          <Route path="/" element={
-            <ProtectedRoute allowedRoles={[USER_ROLES.ADMIN, USER_ROLES.DOCTOR]}>
-              <Dashboard />
-            </ProtectedRoute>
-          } />
           <Route path="/patients" element={
             <ProtectedRoute allowedRoles={[USER_ROLES.ADMIN, USER_ROLES.DOCTOR]}>
               <Patients />
@@ -62,7 +74,7 @@ function AppLayout() {
             </ProtectedRoute>
           } />
 
-          {/* Solo admin — Admin only */}
+          {/* Solo admin */}
           <Route path="/admin/branches" element={
             <ProtectedRoute allowedRoles={[USER_ROLES.ADMIN]}>
               <Branches />
@@ -79,21 +91,20 @@ function AppLayout() {
             </ProtectedRoute>
           } />
 
-          {/* Solo doctor — Doctor only */}
+          {/* Solo doctor */}
           <Route path="/doctor/console" element={
             <ProtectedRoute allowedRoles={[USER_ROLES.DOCTOR]}>
               <DoctorConsole />
             </ProtectedRoute>
           } />
 
-          {/* Solo paciente — Patient only */}
+          {/* Solo paciente */}
           <Route path="/patient/portal" element={
             <ProtectedRoute allowedRoles={[USER_ROLES.PATIENT]}>
               <PatientPortal />
             </ProtectedRoute>
           } />
 
-          {/* Catch-all */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
@@ -101,11 +112,23 @@ function AppLayout() {
   );
 }
 
+// Rutas públicas sin sidebar + rutas de app
+function AppRoutes() {
+  return (
+    <Routes>
+      <Route path="/portal"      element={<LandingPage />} />
+      <Route path="/clinica/:id" element={<ClinicDetail />} />
+      <Route path="/registro"    element={<RegisterPage />} />
+      <Route path="*"            element={<AppLayout />} />
+    </Routes>
+  );
+}
+
 export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <AppLayout />
+        <AppRoutes />
       </AuthProvider>
     </BrowserRouter>
   );

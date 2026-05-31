@@ -55,14 +55,20 @@ const result = await db.collection('appointments')
 ## 3. Colecciones y campos
 
 ### branches
-id          string    identificador único
-name        string    nombre de la sucursal
-address     string    dirección física
-city        string    ciudad (ej: La Paz, El Alto, Cochabamba)
-phone       string    teléfono de contacto
-email       string    correo electrónico
-status      string    active | inactive
-createdAt   string    ISO date
+id           string    identificador único
+name         string    nombre de la sucursal
+address      string    dirección física
+city         string    ciudad (ej: La Paz, El Alto, Cochabamba)
+phone        string    teléfono de contacto
+email        string    correo electrónico
+status       string    active | inactive
+description  string    descripción pública de la clínica (nullable)
+isPublic     boolean   visible en el portal público (default true)
+coverPhoto   string    URL foto de portada Cloudinary (nullable)
+photo1       string    URL foto galería 1 Cloudinary (nullable)
+photo2       string    URL foto galería 2 Cloudinary (nullable)
+photo3       string    URL foto galería 3 Cloudinary (nullable)
+createdAt    string    ISO date
 
 ### users
 id           string    identificador único
@@ -83,6 +89,7 @@ email     string    correo electrónico
 status    string    active | inactive
 branchId  string    FK → branches.id
 userId    string    FK → users.id (nullable, para portal)
+photoUrl  string    URL foto Cloudinary (nullable)
 createdAt string    ISO date
 
 ### professionals
@@ -92,6 +99,9 @@ specialty string    especialidad médica
 phone     string    teléfono
 email     string    correo electrónico
 isActive  boolean   true | false
+photoUrl  string    URL foto Cloudinary (nullable)
+bio       string    biografía corta para el portal (nullable)
+isPublic  boolean   visible en el portal público (default true)
 createdAt string    ISO date
 
 ### appointments

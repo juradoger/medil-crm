@@ -170,3 +170,23 @@ c. Puede ver diagnóstico y tratamiento de cada una
 Para pagar su cita:
 a. Selecciona la cita pendiente de pago
 b. Sigue el Flujo 5 desde el portal del paciente
+
+
+---
+
+## Flujo 8 — Registro de paciente desde portal público
+
+1. Paciente entra a /portal (o /)
+2. Ve la lista de clínicas afiliadas (GET /api/public/branches)
+3. Hace click en una clínica → /clinica/:id
+4. Ve detalle: foto, descripción, equipo médico
+   (GET /api/public/branches/:id)
+5. Hace click en "Registrarse para agendar" → /registro
+6. Completa el formulario:
+   a. Foto de perfil (opcional) → POST /api/uploads/public/register-photo
+   b. Nombre, teléfono, correo, contraseña, sucursal
+7. Hace click en "Crear cuenta"
+   → POST /api/public/register
+   → Sistema crea user (role: patient) + patient en InsForge
+8. Toast "¡Cuenta creada!" + redirige a /login en 2.5s
+9. Paciente inicia sesión → redirige a /patient/portal
