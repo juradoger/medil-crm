@@ -3,10 +3,11 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useBranches } from '../../hooks/useBranches';
 import { DataTable } from '../../organisms/DataTable';
+import { BranchPhotoGallery } from '../../organisms/BranchPhotoGallery';
 import { FullPageSpinner } from '../../atoms/Spinner';
 import { FormField, inputClass } from '../../molecules/FormField';
 
-const EMPTY_FORM = { name: '', address: '', phone: '', city: '' };
+const EMPTY_FORM = { name: '', address: '', phone: '', city: '', description: '' };
 
 function BranchModal({ initial, onSave, onClose }) {
   const [form, setForm] = useState(initial ?? EMPTY_FORM);
@@ -44,6 +45,32 @@ function BranchModal({ initial, onSave, onClose }) {
           <FormField label="Teléfono">
             <input className={inputClass} value={form.phone} onChange={e => set('phone', e.target.value)} />
           </FormField>
+          <FormField label="Descripción de la clínica">
+            <textarea
+              className={inputClass}
+              rows={3}
+              value={form.description ?? ''}
+              onChange={e => set('description', e.target.value)}
+              placeholder="Describí los servicios y especialidades..."
+            />
+          </FormField>
+
+          {/* Galería de fotos: solo al editar una sucursal existente */}
+          {form.id && (
+            <div className="space-y-1">
+              <p className="text-xs font-medium text-gray-600">Fotos de la sucursal</p>
+              <BranchPhotoGallery
+                branchId={form.id}
+                coverPhoto={form.coverPhoto}
+                photo1={form.photo1}
+                photo2={form.photo2}
+                photo3={form.photo3}
+                editable
+                onChange={(key, url) => set(key, url)}
+              />
+            </div>
+          )}
+
           {error && <p className="text-xs text-red-500">{error}</p>}
           <div className="flex justify-end gap-3 pt-2">
             <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200">Cancelar</button>

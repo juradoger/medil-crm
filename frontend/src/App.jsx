@@ -25,6 +25,7 @@ import Billing        from './pages/admin/Billing';
 import Supplies       from './pages/admin/Supplies';
 import DoctorConsole  from './pages/doctor/DoctorConsole';
 import PatientPortal  from './pages/patient/PatientPortal';
+import UserProfile    from './pages/UserProfile';
 
 // Páginas públicas (sin autenticación)
 import LandingPage  from './pages/public/LandingPage';
@@ -57,6 +58,13 @@ function AppLayout() {
       <main className="min-h-screen bg-gray-50">
         <Routes>
           <Route path="/"         element={<HomeRoute />} />
+
+          {/* Perfil — accesible para todos los roles */}
+          <Route path="/profile" element={
+            <ProtectedRoute allowedRoles={[USER_ROLES.ADMIN, USER_ROLES.DOCTOR, USER_ROLES.PATIENT]}>
+              <UserProfile />
+            </ProtectedRoute>
+          } />
 
           <Route path="/patients" element={
             <ProtectedRoute allowedRoles={[USER_ROLES.ADMIN, USER_ROLES.DOCTOR]}>

@@ -1,49 +1,63 @@
-// Organismo de subida de foto con preview y validación
+// Organismo de subida de foto con preview, validación y subida inmediata
 import React, { useState, useRef } from 'react';
+import { Avatar } from '../atoms/Avatar';
+import { Spinner } from '../atoms/Spinner';
 import { BACKEND_URL } from '../services/backendService';
+import { eventBus } from '../core/eventBus';
 
 const MAX_BYTES = 5 * 1024 * 1024; // 5 MB
+const ACCEPTED_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+
+// Tamaños del contenedor de la foto
+const SIZE_MAP = {
+  sm: 'h-12 w-12',
+  md: 'h-20 w-20',
+  lg: 'h-32 w-32',
+};
 
 export function PhotoUpload({
   currentPhoto,
   onUpload,
-  endpoint,
+  entityType,
   entityId,
-  label      = 'Foto',
-  loading    = false,
+  label = 'Foto',
+  size = 'md',
 }) {
   const inputRef = useRef(null);
   const [preview,   setPreview]   = useState(currentPhoto ?? null);
-  const [file,      setFile]      = useState(null);
-  const [sizeErr,   setSizeErr]   = useState('');
+  const [error,     setError]     = useState('');
   const [uploading, setUploading] = useState(false);
 
-  function handleFileChange(e) {
-    const f = e.target.files?.[0];
-    if (!f) return;
-    if (f.size > MAX_BYTES) {
-      setSizeErr('La foto no puede superar los 5MB');
+  const sizeCls = SIZE_MAP[size] ?? SIZE_MAP.md;
+
+  // Valida y dispara la subida inmediata al seleccionar un archivo
+  async function handleFileChange(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!ACCEPTED_TYPES.includes(file.type)) {
+      setError('Formato no permitido. Usá JPG, PNG o WEBP');
       return;
     }
-    setSizeErr('');
-    setFile(f);
-    setPreview(URL.createObjectURL(f));
+    if (file.size > MAX_BYTES) {
+      setError('La foto no puede superar los 5MB');
+      return;
+    }
+
+    setError('');
+    setPreview(URL.createObjectURL(file)); // preview inmediato
+    await uploadFile(file);
   }
 
-  async function handleSave() {
-    if (!file) return;
+  // Sube el archivo al backend Express (Cloudinary) y notifica al padre
+  async function uploadFile(file) {
     setUploading(true);
-    setSizeErr('');
     try {
       const formData = new FormData();
       formData.append('photo', file);
 
-      const path  = entityId
-        ? `/api/uploads/${endpoint}/${entityId}`
-        : `/api/uploads/${endpoint}`;
       const token = localStorage.getItem('medil_token');
-
-      const res  = await fetch(`${BACKEND_URL}${path}`, {
+      const res = await fetch(`${BACKEND_URL}/api/uploads/${entityType}/${entityId}`, {
         method:  'POST',
         headers: token ? { Authorization: `Bearer ${token}` } : {},
         body:    formData,
@@ -51,30 +65,48 @@ export function PhotoUpload({
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Error al subir la foto');
 
-      setFile(null);
       onUpload?.(data.url);
-    } catch (e) {
-      setSizeErr(e.message);
+      eventBus.emit('toast:show', { message: 'Foto actualizada correctamente', type: 'success' });
+    } catch (err) {
+      setError(err.message);
+      eventBus.emit('toast:show', { message: err.message, type: 'error' });
     } finally {
       setUploading(false);
     }
   }
 
-  const initials = label.charAt(0).toUpperCase();
-
   return (
     <div className="flex flex-col items-center gap-2">
-      <div className="relative">
+      <button
+        type="button"
+        onClick={() => inputRef.current?.click()}
+        disabled={uploading}
+        title={`Cambiar ${label.toLowerCase()}`}
+        className={`relative ${sizeCls} rounded-full group focus:outline-none`}
+      >
         {preview
-          ? <img src={preview} alt={label}
-              className="h-24 w-24 rounded-full object-cover border-2 border-[#90E0EF]" />
-          : <div className="h-24 w-24 rounded-full bg-[#CAF0F8] flex items-center justify-center">
-              <span className="text-[#0096B4] font-bold text-2xl">{initials}</span>
+          ? <img
+              src={preview}
+              alt={label}
+              className={`${sizeCls} rounded-full object-cover border-2 border-[#90E0EF]`}
+            />
+          : <div className={sizeCls}>
+              <Avatar name={label} size="fill" className="h-full w-full text-2xl" />
             </div>
         }
-      </div>
 
-      {sizeErr && <p className="text-xs text-red-500">{sizeErr}</p>}
+        {/* Overlay de carga */}
+        {uploading && (
+          <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40">
+            <Spinner size="sm" />
+          </span>
+        )}
+
+        {/* Hint al pasar el mouse */}
+        <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/0 text-white text-xs opacity-0 group-hover:bg-black/30 group-hover:opacity-100 transition">
+          Cambiar
+        </span>
+      </button>
 
       <input
         ref={inputRef}
@@ -84,25 +116,8 @@ export function PhotoUpload({
         onChange={handleFileChange}
       />
 
-      <button
-        type="button"
-        onClick={() => inputRef.current?.click()}
-        className="text-xs text-[#00B4D8] hover:underline"
-        disabled={loading || uploading}
-      >
-        Cambiar foto
-      </button>
-
-      {file && (
-        <button
-          type="button"
-          onClick={handleSave}
-          disabled={uploading || loading}
-          className="px-3 py-1 text-xs font-medium text-white bg-[#00B4D8] rounded-lg hover:bg-[#0096B4] disabled:opacity-50 transition-colors"
-        >
-          {uploading ? 'Subiendo…' : 'Guardar foto'}
-        </button>
-      )}
+      <span className="text-xs text-gray-500">{label}</span>
+      {error && <p className="text-xs text-red-500">{error}</p>}
     </div>
   );
 }

@@ -8,15 +8,15 @@ vi.mock('../services/backendService', () => ({
 
 describe('PhotoUpload', () => {
   it('smoke test: renderiza sin errores', () => {
-    render(<PhotoUpload label="Foto" onUpload={() => {}} endpoint="patient" entityId="p1" />);
-    expect(screen.getByText('Cambiar foto')).toBeTruthy();
+    render(<PhotoUpload label="Foto" onUpload={() => {}} entityType="patient" entityId="p1" />);
+    expect(screen.getByText('Foto')).toBeTruthy();
   });
 
-  it('muestra Avatar cuando no hay currentPhoto', () => {
+  it('muestra Avatar (iniciales) cuando no hay foto', () => {
     const { container } = render(
-      <PhotoUpload label="María" onUpload={() => {}} endpoint="patient" entityId="p1" />
+      <PhotoUpload label="María" onUpload={() => {}} entityType="patient" entityId="p1" />
     );
-    // Debe haber un div con la inicial, no un img
+    // Sin foto: no hay <img>, se muestra la inicial del label
     expect(container.querySelector('img')).toBeFalsy();
     expect(screen.getByText('M')).toBeTruthy();
   });
@@ -27,19 +27,20 @@ describe('PhotoUpload', () => {
         currentPhoto="https://example.com/photo.jpg"
         label="Foto"
         onUpload={() => {}}
-        endpoint="patient"
+        entityType="patient"
         entityId="p1"
       />
     );
-    expect(container.querySelector('img')).toBeTruthy();
-    expect(container.querySelector('img').src).toBe('https://example.com/photo.jpg');
+    const img = container.querySelector('img');
+    expect(img).toBeTruthy();
+    expect(img.src).toBe('https://example.com/photo.jpg');
   });
 
   it('muestra error cuando el archivo supera 5MB', () => {
-    render(<PhotoUpload label="Foto" onUpload={() => {}} endpoint="patient" entityId="p1" />);
+    render(<PhotoUpload label="Foto" onUpload={() => {}} entityType="patient" entityId="p1" />);
     const input = document.querySelector('input[type="file"]');
 
-    const bigFile = new File(['x'.repeat(1)], 'big.jpg', { type: 'image/jpeg' });
+    const bigFile = new File(['x'], 'big.jpg', { type: 'image/jpeg' });
     Object.defineProperty(bigFile, 'size', { value: 6 * 1024 * 1024 });
 
     fireEvent.change(input, { target: { files: [bigFile] } });

@@ -4,7 +4,7 @@
 //
 // Schema real detectado (columnas existentes por tabla):
 //   branches:      id, name, city, address, phone, status, created_at, updated_at
-//   users:         id, email, passwordHash, role, fullName, isActive, created_at, updated_at, branchId
+//   users:         id, email, passwordHash, role, fullName, isActive, created_at, updated_at, branchId, photoUrl
 //   patients:      id, name, email, phone, status, createdAt
 //   professionals: id, fullName, specialty, email, phone, created_at, updated_at
 //   appointments:  id, patientId, patientName, professionalId, professional, date, time, reason, status, createdAt
@@ -313,8 +313,8 @@ try {
 console.log('\n2. admins (2)...');
 try {
   for (const a of [
-    { email: 'admin.lapaz@medil.com',      passwordHash: 'admin123', role: 'admin', fullName: 'Rodrigo Alejandro García',  branchId: branchIds[0], isActive: true },
-    { email: 'admin.cochabamba@medil.com', passwordHash: 'admin123', role: 'admin', fullName: 'Patricia Viviana Morales', branchId: branchIds[2], isActive: true },
+    { email: 'admin.lapaz@medil.com',      passwordHash: 'admin123', role: 'admin', fullName: 'Rodrigo Alejandro García',  branchId: branchIds[0], isActive: true, photoUrl: null },
+    { email: 'admin.cochabamba@medil.com', passwordHash: 'admin123', role: 'admin', fullName: 'Patricia Viviana Morales', branchId: branchIds[2], isActive: true, photoUrl: null },
   ]) {
     const r = await ins('users', a);
     if (r) { C.users++; console.log(`   OK ${a.email}: ${r.id}`); }
@@ -336,7 +336,7 @@ try {
 
     const u = await ins('users', {
       email: d.email, passwordHash: 'doctor123', role: 'doctor',
-      fullName: d.fullName, branchId: bId, isActive: true,
+      fullName: d.fullName, branchId: bId, isActive: true, photoUrl: null,
     });
     if (u) C.users++;
 
