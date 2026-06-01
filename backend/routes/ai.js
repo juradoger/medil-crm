@@ -9,6 +9,20 @@ const router = Router();
 // Texto usado cuando el paciente no tiene historial previo
 const NO_HISTORY_TEXT = 'Sin historial previo registrado.';
 
+// Detecta si el error indica que la IA no está disponible:
+// key ausente, key inválida (401), o error de autenticación de la API
+function isAIUnavailable(error) {
+  return (
+    error.message?.includes('CLAUDE_API_KEY') ||
+    error.status === 401 ||
+    error.status === 403 ||
+    error.message?.includes('invalid x-api-key') ||
+    error.message?.includes('authentication') ||
+    error.message?.includes('API key') ||
+    error?.error?.type === 'authentication_error'
+  );
+}
+
 // ─── POST /api/ai/suggest-diagnosis ────────────────
 // El doctor ingresa síntomas y Claude sugiere diagnóstico
 router.post('/suggest-diagnosis', requireAuth, async (req, res, next) => {
@@ -74,7 +88,7 @@ ESTUDIOS: [estudios si aplican, o "No requeridos"]`;
     });
 
   } catch (error) {
-    if (error.message.includes('CLAUDE_API_KEY')) {
+    if (isAIUnavailable(error)) {
       return res.status(503).json({
         error: 'IA no configurada',
         message: 'Configurá CLAUDE_API_KEY en el .env del backend',
@@ -133,7 +147,7 @@ y última consulta.`;
     res.json({ summary, recordCount: records.length });
 
   } catch (error) {
-    if (error.message.includes('CLAUDE_API_KEY')) {
+    if (isAIUnavailable(error)) {
       return res.status(503).json({
         error: 'IA no configurada',
         simulated: true,
@@ -201,7 +215,7 @@ REGLAS:
     });
 
   } catch (error) {
-    if (error.message.includes('CLAUDE_API_KEY')) {
+    if (isAIUnavailable(error)) {
       return res.status(503).json({
         error: 'IA no configurada',
         simulated: true,
@@ -280,7 +294,7 @@ Cantidades conservadoras y realistas.`;
     res.json({ suggestions });
 
   } catch (error) {
-    if (error.message.includes('CLAUDE_API_KEY')) {
+    if (isAIUnavailable(error)) {
       return res.status(503).json({
         simulated: true,
         suggestions: [],
@@ -314,7 +328,7 @@ Máximo 3 líneas. Sin emojis técnicos, solo 👋 y 📅.`;
     res.json({ message });
 
   } catch (error) {
-    if (error.message.includes('CLAUDE_API_KEY')) {
+    if (isAIUnavailable(error)) {
       return res.status(503).json({
         simulated: true,
         message: `Hola ${req.body.patientName} 👋 ` +
@@ -374,7 +388,7 @@ URGENCIA: [Normal / Consultar pronto / Urgente]`;
     res.json({ specialty, reason, urgency, raw: response });
 
   } catch (error) {
-    if (error.message.includes('CLAUDE_API_KEY')) {
+    if (isAIUnavailable(error)) {
       return res.status(503).json({
         simulated: true,
         specialty: 'Medicina General',

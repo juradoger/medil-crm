@@ -9,6 +9,20 @@ export default defineConfig({
     tailwindcss(),
     react(),
   ],
+  build: {
+    rollupOptions: {
+      output: {
+        // rolldown (Vite 8) espera manualChunks como función, no objeto
+        manualChunks(id) {
+          if (!id.includes('node_modules')) return;
+          if (id.includes('jspdf')) return 'pdf';   // incluye jspdf-autotable
+          if (id.includes('xlsx'))  return 'xlsx';
+          if (id.includes('react')) return 'vendor'; // react, react-dom, react-router-dom
+        },
+      },
+    },
+    chunkSizeWarningLimit: 1000,
+  },
   test: {
     globals: true,
     environment: 'jsdom',

@@ -26,14 +26,15 @@ export default function Login() {
     setError('');
     setEmailError('');
     setPasswordError('');
+    // Credenciales reales insertadas por scripts/seed-insforge.js
     if (role === 'admin') {
-      setEmail('admin@medil.com');
+      setEmail('admin.lapaz@medil.com');
       setPassword('admin123');
     } else if (role === 'doctor') {
-      setEmail('doctor@medil.com');
+      setEmail('mamani.marco@medil.com');
       setPassword('doctor123');
     } else if (role === 'patient') {
-      setEmail('paciente@medil.com');
+      setEmail('marco.antonio.mamani.0@gmail.com');
       setPassword('paciente123');
     }
   };

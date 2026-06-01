@@ -383,7 +383,8 @@ try {
   for (let i = 0; i < 90; i++) {
     const name   = makeName(i);
     const email  = `${slug(name)}.${i}@gmail.com`;
-    const status = (i % 12 === 0) ? 'inactive' : 'active';
+    // El primer paciente (idx 0) se mantiene activo para el acceso de prueba
+    const status = (i > 0 && i % 12 === 0) ? 'inactive' : 'active';
     const phone  = bolivianPhone();
     const insuranceCode = i < SEED_INSURANCE.length ? SEED_INSURANCE[i] : null;
     const isInsured     = computeIsInsured(insuranceCode);
@@ -392,12 +393,32 @@ try {
       name, email, phone, status, photoUrl: null,
       insuranceCode, isInsured, whatsappPhone: phone,
     });
-    patData.push({ id: r?.id ?? null, name });
+    patData.push({ id: r?.id ?? null, name, email });
     if (r) C.patients++;
   }
   console.log(`   ${C.patients} pacientes insertados`);
 } catch (e) {
   console.error('  patients error:', e.message);
+}
+
+// ── 4b. USUARIO DE LOGIN PARA EL PRIMER PACIENTE (acceso de prueba) ────────────
+console.log('\n4b. usuario de login del primer paciente...');
+try {
+  const firstPatient = patData[0];
+  if (firstPatient?.email) {
+    const u = await ins('users', {
+      email:        firstPatient.email,
+      passwordHash: 'paciente123',
+      role:         'patient',
+      fullName:     firstPatient.name,
+      branchId:     branchIds[0],
+      isActive:     true,
+      photoUrl:     null,
+    });
+    if (u) { C.users++; console.log(`   OK paciente: ${firstPatient.email} / paciente123`); }
+  }
+} catch (e) {
+  console.error('  usuario paciente error:', e.message);
 }
 
 // ── 5. APPOINTMENTS + MEDICAL_RECORDS + REMINDERS + PAYMENTS ──────────────────
