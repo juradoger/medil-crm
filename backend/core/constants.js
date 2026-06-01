@@ -64,9 +64,10 @@ export const DEFAULT_APPOINTMENT_DURATION_MINUTES = 30;
 // Porcentaje de comisión QR (2%) — QR commission percentage (2%)
 export const QR_COMMISSION_PERCENTAGE = 0.02;
 
-// Modelo de Claude usado por los endpoints de IA — Claude model used by AI endpoints
-// (claude-sonnet-4-20250514 quedó deprecado; se migra a un modelo vigente)
-export const CLAUDE_MODEL = 'claude-sonnet-4-6';
+// Modelo de IA usado por los endpoints — AI model used by endpoints
+// Groq: llama-3.3-70b-versatile (gratuito, alta calidad)
+export const AI_MODEL = 'llama-3.3-70b-versatile';
+export const CLAUDE_MODEL = AI_MODEL; // alias para compatibilidad con código previo
 
 // Límite por defecto de tokens en respuestas de IA — Default token limit for AI responses
 export const AI_MAX_TOKENS = 1000;

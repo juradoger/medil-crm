@@ -492,7 +492,7 @@ no pueden hacerse desde el frontend por seguridad
 (claves API privadas, lógica de negocio sensible).
 
 ### Cuándo llamar al servidor (http://localhost:3001)
-→ Claude API (IA — Etapa 8)
+→ Groq API (IA — llama-3.3-70b-versatile, gratuita)
 → Twilio WhatsApp (notificaciones — Etapa 8)
 → PagoFácil real (pagos — Etapa 7)
 
@@ -502,9 +502,9 @@ no pueden hacerse desde el frontend por seguridad
 ### Endpoints disponibles
 GET  /health                                  verificar que el servidor está vivo
 GET  /api                                     lista de endpoints disponibles
-POST /api/ai/suggest-diagnosis                Etapa 8 — Claude API
-POST /api/ai/summarize-history                Etapa 8 — Claude API
-POST /api/ai/generate-reminder-message       Etapa 8 — Claude API
+POST /api/ai/suggest-diagnosis                Etapa 8 — Groq API
+POST /api/ai/summarize-history                Etapa 8 — Groq API
+POST /api/ai/generate-reminder-message       Etapa 8 — Groq API
 POST /api/notify/reminder                     Etapa 8 — Twilio WhatsApp
 POST /api/payments/generate-qr               Etapa 7 — PagoFácil
 GET  /api/payments/status/:id                Etapa 7 — PagoFácil
@@ -516,7 +516,7 @@ GET  /api/public/branches                    lista pública de clínicas activas
 GET  /api/public/branches/:id                detalle de clínica + profesionales
 POST /api/public/register                    registro de nuevo paciente desde portal
 
-### Endpoints de IA (requieren CLAUDE_API_KEY en backend/.env)
+### Endpoints de IA (requieren GROQ_API_KEY en backend/.env)
   POST /api/ai/suggest-diagnosis
        body: { symptoms, patientId, doctorSpecialty }
        Retorna: { suggestion, basedOn }
@@ -542,9 +542,15 @@ POST /api/public/register                    registro de nuevo paciente desde po
                appointmentTime, reason, professionalName }
        Retorna: { message }
 
-Comportamiento sin API key:
+Proveedor de IA:
+  Por defecto Groq API (llama-3.3-70b-versatile) — gratuita.
+  El sistema es agnóstico del proveedor: para cambiar a Claude u otro,
+  solo se reemplaza backend/lib/groq.js manteniendo la interfaz
+  (askClaude / getClaudeClient). routes/ai.js no cambia.
+
+Comportamiento sin API key (o key inválida):
   Todos los endpoints retornan { simulated: true, ... }
-  con datos simulados para desarrollo.
+  con datos simulados para desarrollo (ver isAIUnavailable).
   La UI muestra un badge naranja "Simulado".
 
 Principio clave de la IA en MedIL:

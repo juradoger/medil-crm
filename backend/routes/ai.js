@@ -14,12 +14,16 @@ const NO_HISTORY_TEXT = 'Sin historial previo registrado.';
 function isAIUnavailable(error) {
   return (
     error.message?.includes('CLAUDE_API_KEY') ||
+    error.message?.includes('GROQ_API_KEY') ||
     error.status === 401 ||
     error.status === 403 ||
     error.message?.includes('invalid x-api-key') ||
     error.message?.includes('authentication') ||
     error.message?.includes('API key') ||
-    error?.error?.type === 'authentication_error'
+    error.message?.includes('credit balance') ||
+    error.message?.includes('too low') ||
+    error?.error?.type === 'authentication_error' ||
+    error?.error?.type === 'invalid_request_error'
   );
 }
 
@@ -201,16 +205,16 @@ REGLAS:
 
     messages.push({ role: 'user', content: message });
 
-    const claude = getClaudeClient();
-    const response = await claude.messages.create({
+    // Groq es OpenAI-compatible: el system va como primer mensaje del array
+    const groq = getClaudeClient();
+    const completion = await groq.chat.completions.create({
       model: CLAUDE_MODEL,
       max_tokens: 500,
-      system: systemPrompt,
-      messages,
+      messages: [{ role: 'system', content: systemPrompt }, ...messages],
     });
 
     res.json({
-      response: response.content[0].text,
+      response: completion.choices[0]?.message?.content || '',
       role: 'assistant',
     });
 
