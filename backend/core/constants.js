@@ -29,6 +29,12 @@ export const PATIENT_STATUS = {
   INACTIVE: 'inactive',
 };
 
+// Estados posibles de una sucursal — Possible branch statuses
+export const BRANCH_STATUS = {
+  ACTIVE:   'active',
+  INACTIVE: 'inactive',
+};
+
 // Estados de pago — Payment statuses
 export const PAYMENT_STATUS = {
   PENDING:  'pending',

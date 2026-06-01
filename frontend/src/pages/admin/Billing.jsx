@@ -111,7 +111,7 @@ export default function Billing() {
         <div className="flex gap-2">
           <button
             onClick={() => setQrTarget(r)}
-            className="p-1.5 text-white bg-[#00B4D8] hover:bg-[#0096B4] rounded transition-colors"
+            className="p-1.5 text-white bg-primary hover:bg-primary-dark rounded transition-colors"
             title="Cobrar con QR"
           >
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -120,7 +120,7 @@ export default function Billing() {
           </button>
           <button
             onClick={() => setCashTarget(r)}
-            className="p-1.5 text-[#00B4D8] border border-[#00B4D8] hover:bg-[#00B4D8]/10 rounded transition-colors"
+            className="p-1.5 text-primary border border-primary hover:bg-primary/10 rounded transition-colors"
             title="Cobrar en efectivo"
           >
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -183,7 +183,7 @@ export default function Billing() {
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-6">
       <div>
-        <Link to="/" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#00B4D8] hover:text-[#0096B4] transition-colors">
+        <Link to="/" className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary-dark transition-colors">
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
@@ -192,7 +192,7 @@ export default function Billing() {
       </div>
 
       <div>
-        <h1 className="text-2xl font-bold text-[#0E4A8A]">Facturación y Cobros</h1>
+        <h1 className="text-2xl font-bold text-navy">Facturación y Cobros</h1>
         <p className="text-sm text-gray-400 mt-0.5">Control de ingresos y pagos de consultas médicas</p>
       </div>
 

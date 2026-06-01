@@ -76,7 +76,7 @@ function AppointmentModal({ patients, onSave, onClose }) {
           {error && <p className="text-xs text-red-500">{error}</p>}
           <div className="flex justify-end gap-3 pt-2">
             <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200">Cancelar</button>
-            <button type="submit" disabled={saving} className="px-4 py-2 text-sm text-white bg-[#00B4D8] rounded-lg hover:bg-[#0096B4] disabled:opacity-50">
+            <button type="submit" disabled={saving} className="px-4 py-2 text-sm text-white bg-primary rounded-lg hover:bg-primary-dark disabled:opacity-50">
               {saving ? 'Guardando…' : 'Agendar'}
             </button>
           </div>
@@ -154,7 +154,7 @@ export default function Appointments() {
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-6">
       <div>
-        <Link to="/" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#00B4D8] hover:text-[#0096B4] transition-colors">
+        <Link to="/" className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary-dark transition-colors">
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
@@ -163,8 +163,8 @@ export default function Appointments() {
       </div>
 
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-[#0E4A8A]">Citas</h1>
-        <button onClick={() => setShowModal(true)} className="px-4 py-2 text-sm text-white bg-[#00B4D8] rounded-lg hover:bg-[#0096B4]">
+        <h1 className="text-2xl font-bold text-navy">Citas</h1>
+        <button onClick={() => setShowModal(true)} className="px-4 py-2 text-sm text-white bg-primary rounded-lg hover:bg-primary-dark">
           + Nueva cita
         </button>
       </div>
@@ -175,7 +175,7 @@ export default function Appointments() {
             key={s}
             onClick={() => setFilter(s)}
             className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
-              filterStatus === s ? 'bg-[#00B4D8] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              filterStatus === s ? 'bg-primary text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
             {STATUS_LABELS[s] ?? s}

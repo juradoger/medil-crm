@@ -54,7 +54,7 @@ function SupplyModal({ initial, onSave, onClose }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
       <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-md p-6">
-        <h2 className="text-lg font-semibold text-[#0E4A8A] mb-4">
+        <h2 className="text-lg font-semibold text-navy mb-4">
           {initial ? 'Editar Insumo' : 'Nuevo Insumo'}
         </h2>
         <form onSubmit={submit} className="space-y-4">
@@ -79,7 +79,7 @@ function SupplyModal({ initial, onSave, onClose }) {
           {error && <p className="text-xs text-red-500">{error}</p>}
           <div className="flex justify-end gap-3 pt-2">
             <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200">Cancelar</button>
-            <button type="submit" disabled={saving} className="px-4 py-2 text-sm text-white bg-[#00B4D8] rounded-lg hover:bg-[#0096B4] disabled:opacity-50">
+            <button type="submit" disabled={saving} className="px-4 py-2 text-sm text-white bg-primary rounded-lg hover:bg-primary-dark disabled:opacity-50">
               {saving ? 'Guardando…' : 'Guardar'}
             </button>
           </div>
@@ -117,7 +117,7 @@ function AdjustStockModal({ supply, onSave, onClose }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
       <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-md p-6">
-        <h2 className="text-lg font-semibold text-[#0E4A8A] mb-2 font-bold">Ajustar Stock</h2>
+        <h2 className="text-lg font-semibold text-navy mb-2 font-bold">Ajustar Stock</h2>
         <p className="text-sm text-gray-500 mb-4">{supply.name}</p>
         <form onSubmit={submit} className="space-y-4">
           <FormField label={`Cantidad (${supply.unit})`}>
@@ -153,7 +153,7 @@ function AdjustStockModal({ supply, onSave, onClose }) {
           {error && <p className="text-xs text-red-500">{error}</p>}
           <div className="flex justify-end gap-3 pt-2">
             <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200">Cancelar</button>
-            <button type="submit" disabled={saving} className="px-4 py-2 text-sm text-white bg-[#00B4D8] rounded-lg hover:bg-[#0096B4] disabled:opacity-50 font-medium">
+            <button type="submit" disabled={saving} className="px-4 py-2 text-sm text-white bg-primary rounded-lg hover:bg-primary-dark disabled:opacity-50 font-medium">
               {saving ? 'Guardando…' : 'Actualizar'}
             </button>
           </div>
@@ -200,12 +200,12 @@ export default function Supplies() {
       key: 'actions', label: '',
       render: r => (
         <div className="flex gap-3">
-          <button onClick={() => setAdjust(r)} className="text-gray-400 hover:text-[#00B4D8] transition-colors" title="Ajustar stock">
+          <button onClick={() => setAdjust(r)} className="text-gray-400 hover:text-primary transition-colors" title="Ajustar stock">
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </button>
-          <button onClick={() => setModal(r)} className="text-gray-400 hover:text-[#0E4A8A] transition-colors" title="Editar">
+          <button onClick={() => setModal(r)} className="text-gray-400 hover:text-navy transition-colors" title="Editar">
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
             </svg>
@@ -233,7 +233,7 @@ export default function Supplies() {
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-6">
       <div>
-        <Link to="/" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#00B4D8] hover:text-[#0096B4] transition-colors">
+        <Link to="/" className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary-dark transition-colors">
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
@@ -243,12 +243,12 @@ export default function Supplies() {
 
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#0E4A8A]">Insumos y Suministros</h1>
+          <h1 className="text-2xl font-bold text-navy">Insumos y Suministros</h1>
           <p className="text-sm text-gray-400 mt-0.5">Control de inventario y alertas de stock de la sucursal</p>
         </div>
         <button
           onClick={() => setModal('create')}
-          className="px-4 py-2 text-sm text-white bg-[#00B4D8] rounded-lg hover:bg-[#0096B4] transition-colors"
+          className="px-4 py-2 text-sm text-white bg-primary rounded-lg hover:bg-primary-dark transition-colors"
         >
           + Nuevo insumo
         </button>

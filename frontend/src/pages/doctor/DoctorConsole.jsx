@@ -232,7 +232,7 @@ export default function DoctorConsole() {
   const leftPanel = (
     <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 space-y-4">
       <div>
-        <h2 className="text-base font-bold text-[#0E4A8A]">Agenda del día</h2>
+        <h2 className="text-base font-bold text-navy">Agenda del día</h2>
         <p className="text-xs text-gray-400 mt-0.5">{TODAY}</p>
       </div>
 
@@ -242,7 +242,7 @@ export default function DoctorConsole() {
             key={f}
             onClick={() => setFilter(f)}
             className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
-              filterStatus === f ? 'bg-[#00B4D8] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              filterStatus === f ? 'bg-primary text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
             {FILTER_LABELS[f]}
@@ -262,8 +262,8 @@ export default function DoctorConsole() {
               onClick={() => handleSelect(a)}
               className={`p-3 rounded-lg border cursor-pointer transition-colors ${
                 selected?.id === a.id
-                  ? 'border-[#00B4D8] bg-[#00B4D8]/5 shadow-sm'
-                  : 'border-gray-100 hover:border-[#00B4D8]/30 hover:bg-gray-50'
+                  ? 'border-primary bg-primary/5 shadow-sm'
+                  : 'border-gray-100 hover:border-primary/30 hover:bg-gray-50'
               }`}
             >
               <div className="flex items-center justify-between gap-2">
@@ -272,7 +272,7 @@ export default function DoctorConsole() {
                 </span>
                 <StatusBadge status={a.status} />
               </div>
-              <p className="text-sm font-medium text-[#0E4A8A] mt-1.5 truncate">{a.patientName}</p>
+              <p className="text-sm font-medium text-navy mt-1.5 truncate">{a.patientName}</p>
               <p className="text-xs text-gray-400 mt-0.5 truncate">{a.reason || 'Sin motivo especificado'}</p>
             </li>
           ))}
@@ -304,15 +304,15 @@ export default function DoctorConsole() {
           <div className="flex items-center gap-3 pb-4 border-b border-gray-100">
             <Avatar name={patient?.name || selected.patientName} size="md" />
             <div>
-              <h3 className="text-base font-bold text-[#0E4A8A]">{patient?.name || selected.patientName}</h3>
+              <h3 className="text-base font-bold text-navy">{patient?.name || selected.patientName}</h3>
               <p className="text-xs text-gray-400">CI: {patient?.ci || '—'} · Cel: {patient?.phone || '—'}</p>
             </div>
           </div>
 
           {/* Resumen automático del historial */}
           {autoSummary && (
-            <div className="bg-[#00B4D8]/5 border-l-4 border-[#00B4D8] p-3 rounded-r-lg">
-              <p className="text-xs text-[#00B4D8] font-medium">🤖 Resumen IA</p>
+            <div className="bg-primary/5 border-l-4 border-primary p-3 rounded-r-lg">
+              <p className="text-xs text-primary font-medium">🤖 Resumen IA</p>
               <p className="text-sm text-gray-700 mt-1 whitespace-pre-wrap">{autoSummary}</p>
             </div>
           )}
@@ -325,7 +325,7 @@ export default function DoctorConsole() {
                 onClick={() => setTab(idx)}
                 className={`px-4 py-2 text-xs font-semibold transition-colors border-b-2 ${
                   tab === idx
-                    ? 'border-[#00B4D8] text-[#00B4D8]'
+                    ? 'border-primary text-primary'
                     : 'border-transparent text-gray-500 hover:text-gray-700'
                 }`}
               >
@@ -371,8 +371,8 @@ export default function DoctorConsole() {
               </div>
 
               {manualSummary && (
-                <div className="bg-[#00B4D8]/5 border border-[#00B4D8]/20 rounded-xl p-4">
-                  <p className="text-xs uppercase text-[#00B4D8] font-medium">Resumen IA</p>
+                <div className="bg-primary/5 border border-primary/20 rounded-xl p-4">
+                  <p className="text-xs uppercase text-primary font-medium">Resumen IA</p>
                   <p className="text-sm text-gray-700 mt-2 whitespace-pre-wrap">{manualSummary}</p>
                   {isSimulated && <p className="text-xs text-gray-300 mt-1">(simulado)</p>}
                 </div>
@@ -387,10 +387,10 @@ export default function DoctorConsole() {
                   {records.map(r => (
                     <div key={r.id} className="p-3 border border-gray-100 rounded-lg space-y-1 bg-gray-50">
                       <div className="flex justify-between text-xs text-gray-400">
-                        <span className="font-semibold text-[#00B4D8]">Consulta</span>
+                        <span className="font-semibold text-primary">Consulta</span>
                         <span>{r.attendanceDate || new Date(r.createdAt).toLocaleDateString('es-BO')}</span>
                       </div>
-                      <p className="text-sm font-bold text-[#0E4A8A]">{r.diagnosis}</p>
+                      <p className="text-sm font-bold text-navy">{r.diagnosis}</p>
                       <p className="text-xs text-gray-600 whitespace-pre-wrap">{r.notes}</p>
                     </div>
                   ))}
@@ -423,9 +423,9 @@ export default function DoctorConsole() {
 
               {/* Sección 2: Sugerencia IA */}
               {aiSuggestion !== null && (
-                <div className="bg-[#00B4D8]/5 border-l-4 border-[#00B4D8] rounded-r-xl p-4 space-y-3">
+                <div className="bg-primary/5 border-l-4 border-primary rounded-r-xl p-4 space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-semibold text-[#0E4A8A]">🤖 Sugerencia del asistente IA</span>
+                    <span className="text-sm font-semibold text-navy">🤖 Sugerencia del asistente IA</span>
                     {isSimulated && (
                       <span className="px-2 py-0.5 text-xs rounded-full bg-orange-400 text-white">Simulado</span>
                     )}
@@ -491,7 +491,7 @@ export default function DoctorConsole() {
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 text-sm text-white bg-[#00B4D8] rounded-lg hover:bg-[#0096B4] transition-colors font-medium"
+                    className="px-4 py-2 text-sm text-white bg-primary rounded-lg hover:bg-primary-dark transition-colors font-medium"
                   >
                     ✓ Guardar consulta
                   </button>
@@ -523,7 +523,7 @@ export default function DoctorConsole() {
   return (
     <div className="p-6 max-w-7xl mx-auto space-y-4">
       <div>
-        <Link to="/" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#00B4D8] hover:text-[#0096B4] transition-colors">
+        <Link to="/" className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary-dark transition-colors">
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
@@ -537,7 +537,7 @@ export default function DoctorConsole() {
         <div className="fixed right-0 top-0 h-full w-80 z-40 bg-white shadow-2xl border-l border-gray-100 flex flex-col">
           <div className="p-4 border-b border-gray-100 flex items-start justify-between">
             <div>
-              <p className="font-semibold text-[#0E4A8A]">🤖 Asistente MedIL</p>
+              <p className="font-semibold text-navy">🤖 Asistente MedIL</p>
               <p className="text-xs text-gray-400">Contexto: {patient?.name || selected.patientName}</p>
             </div>
             <button
@@ -562,7 +562,7 @@ export default function DoctorConsole() {
                 key={i}
                 className={`px-3 py-2 text-sm max-w-[80%] ${
                   msg.role === 'user'
-                    ? 'self-end bg-[#00B4D8] text-white rounded-2xl rounded-tr-sm'
+                    ? 'self-end bg-primary text-white rounded-2xl rounded-tr-sm'
                     : 'self-start bg-gray-100 text-gray-700 rounded-2xl rounded-tl-sm'
                 }`}
               >

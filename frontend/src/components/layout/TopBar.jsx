@@ -19,7 +19,7 @@ export function TopBar({ onMenuClick }) {
       {isAuthenticated && (
         <button
           onClick={onMenuClick}
-          className="p-2 rounded-lg text-[#0E4A8A] hover:bg-blue-50 transition-colors"
+          className="p-2 rounded-lg text-navy hover:bg-blue-50 transition-colors"
           aria-label="Abrir menú"
         >
           <svg className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

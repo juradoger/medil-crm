@@ -72,7 +72,7 @@ export function DataTable({
                   <th
                     key={col.key}
                     onClick={() => toggleSort(col.key)}
-                    className={`px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide ${sortable ? 'cursor-pointer select-none hover:text-gray-700' : ''}`}
+                    className={`px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide ${col.className ?? ''} ${sortable ? 'cursor-pointer select-none hover:text-gray-700' : ''}`}
                   >
                     {col.label}
                     {sortable && sortKey === col.key && (
@@ -90,7 +90,7 @@ export function DataTable({
                   className={`hover:bg-blue-50/30 transition-colors ${onRowClick ? 'cursor-pointer' : ''}`}
                 >
                   {columns.map(col => (
-                    <td key={col.key} className="px-4 py-3 text-sm text-gray-700">
+                    <td key={col.key} className={`px-4 py-3 text-sm text-gray-700 ${col.className ?? ''}`}>
                       {col.render ? col.render(row) : (row[col.key] ?? '—')}
                     </td>
                   ))}

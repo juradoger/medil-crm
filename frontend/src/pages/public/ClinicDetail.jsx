@@ -18,13 +18,13 @@ function ProfessionalCard({ professional }) {
       {professional.photoUrl
         ? <img src={professional.photoUrl} alt={professional.fullName}
             className="h-14 w-14 rounded-full object-cover flex-shrink-0" />
-        : <div className="h-14 w-14 rounded-full bg-[#CAF0F8] flex items-center justify-center flex-shrink-0">
-            <span className="text-[#0096B4] font-bold text-lg">{initials}</span>
+        : <div className="h-14 w-14 rounded-full bg-primary-pale flex items-center justify-center flex-shrink-0">
+            <span className="text-primary-dark font-bold text-lg">{initials}</span>
           </div>
       }
       <div>
         <p className="font-semibold text-gray-800">{professional.fullName}</p>
-        <p className="text-sm text-[#00B4D8]">{professional.specialty}</p>
+        <p className="text-sm text-primary">{professional.specialty}</p>
         {professional.bio && <p className="text-xs text-gray-500 mt-1 line-clamp-2">{professional.bio}</p>}
       </div>
     </div>
@@ -53,7 +53,7 @@ export default function ClinicDetail() {
   if (loading) return (
     <PublicLayout>
       <div className="flex justify-center py-24">
-        <div className="h-8 w-8 border-4 border-[#00B4D8] border-t-transparent rounded-full animate-spin" />
+        <div className="h-8 w-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
       </div>
     </PublicLayout>
   );
@@ -62,7 +62,7 @@ export default function ClinicDetail() {
     <PublicLayout>
       <div className="text-center py-24 space-y-3">
         <p className="text-lg text-gray-500">{error || 'Clínica no encontrada'}</p>
-        <Link to="/portal" className="text-[#00B4D8] hover:underline text-sm">← Volver al portal</Link>
+        <Link to="/portal" className="text-primary hover:underline text-sm">← Volver al portal</Link>
       </div>
     </PublicLayout>
   );
@@ -71,13 +71,13 @@ export default function ClinicDetail() {
 
   return (
     <PublicLayout>
-      <Link to="/portal" className="text-sm text-[#00B4D8] hover:underline mb-6 inline-block">
+      <Link to="/portal" className="text-sm text-primary hover:underline mb-6 inline-block">
         ← Volver al portal
       </Link>
 
       {/* Header de la clínica */}
       <div className="rounded-2xl overflow-hidden mb-8">
-        <div className="h-56 bg-gradient-to-br from-[#00B4D8] to-[#0E4A8A] relative flex items-end">
+        <div className="h-56 bg-gradient-to-br from-primary to-navy relative flex items-end">
           {branch.coverPhoto && (
             <img src={branch.coverPhoto} alt={branch.name}
               className="absolute inset-0 w-full h-full object-cover opacity-80" />
@@ -121,15 +121,15 @@ export default function ClinicDetail() {
       )}
 
       {/* CTA */}
-      <div className="text-center py-6 bg-[#CAF0F8] rounded-2xl">
+      <div className="text-center py-6 bg-primary-pale rounded-2xl">
         <p className="text-gray-700 font-medium mb-4">¿Querés agendar una cita?</p>
         {isAuthenticated
           ? <Link to="/patient/portal"
-              className="px-6 py-3 text-sm font-medium text-white bg-[#00B4D8] rounded-lg hover:bg-[#0096B4] transition-colors">
+              className="px-6 py-3 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-dark transition-colors">
               Ir a mi portal
             </Link>
           : <Link to="/registro"
-              className="px-6 py-3 text-sm font-medium text-white bg-[#00B4D8] rounded-lg hover:bg-[#0096B4] transition-colors">
+              className="px-6 py-3 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-dark transition-colors">
               Registrarse para agendar
             </Link>
         }

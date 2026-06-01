@@ -181,7 +181,7 @@ export default function Professionals() {
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-6">
       <div>
-        <Link to="/" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#00B4D8] hover:text-[#0096B4] transition-colors">
+        <Link to="/" className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary-dark transition-colors">
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
@@ -190,7 +190,7 @@ export default function Professionals() {
       </div>
 
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-[#0E4A8A]">Profesionales</h1>
+        <h1 className="text-2xl font-bold text-navy">Profesionales</h1>
         <Button label="+ Nuevo profesional" onClick={() => setModal('create')} />
       </div>
 
@@ -206,7 +206,7 @@ export default function Professionals() {
               key={f}
               onClick={() => setStatusFilter(f)}
               className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
-                statusFilter === f ? 'bg-[#00B4D8] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                statusFilter === f ? 'bg-primary text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
               {f}
@@ -224,10 +224,10 @@ export default function Professionals() {
               <div className="flex justify-center">
                 <Avatar name={p.fullName} photoUrl={p.photoUrl} size="lg" className="h-16 w-16 text-xl" />
               </div>
-              <p className="text-base font-semibold text-[#0E4A8A] text-center mt-3">{p.fullName}</p>
+              <p className="text-base font-semibold text-navy text-center mt-3">{p.fullName}</p>
               <p className="text-sm text-gray-400 text-center">{p.specialty}</p>
               <p className="text-center mt-1">
-                <span className="text-xs bg-[#00B4D8]/10 text-[#00B4D8] px-2 py-0.5 rounded-full">{branchName(p.branchId)}</span>
+                <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">{branchName(p.branchId)}</span>
               </p>
 
               <div className="border-t border-gray-100 my-4" />

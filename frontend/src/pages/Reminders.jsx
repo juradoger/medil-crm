@@ -61,7 +61,7 @@ export default function Reminders() {
   return (
     <div className="p-6 max-w-5xl mx-auto space-y-6">
       <div>
-        <Link to="/" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#00B4D8] hover:text-[#0096B4] transition-colors">
+        <Link to="/" className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary-dark transition-colors">
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
@@ -69,15 +69,15 @@ export default function Reminders() {
         </Link>
       </div>
 
-      <h1 className="text-2xl font-bold text-[#0E4A8A]">Recordatorios</h1>
+      <h1 className="text-2xl font-bold text-navy">Recordatorios</h1>
 
       {/* Banner de job automático */}
       {!JOB_ENABLED && (
-        <div className="bg-[#00B4D8]/10 border border-[#00B4D8]/20 rounded-xl p-3 flex items-center gap-2">
-          <svg className="h-5 w-5 text-[#00B4D8] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <div className="bg-primary/10 border border-primary/20 rounded-xl p-3 flex items-center gap-2">
+          <svg className="h-5 w-5 text-primary shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          <p className="text-sm text-[#0E4A8A]">
+          <p className="text-sm text-navy">
             Los recordatorios se enviarán automáticamente cuando llegue la hora programada.
           </p>
         </div>
@@ -89,7 +89,7 @@ export default function Reminders() {
             key={s}
             onClick={() => setFilter(s)}
             className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
-              filterStatus === s ? 'bg-[#00B4D8] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              filterStatus === s ? 'bg-primary text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
             {STATUS_LABELS[s] ?? s}

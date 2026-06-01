@@ -1,5 +1,6 @@
 // Servicio de autenticación
 import { db } from '../lib/insforge';
+import { MESSAGES } from '../core/messages';
 
 const TOKEN_KEY = 'medil_token';
 
@@ -10,11 +11,11 @@ export const authService = {
       .eq('email', email)
       .eq('isActive', true);
 
-    if (error) throw new Error('Error de conexión');
+    if (error) throw new Error(MESSAGES.error.connection.server);
 
     const user = data?.[0] ?? null;
-    if (!user) throw new Error('Credenciales inválidas');
-    if (user.passwordHash !== password) throw new Error('Credenciales inválidas');
+    if (!user) throw new Error(MESSAGES.error.auth.invalidCredentials);
+    if (user.passwordHash !== password) throw new Error(MESSAGES.error.auth.invalidCredentials);
 
     const payload = { id: user.id, email: user.email, role: user.role, branchId: user.branchId };
     localStorage.setItem(TOKEN_KEY, btoa(JSON.stringify(payload)));

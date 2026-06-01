@@ -46,7 +46,7 @@ function RecordModal({ onSave, onClose }) {
           </FormField>
           <div className="flex justify-end gap-3 pt-2">
             <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200">Cancelar</button>
-            <button type="submit" disabled={saving} className="px-4 py-2 text-sm text-white bg-[#00B4D8] rounded-lg hover:bg-[#0096B4] disabled:opacity-50">
+            <button type="submit" disabled={saving} className="px-4 py-2 text-sm text-white bg-primary rounded-lg hover:bg-primary-dark disabled:opacity-50">
               {saving ? 'Guardando…' : 'Guardar'}
             </button>
           </div>
@@ -89,20 +89,20 @@ export default function PatientDetail() {
   if (loadP || loadA || loadR) return <FullPageSpinner />;
   if (!patient) return (
     <div className="p-6 text-center text-gray-500">
-      Paciente no encontrado. <Link to="/patients" className="text-[#00B4D8] hover:underline">Volver</Link>
+      Paciente no encontrado. <Link to="/patients" className="text-primary hover:underline">Volver</Link>
     </div>
   );
 
   return (
     <div className="p-6 max-w-5xl mx-auto space-y-6">
-      <Link to="/patients" className="text-sm text-[#00B4D8] hover:underline">← Volver a Pacientes</Link>
+      <Link to="/patients" className="text-sm text-primary hover:underline">← Volver a Pacientes</Link>
 
       {/* Columnas: info + stats */}
       <div className="grid md:grid-cols-3 gap-6">
         <div className="md:col-span-2 bg-white rounded-xl border border-gray-100 shadow-sm p-6 space-y-3">
           <div className="flex items-start justify-between">
             <div>
-              <h1 className="text-xl font-bold text-[#0E4A8A]">{patient.name}</h1>
+              <h1 className="text-xl font-bold text-navy">{patient.name}</h1>
             </div>
             <StatusBadge status={patient.status} />
           </div>
@@ -114,7 +114,7 @@ export default function PatientDetail() {
 
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 flex flex-col gap-4">
           <div className="text-center">
-            <p className="text-3xl font-bold text-[#00B4D8]">{patientAppointments.length}</p>
+            <p className="text-3xl font-bold text-primary">{patientAppointments.length}</p>
             <p className="text-xs text-gray-400 mt-1">Citas totales</p>
           </div>
           <div className="text-center">
@@ -132,7 +132,7 @@ export default function PatientDetail() {
               key={t}
               onClick={() => setTab(i)}
               className={`px-4 py-2 text-sm font-medium transition-colors border-b-2 -mb-px ${
-                tab === i ? 'border-[#00B4D8] text-[#00B4D8]' : 'border-transparent text-gray-500 hover:text-gray-700'
+                tab === i ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700'
               }`}
             >
               {t}
@@ -149,7 +149,7 @@ export default function PatientDetail() {
             <div className="flex justify-end">
               <button
                 onClick={() => setShowRecord(true)}
-                className="px-4 py-2 text-sm text-white bg-[#00B4D8] rounded-lg hover:bg-[#0096B4]"
+                className="px-4 py-2 text-sm text-white bg-primary rounded-lg hover:bg-primary-dark"
               >
                 + Nueva entrada
               </button>

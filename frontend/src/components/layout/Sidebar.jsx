@@ -92,7 +92,7 @@ function NavItem({ to, label, iconKey, end, onClick }) {
       onClick={onClick}
       className={({ isActive }) =>
         `flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-          isActive ? 'bg-[#00B4D8] text-white animate-fade-in' : 'text-[#0E4A8A] hover:bg-blue-50'
+          isActive ? 'bg-primary text-white animate-fade-in' : 'text-navy hover:bg-blue-50'
         }`
       }
     >
@@ -133,13 +133,13 @@ export function Sidebar({ open, onClose }) {
           >
             <Avatar name={user.fullName || user.email} photoUrl={photoUrl} size="sm" />
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-bold text-[#0E4A8A] truncate">{user.fullName || 'Usuario'}</p>
+              <p className="text-sm font-bold text-navy truncate">{user.fullName || 'Usuario'}</p>
               <p className="text-xs text-gray-400 truncate">{user.email}</p>
               <div className="flex gap-2 items-center mt-1">
                 <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
                   user.role === 'admin' ? 'bg-orange-100 text-orange-800' :
                   user.role === 'doctor' ? 'bg-green-100 text-green-800' :
-                  'bg-blue-100 text-[#00B4D8]'
+                  'bg-blue-100 text-primary'
                 }`}>
                   {user.role === 'admin' ? 'Administrador' :
                    user.role === 'doctor' ? 'Médico' : 'Paciente'}
@@ -166,7 +166,7 @@ export function Sidebar({ open, onClose }) {
             href="/portal"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-3 px-4 py-2.5 text-sm text-[#00B4D8] hover:bg-[#CAF0F8] rounded-lg transition-colors font-medium"
+            className="flex items-center gap-3 px-4 py-2.5 text-sm text-primary hover:bg-primary-pale rounded-lg transition-colors font-medium"
           >
             <svg className="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />

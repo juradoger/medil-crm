@@ -151,7 +151,7 @@ export default function Reports() {
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-6">
       <div>
-        <Link to="/" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#00B4D8] hover:text-[#0096B4] transition-colors">
+        <Link to="/" className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary-dark transition-colors">
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
@@ -160,7 +160,7 @@ export default function Reports() {
       </div>
 
       <div>
-        <h1 className="text-2xl font-bold text-[#0E4A8A]">Reportes</h1>
+        <h1 className="text-2xl font-bold text-navy">Reportes</h1>
         <p className="text-sm text-gray-400">Análisis de desempeño por profesional</p>
       </div>
 
@@ -191,9 +191,9 @@ export default function Reports() {
       ) : (
         <>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-            <Metric label="Citas atendidas"   value={report.metrics.attended}            color="text-[#0E4A8A]" />
+            <Metric label="Citas atendidas"   value={report.metrics.attended}            color="text-navy" />
             <Metric label="Citas canceladas"  value={report.metrics.cancelled}           color="text-red-500" />
-            <Metric label="Pacientes únicos"  value={report.metrics.uniquePatients}      color="text-[#00B4D8]" />
+            <Metric label="Pacientes únicos"  value={report.metrics.uniquePatients}      color="text-primary" />
             <Metric label="Ingresos (Bs)"     value={`Bs. ${report.metrics.totalIncome}`} color="text-green-600" />
             <Metric label="Comisión (Bs)"     value={`Bs. ${report.metrics.commission}`}  color="text-orange-500" />
           </div>
@@ -222,7 +222,7 @@ export default function Reports() {
                   </tr>
                 ))}
               </tbody>
-              <tfoot className="bg-gray-50 font-bold text-[#0E4A8A]">
+              <tfoot className="bg-gray-50 font-bold text-navy">
                 <tr className="border-t border-gray-200">
                   <td className="px-4 py-2" colSpan={4}>Totales</td>
                   <td className="px-4 py-2 text-right">Bs. {report.metrics.totalIncome}</td>

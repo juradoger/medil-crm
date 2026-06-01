@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { db } from '../infrastructure/insforge.js';
+import { USER_ROLES, PATIENT_STATUS, BRANCH_STATUS } from '../core/constants.js';
 
 const router = Router();
 
@@ -8,7 +9,7 @@ router.get('/branches', async (req, res, next) => {
   try {
     const { data: branches, error } = await db.from('branches')
       .select('*')
-      .eq('status', 'active');
+      .eq('status', BRANCH_STATUS.ACTIVE);
     if (error) throw new Error(error.message);
     res.json({ branches: branches ?? [] });
   } catch (error) { next(error); }
@@ -67,7 +68,7 @@ router.post('/register', async (req, res, next) => {
     const { data: userRows, error: userErr } = await db.from('users').insert({
       email,
       passwordHash: password,
-      role:         'patient',
+      role:         USER_ROLES.PATIENT,
       branchId,
       isActive:     true,
       fullName:     name,
@@ -83,7 +84,7 @@ router.post('/register', async (req, res, next) => {
       name,
       phone,
       email,
-      status:    'active',
+      status:    PATIENT_STATUS.ACTIVE,
       createdAt: now,
     }).select();
     if (patientErr) throw new Error(patientErr.message);

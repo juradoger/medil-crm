@@ -29,7 +29,7 @@ export class ErrorBoundary extends React.Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen bg-[#F8FAFC] flex flex-col items-center justify-center p-6 font-sans">
+        <div className="min-h-screen bg-bg-app flex flex-col items-center justify-center p-6 font-sans">
           <div className="bg-white rounded-2xl border border-gray-100 shadow-xl p-8 max-w-md w-full text-center space-y-6">
             
             {/* Ícono de error premium */}
@@ -55,7 +55,7 @@ export class ErrorBoundary extends React.Component {
 
             <button
               onClick={this.handleReset}
-              className="w-full py-3 px-6 text-sm font-semibold text-white bg-[#00B4D8] hover:bg-[#0096B4] rounded-xl transition-all duration-200 shadow-lg shadow-[#00B4D8]/20 focus:outline-none focus:ring-2 focus:ring-[#00B4D8] focus:ring-offset-2"
+              className="w-full py-3 px-6 text-sm font-semibold text-white bg-primary hover:bg-primary-dark rounded-xl transition-all duration-200 shadow-lg shadow-primary/20 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
             >
               Volver al inicio
             </button>

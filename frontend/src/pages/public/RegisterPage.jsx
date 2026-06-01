@@ -84,13 +84,13 @@ export default function RegisterPage() {
     }
   }
 
-  const inputClass = 'w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-[#00B4D8]';
+  const inputClass = 'w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-primary';
 
   if (success) return (
     <PublicLayout>
       <div className="max-w-md mx-auto py-20 text-center space-y-4">
         <div className="text-5xl">✓</div>
-        <h2 className="text-xl font-bold text-[#00B4D8]">¡Cuenta creada!</h2>
+        <h2 className="text-xl font-bold text-primary">¡Cuenta creada!</h2>
         <p className="text-gray-500">Redirigiendo al inicio de sesión…</p>
       </div>
     </PublicLayout>
@@ -103,7 +103,7 @@ export default function RegisterPage() {
         <div className="flex justify-center mb-6">
           <Logo className="text-3xl" />
         </div>
-        <h1 className="text-2xl font-bold text-center text-[#0E4A8A] mb-6">Crear cuenta de paciente</h1>
+        <h1 className="text-2xl font-bold text-center text-navy mb-6">Crear cuenta de paciente</h1>
 
         <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 space-y-4">
 
@@ -112,15 +112,15 @@ export default function RegisterPage() {
           <div className="flex flex-col items-center gap-2 mb-2">
             <div
               onClick={() => inputRef.current?.click()}
-              className="h-20 w-20 rounded-full overflow-hidden cursor-pointer border-2 border-[#90E0EF] bg-[#CAF0F8] flex items-center justify-center hover:opacity-80 transition-opacity"
+              className="h-20 w-20 rounded-full overflow-hidden cursor-pointer border-2 border-primary-light bg-primary-pale flex items-center justify-center hover:opacity-80 transition-opacity"
             >
               {preview
                 ? <img src={preview} alt="Foto" className="w-full h-full object-cover" />
-                : <span className="text-[#0096B4] text-sm font-medium">Foto</span>
+                : <span className="text-primary-dark text-sm font-medium">Foto</span>
               }
             </div>
             <button type="button" onClick={() => inputRef.current?.click()}
-              className="text-xs text-[#00B4D8] hover:underline">
+              className="text-xs text-primary hover:underline">
               {preview ? 'Cambiar foto' : 'Agregar foto (opcional)'}
             </button>
             <input ref={inputRef} type="file" accept=".jpg,.jpeg,.png,.webp"
@@ -199,13 +199,13 @@ export default function RegisterPage() {
           )}
 
           <button type="submit" disabled={saving}
-            className="w-full py-2.5 text-sm font-medium text-white bg-[#00B4D8] rounded-lg hover:bg-[#0096B4] disabled:opacity-50 transition-colors">
+            className="w-full py-2.5 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-dark disabled:opacity-50 transition-colors">
             {saving ? 'Creando cuenta…' : 'Crear cuenta'}
           </button>
 
           <p className="text-center text-sm text-gray-500">
             ¿Ya tenés cuenta?{' '}
-            <Link to="/login" className="text-[#00B4D8] hover:underline">Iniciá sesión</Link>
+            <Link to="/login" className="text-primary hover:underline">Iniciá sesión</Link>
           </p>
         </form>
       </div>

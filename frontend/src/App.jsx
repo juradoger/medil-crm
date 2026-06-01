@@ -28,6 +28,7 @@ import Reports        from './pages/admin/Reports';
 import DoctorConsole  from './pages/doctor/DoctorConsole';
 import PatientPortal  from './pages/patient/PatientPortal';
 import UserProfile    from './pages/UserProfile';
+import NotFound       from './pages/NotFound';
 
 // Páginas públicas (sin autenticación)
 import LandingPage  from './pages/public/LandingPage';
@@ -130,7 +131,7 @@ function AppLayout() {
             </ProtectedRoute>
           } />
 
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
     </>

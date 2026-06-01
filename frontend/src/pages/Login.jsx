@@ -75,7 +75,7 @@ export default function Login() {
 
   return (
     <AuthLayout>
-      <h1 className="text-2xl font-bold text-center text-[#0E4A8A] mb-6">
+      <h1 className="text-2xl font-bold text-center text-navy mb-6">
         Iniciar sesión
       </h1>
 

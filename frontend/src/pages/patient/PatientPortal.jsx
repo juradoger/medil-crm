@@ -30,7 +30,7 @@ function Stepper({ step }) {
         <React.Fragment key={n}>
           <div className={`flex items-center justify-center h-8 w-8 rounded-full text-xs font-bold ${
             n < step ? 'bg-green-500 text-white'
-            : n === step ? 'bg-[#00B4D8] text-white'
+            : n === step ? 'bg-primary text-white'
             : 'bg-gray-100 text-gray-400'
           }`}>
             {n < step ? '✓' : n}
@@ -121,13 +121,13 @@ function BookModal({ professionals, isInsured, onSave, onClose }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
       <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-lg p-6 text-left max-h-[90vh] overflow-y-auto">
-        <h2 className="text-lg font-semibold text-[#0E4A8A] mb-4 text-center">Agendar nueva cita</h2>
+        <h2 className="text-lg font-semibold text-navy mb-4 text-center">Agendar nueva cita</h2>
         <Stepper step={step} />
 
         {/* PASO 1 — Síntomas */}
         {step === 1 && (
           <div className="space-y-3">
-            <h3 className="text-base font-semibold text-[#0E4A8A]">Contanos cómo te sentís</h3>
+            <h3 className="text-base font-semibold text-navy">Contanos cómo te sentís</h3>
             <textarea
               className={`${inputClass} resize-none`}
               rows={5}
@@ -152,9 +152,9 @@ function BookModal({ professionals, isInsured, onSave, onClose }) {
         {step === 2 && (
           <div className="space-y-3">
             {suggestion && (
-              <div className="bg-[#00B4D8]/5 border border-[#00B4D8]/20 rounded-xl p-4 mb-2">
-                <p className="text-xs text-[#00B4D8] font-medium uppercase">🤖 El asistente sugiere:</p>
-                <p className="text-lg font-bold text-[#0E4A8A]">{suggestion.specialty}</p>
+              <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 mb-2">
+                <p className="text-xs text-primary font-medium uppercase">🤖 El asistente sugiere:</p>
+                <p className="text-lg font-bold text-navy">{suggestion.specialty}</p>
                 <p className="text-sm text-gray-400">{suggestion.reason}</p>
                 <div className="mt-2"><UrgencyBadge urgency={suggestion.urgency} /></div>
               </div>
@@ -170,16 +170,16 @@ function BookModal({ professionals, isInsured, onSave, onClose }) {
                     key={p.id}
                     onClick={() => setSelectedProf(p)}
                     className={`w-full text-left bg-white rounded-xl border p-4 flex items-center gap-3 transition-colors ${
-                      selectedProf?.id === p.id ? 'border-[#00B4D8] bg-[#00B4D8]/5' : 'border-gray-100 hover:border-[#00B4D8]/30'
+                      selectedProf?.id === p.id ? 'border-primary bg-primary/5' : 'border-gray-100 hover:border-primary/30'
                     }`}
                   >
                     <Avatar name={p.fullName ?? p.name} photoUrl={p.photoUrl} size="md" />
                     <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-[#0E4A8A] truncate">{p.fullName ?? p.name}</p>
+                      <p className="font-semibold text-navy truncate">{p.fullName ?? p.name}</p>
                       <p className="text-sm text-gray-400">{p.specialty}</p>
                     </div>
                     {isRecommended(p) && (
-                      <span className="text-xs bg-[#00B4D8]/10 text-[#00B4D8] px-2 py-0.5 rounded-full whitespace-nowrap">✓ Recomendado</span>
+                      <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full whitespace-nowrap">✓ Recomendado</span>
                     )}
                   </button>
                 ))}
@@ -244,12 +244,12 @@ function BookModal({ professionals, isInsured, onSave, onClose }) {
         {/* PASO 4 — Confirmación y pago */}
         {step === 4 && (
           <div className="space-y-4">
-            <h3 className="text-base font-semibold text-[#0E4A8A]">Confirmá tu cita</h3>
+            <h3 className="text-base font-semibold text-navy">Confirmá tu cita</h3>
             <div className="bg-gray-50 rounded-xl p-4 space-y-3">
               <div className="flex items-center gap-3">
                 <Avatar name={selectedProf?.fullName ?? selectedProf?.name} photoUrl={selectedProf?.photoUrl} size="md" />
                 <div>
-                  <p className="font-semibold text-[#0E4A8A]">{selectedProf?.fullName ?? selectedProf?.name}</p>
+                  <p className="font-semibold text-navy">{selectedProf?.fullName ?? selectedProf?.name}</p>
                   <p className="text-sm text-gray-400">{selectedProf?.specialty}</p>
                 </div>
               </div>
@@ -359,7 +359,7 @@ export default function PatientPortal() {
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-6">
       <div>
-        <Link to="/portal" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#00B4D8] hover:text-[#0096B4] transition-colors">
+        <Link to="/portal" className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary-dark transition-colors">
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
@@ -372,13 +372,13 @@ export default function PatientPortal() {
         <div className="flex items-center gap-4">
           <Avatar name={user?.fullName || 'Paciente'} size="lg" />
           <div className="text-center md:text-left">
-            <h1 className="text-xl font-bold text-[#0E4A8A]">¡Hola, {user?.fullName || 'Paciente'}!</h1>
+            <h1 className="text-xl font-bold text-navy">¡Hola, {user?.fullName || 'Paciente'}!</h1>
             <p className="text-xs text-gray-400 mt-0.5">Bienvenido a tu portal de salud MedIL</p>
           </div>
         </div>
         <button
           onClick={() => setShowBook(true)}
-          className="hidden md:inline-flex px-4 py-2 text-sm text-white bg-[#00B4D8] rounded-lg hover:bg-[#0096B4] transition-colors font-medium"
+          className="hidden md:inline-flex px-4 py-2 text-sm text-white bg-primary rounded-lg hover:bg-primary-dark transition-colors font-medium"
         >
           Agendar cita
         </button>
@@ -386,9 +386,9 @@ export default function PatientPortal() {
 
       {/* Banner de seguro: visible si el paciente no tiene código configurado */}
       {myPatient && !myPatient.insuranceCode && (
-        <div className="bg-[#00B4D8]/10 border border-[#00B4D8]/20 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <p className="text-sm text-[#0E4A8A]">{MESSAGES.empty.noInsurance}</p>
-          <Link to="/profile" className="text-sm font-semibold text-[#00B4D8] hover:text-[#0096B4] whitespace-nowrap">
+        <div className="bg-primary/10 border border-primary/20 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <p className="text-sm text-navy">{MESSAGES.empty.noInsurance}</p>
+          <Link to="/profile" className="text-sm font-semibold text-primary hover:text-primary-dark whitespace-nowrap">
             Ir a mi perfil →
           </Link>
         </div>
@@ -397,13 +397,13 @@ export default function PatientPortal() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Próximas Citas */}
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 space-y-4">
-          <h2 className="text-base font-bold text-[#0E4A8A] text-left">Mis próximas citas</h2>
+          <h2 className="text-base font-bold text-navy text-left">Mis próximas citas</h2>
           {upcomingAppointments.length === 0 ? (
             <div className="py-8 text-center space-y-3">
               <p className="text-sm text-gray-400">No tenés citas próximas programadas.</p>
               <button
                 onClick={() => setShowBook(true)}
-                className="text-xs text-[#00B4D8] border border-[#00B4D8] hover:bg-[#00B4D8]/10 px-3 py-1.5 rounded transition-colors font-medium"
+                className="text-xs text-primary border border-primary hover:bg-primary/10 px-3 py-1.5 rounded transition-colors font-medium"
               >
                 Agendá tu primera cita
               </button>
@@ -437,7 +437,7 @@ export default function PatientPortal() {
 
         {/* Historial Clínico */}
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 space-y-4">
-          <h2 className="text-base font-bold text-[#0E4A8A] text-left">Mi historial médico</h2>
+          <h2 className="text-base font-bold text-navy text-left">Mi historial médico</h2>
           {records.length === 0 ? (
             <p className="text-sm text-gray-400 py-8 text-center bg-gray-50 rounded-xl border border-gray-100">
               No tenés registros de consultas médicas aún.
@@ -446,9 +446,9 @@ export default function PatientPortal() {
             <div className="space-y-4 max-h-[350px] overflow-y-auto pr-1 text-left">
               {records.map(r => (
                 <div key={r.id} className="relative pl-6 border-l border-gray-200 space-y-1">
-                  <span className="absolute -left-[5px] top-1.5 h-2.5 w-2.5 rounded-full bg-[#00B4D8]" />
+                  <span className="absolute -left-[5px] top-1.5 h-2.5 w-2.5 rounded-full bg-primary" />
                   <div className="flex justify-between text-xs text-gray-400">
-                    <span className="font-semibold text-[#00B4D8]">Consulta médica</span>
+                    <span className="font-semibold text-primary">Consulta médica</span>
                     <span>{r.attendanceDate || new Date(r.createdAt).toLocaleDateString('es-BO')}</span>
                   </div>
                   <h4 className="text-sm font-bold text-gray-800">{r.diagnosis}</h4>
@@ -463,7 +463,7 @@ export default function PatientPortal() {
       {/* Botón flotante móvil */}
       <button
         onClick={() => setShowBook(true)}
-        className="md:hidden fixed bottom-6 right-6 z-40 bg-[#00B4D8] hover:bg-[#0096B4] text-white p-4 rounded-full shadow-lg transition-transform active:scale-95"
+        className="md:hidden fixed bottom-6 right-6 z-40 bg-primary hover:bg-primary-dark text-white p-4 rounded-full shadow-lg transition-transform active:scale-95"
         aria-label="Agendar cita"
       >
         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">

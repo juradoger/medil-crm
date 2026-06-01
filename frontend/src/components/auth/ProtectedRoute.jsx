@@ -13,7 +13,7 @@ export function ProtectedRoute({ children, allowedRoles }) {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
-        <div className="animate-spin h-10 w-10 border-4 border-[#00B4D8] border-t-transparent rounded-full" />
+        <div className="animate-spin h-10 w-10 border-4 border-primary border-t-transparent rounded-full" />
       </div>
     );
   }
@@ -27,7 +27,7 @@ export function ProtectedRoute({ children, allowedRoles }) {
   if (allowedRoles && !hasRole(allowedRoles)) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 gap-4">
-        <h1 className="text-6xl font-bold text-[#0E4A8A]">403</h1>
+        <h1 className="text-6xl font-bold text-navy">403</h1>
         <p className="text-gray-500 text-lg">
           Sin autorización
         </p>

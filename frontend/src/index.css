@@ -8,4 +8,16 @@
   --color-accent:     #00A896;   /* Verde Aqua — Aqua Green */
   --color-alert:      #FFD100;   /* Amarillo — Yellow */
   --color-background: #FFFFFF;   /* Blanco Puro — Pure White */
+
+  /* Variantes de apoyo (tints del brief de marca) — Brand brief support tints */
+  --color-primary-dark:  #0096B4; /* Hover de botón primario — Primary button hover */
+  --color-primary-light: #90E0EF; /* Aqua claro — Light aqua */
+  --color-primary-pale:  #CAF0F8; /* Aqua pálido — Pale aqua */
+  --color-bg-app:        #F9FAFB; /* Fondo del área de contenido — Content area background */
+
+  /* Tinta / texto — Ink / text */
+  --color-ink:       #1A1A2E;     /* Texto oscuro — Dark text */
+  --color-ink-body:  #374151;     /* Cuerpo — Body text */
+  --color-ink-muted: #6B7280;     /* Texto secundario — Muted text */
+  --color-ink-faint: #9CA3AF;     /* Texto tenue — Faint text */
 }

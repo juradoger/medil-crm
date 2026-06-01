@@ -147,7 +147,7 @@ export default function UserProfile() {
   return (
     <div className="p-6 max-w-3xl mx-auto space-y-6">
       <div>
-        <Link to="/" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#00B4D8] hover:text-[#0096B4] transition-colors">
+        <Link to="/" className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary-dark transition-colors">
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
@@ -157,7 +157,7 @@ export default function UserProfile() {
 
       {/* HEADER */}
       <div className="flex items-center gap-3">
-        <h1 className="text-2xl font-bold text-[#0E4A8A]">Mi perfil</h1>
+        <h1 className="text-2xl font-bold text-navy">Mi perfil</h1>
         <Badge text={roleBadge.text} color={roleBadge.color} />
       </div>
 
@@ -175,7 +175,7 @@ export default function UserProfile() {
 
       {/* SECCIÓN 2 — Datos personales */}
       <div className={cardClass}>
-        <h2 className="text-base font-semibold text-[#0E4A8A]">Datos personales</h2>
+        <h2 className="text-base font-semibold text-navy">Datos personales</h2>
         <FormField label="Nombre completo">
           <input className={inputClass} value={form.name} onChange={e => setField('name', e.target.value)} />
         </FormField>
@@ -203,13 +203,13 @@ export default function UserProfile() {
       {/* SECCIÓN 3 — Seguro médico (solo patient) */}
       {isPatient && (
         <div className={cardClass}>
-          <h2 className="text-base font-semibold text-[#0E4A8A]">Seguro médico</h2>
+          <h2 className="text-base font-semibold text-navy">Seguro médico</h2>
           <label className="flex items-center gap-2 text-sm text-gray-700">
             <input
               type="checkbox"
               checked={hasInsurance}
               onChange={e => setHasInsurance(e.target.checked)}
-              className="h-4 w-4 accent-[#00B4D8]"
+              className="h-4 w-4 accent-primary"
             />
             ¿Tenés seguro médico?
           </label>
@@ -235,7 +235,7 @@ export default function UserProfile() {
       {/* SECCIÓN 4 — Perfil profesional (solo doctor) */}
       {isDoctor && (
         <div className={cardClass}>
-          <h2 className="text-base font-semibold text-[#0E4A8A]">Perfil profesional</h2>
+          <h2 className="text-base font-semibold text-navy">Perfil profesional</h2>
           <div>
             <p className="text-xs text-gray-400 mb-1">Especialidad</p>
             <p className="text-sm text-gray-700">{user.specialty ?? '—'}</p>
@@ -253,15 +253,15 @@ export default function UserProfile() {
 
           <div className="grid grid-cols-3 gap-3 pt-2">
             <div className="text-center bg-gray-50 rounded-lg p-3">
-              <p className="text-xl font-bold text-[#00B4D8]">{attended}</p>
+              <p className="text-xl font-bold text-primary">{attended}</p>
               <p className="text-xs text-gray-500">Citas atendidas</p>
             </div>
             <div className="text-center bg-gray-50 rounded-lg p-3">
-              <p className="text-xl font-bold text-[#00B4D8]">{uniquePatients}</p>
+              <p className="text-xl font-bold text-primary">{uniquePatients}</p>
               <p className="text-xs text-gray-500">Pacientes únicos</p>
             </div>
             <div className="text-center bg-gray-50 rounded-lg p-3">
-              <p className="text-xl font-bold text-[#00B4D8]">{attendanceRate}%</p>
+              <p className="text-xl font-bold text-primary">{attendanceRate}%</p>
               <p className="text-xs text-gray-500">Tasa asistencia</p>
             </div>
           </div>
@@ -277,7 +277,7 @@ export default function UserProfile() {
         <button
           type="button"
           onClick={() => setPwdOpen(o => !o)}
-          className="w-full flex items-center justify-between text-base font-semibold text-[#0E4A8A]"
+          className="w-full flex items-center justify-between text-base font-semibold text-navy"
         >
           Cambiar contraseña
           <svg className={`h-5 w-5 transition-transform ${pwdOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
