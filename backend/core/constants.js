@@ -65,7 +65,8 @@ export const DEFAULT_APPOINTMENT_DURATION_MINUTES = 30;
 export const QR_COMMISSION_PERCENTAGE = 0.02;
 
 // Modelo de Claude usado por los endpoints de IA — Claude model used by AI endpoints
-export const CLAUDE_MODEL = 'claude-sonnet-4-20250514';
+// (claude-sonnet-4-20250514 quedó deprecado; se migra a un modelo vigente)
+export const CLAUDE_MODEL = 'claude-sonnet-4-6';
 
 // Límite por defecto de tokens en respuestas de IA — Default token limit for AI responses
 export const AI_MAX_TOKENS = 1000;
