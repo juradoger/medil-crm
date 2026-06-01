@@ -6,7 +6,7 @@
 //   branches:      id, name, city, address, phone, status, created_at, updated_at
 //   users:         id, email, passwordHash, role, fullName, isActive, created_at, updated_at, branchId, photoUrl
 //   patients:      id, name, email, phone, status, createdAt, photoUrl, insuranceCode, isInsured, whatsappPhone
-//   professionals: id, fullName, specialty, email, phone, created_at, updated_at
+//   professionals: id, fullName, specialty, email, phone, created_at, updated_at, branchId, isActive, commissionRate, photoUrl, bio, isPublic
 //   appointments:  id, patientId, patientName, professionalId, professional, date, time, reason, status, createdAt
 //   reminders:     id, appointmentId, patientId, message, sendAt, status
 //   medical_records: id, patientId, appointmentId, notes, diagnosis, createdAt
@@ -354,10 +354,13 @@ try {
     });
     if (u) C.users++;
 
+    // Comisión: 15% para los 5 primeros doctores, 10% para el resto
+    const commissionRate = i < 5 ? 0.15 : 0.10;
     const p = await ins('professionals', {
       fullName: d.fullName, specialty: d.specialty,
       email: d.email, phone: d.phone,
       photoUrl: null, bio: null, isPublic: true,
+      branchId: bId, isActive: true, commissionRate,
     });
     profIds.push(p?.id ?? null);
     profNames.push(d.fullName);

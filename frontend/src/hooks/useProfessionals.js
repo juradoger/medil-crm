@@ -2,9 +2,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { professionalService } from '../services/professionalService';
 
-export function useProfessionals(branchId) {
+export function useProfessionals(branchId = null) {
   const [professionals, setProfessionals] = useState([]);
-  const [loading, setLoading]             = useState(true);
+  const [loading, setLoading]             = useState(false);
   const [error, setError]                 = useState(null);
 
   // withLoading canónico — envuelve TODA operación async (loading + error)
@@ -22,27 +22,33 @@ export function useProfessionals(branchId) {
   }, []);
 
   const fetchProfessionals = useCallback(async () => {
-    const data = await professionalService.getByBranch(branchId);
-    setProfessionals(data);
+    const all = await professionalService.getAll();
+    const filtered = branchId ? all.filter(p => p.branchId === branchId) : all;
+    setProfessionals(filtered);
   }, [branchId]);
 
-  const load = useCallback(() => {
-    if (!branchId) return Promise.resolve();
-    return withLoading(fetchProfessionals);
-  }, [branchId, withLoading, fetchProfessionals]);
-
   // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => { load().catch(() => {}); }, [load]);
+  useEffect(() => { withLoading(fetchProfessionals).catch(() => {}); }, [withLoading, fetchProfessionals]);
 
-  const create = (data) => withLoading(async () => {
-    await professionalService.create({ ...data, branchId });
-    await fetchProfessionals();
+  const createProfessional = (data) => withLoading(async () => {
+    const created = await professionalService.create(data);
+    setProfessionals(prev => [...prev, created]);
+    return created;
   });
 
-  const update = (id, data) => withLoading(async () => {
-    await professionalService.update(id, data);
-    await fetchProfessionals();
+  const updateProfessional = (id, data) => withLoading(async () => {
+    const updated = await professionalService.update(id, data);
+    setProfessionals(prev => prev.map(p => (p.id === id ? { ...p, ...updated } : p)));
+    return updated;
   });
 
-  return { professionals, loading, error, create, update, reload: load };
+  const deactivateProfessional = (id) => withLoading(async () => {
+    await professionalService.deactivate(id);
+    setProfessionals(prev => prev.map(p => (p.id === id ? { ...p, isActive: false } : p)));
+  });
+
+  return {
+    professionals, loading, error,
+    createProfessional, updateProfessional, deactivateProfessional,
+  };
 }

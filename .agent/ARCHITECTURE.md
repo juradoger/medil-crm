@@ -533,6 +533,10 @@ POST /api/public/register                    registro de nuevo paciente desde po
        body: { diagnosis, notes, branchId }
        Retorna: { suggestions: [{ name, quantity }] }
 
+  POST /api/ai/suggest-specialty (público, sin auth)
+       body: { symptoms, availableSpecialties }
+       Retorna: { specialty, reason, urgency, raw }
+
   POST /api/ai/generate-reminder-message
        body: { patientName, appointmentDate,
                appointmentTime, reason, professionalName }

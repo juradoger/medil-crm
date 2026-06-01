@@ -326,6 +326,66 @@ Máximo 3 líneas. Sin emojis técnicos, solo 👋 y 📅.`;
   }
 });
 
+// ─── POST /api/ai/suggest-specialty ────────────────
+// El paciente describe síntomas y Claude sugiere la especialidad médica adecuada
+router.post('/suggest-specialty', async (req, res, next) => {
+  try {
+    const { symptoms, availableSpecialties } = req.body;
+
+    if (!symptoms?.trim()) {
+      return res.status(400).json({
+        error: 'Síntomas requeridos',
+        message: 'Describí tus síntomas para recibir una sugerencia',
+      });
+    }
+
+    const specialtiesText = availableSpecialties?.length
+      ? availableSpecialties.join(', ')
+      : 'Medicina General, Pediatría, Cardiología, Dermatología';
+
+    const systemPrompt = `Sos un asistente de orientación médica
+para pacientes en Bolivia. Ayudás a elegir la especialidad
+médica correcta según los síntomas descritos.
+
+ESPECIALIDADES DISPONIBLES: ${specialtiesText}
+
+REGLAS:
+- Respondé SIEMPRE en español
+- Sé amable y claro para un paciente no médico
+- Recomendá UNA especialidad principal
+- Explicá en 1 línea por qué
+- Si los síntomas son urgentes, indicalo claramente
+- Respondé en este formato exacto:
+ESPECIALIDAD: [nombre exacto de la especialidad]
+RAZÓN: [explicación en 1 línea para el paciente]
+URGENCIA: [Normal / Consultar pronto / Urgente]`;
+
+    const response = await askClaude(systemPrompt, symptoms, 200);
+
+    // Parsear la respuesta
+    const lines = response.split('\n');
+    const specialty = lines.find(l => l.startsWith('ESPECIALIDAD:'))
+      ?.replace('ESPECIALIDAD:', '').trim() || '';
+    const reason = lines.find(l => l.startsWith('RAZÓN:'))
+      ?.replace('RAZÓN:', '').trim() || '';
+    const urgency = lines.find(l => l.startsWith('URGENCIA:'))
+      ?.replace('URGENCIA:', '').trim() || 'Normal';
+
+    res.json({ specialty, reason, urgency, raw: response });
+
+  } catch (error) {
+    if (error.message.includes('CLAUDE_API_KEY')) {
+      return res.status(503).json({
+        simulated: true,
+        specialty: 'Medicina General',
+        reason: 'Especialidad sugerida por defecto (IA no configurada)',
+        urgency: 'Normal',
+      });
+    }
+    next(error);
+  }
+});
+
 // Simulación cuando no hay API key
 function simulateDiagnosis() {
   return 'DIAGNÓSTICO PROBABLE: Consulta con el especialista\n' +

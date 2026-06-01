@@ -4,12 +4,14 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useAppointments } from '../../hooks/useAppointments';
 import { usePatients } from '../../hooks/usePatients';
+import { useAI } from '../../hooks/useAI';
 import { recordService } from '../../services/recordService';
 import { professionalService } from '../../services/professionalService';
 import { StatusBadge } from '../../molecules/StatusBadge';
 import { FormField, inputClass } from '../../molecules/FormField';
 import { ConfirmModal } from '../../molecules/ConfirmModal';
 import { PaymentGate } from '../../organisms/PaymentGate';
+import { Button } from '../../atoms/Button';
 import { FullPageSpinner } from '../../atoms/Spinner';
 import { Avatar } from '../../atoms/Avatar';
 import { APPOINTMENT_STATUS, DEFAULT_CONSULTATION_FEE } from '../../core/constants';
@@ -18,26 +20,94 @@ import { eventBus } from '../../core/eventBus';
 
 
 const TODAY = new Date().toISOString().slice(0, 10);
+const MIN_SYMPTOMS = 20;
 
-function BookModal({ professionals, onSave, onClose }) {
-  const [form, setForm] = useState({ professionalId: '', date: TODAY, time: '', reason: '' });
+// Indicador de pasos del flujo de agendamiento
+function Stepper({ step }) {
+  return (
+    <div data-testid="stepper" className="flex items-center justify-center mb-6">
+      {[1, 2, 3, 4].map(n => (
+        <React.Fragment key={n}>
+          <div className={`flex items-center justify-center h-8 w-8 rounded-full text-xs font-bold ${
+            n < step ? 'bg-green-500 text-white'
+            : n === step ? 'bg-[#00B4D8] text-white'
+            : 'bg-gray-100 text-gray-400'
+          }`}>
+            {n < step ? '✓' : n}
+          </div>
+          {n < 4 && <div className={`h-0.5 w-8 ${n < step ? 'bg-green-500' : 'bg-gray-200'}`} />}
+        </React.Fragment>
+      ))}
+    </div>
+  );
+}
+
+// Insignia de urgencia según la sugerencia de la IA
+function UrgencyBadge({ urgency }) {
+  if (urgency === 'Urgente') {
+    return <span className="px-2 py-0.5 text-xs rounded-full bg-red-500 text-white">⚡ Consulta urgente</span>;
+  }
+  if (urgency === 'Consultar pronto') {
+    return <span className="px-2 py-0.5 text-xs rounded-full bg-orange-400 text-white">Consultar pronto</span>;
+  }
+  return null;
+}
+
+function BookModal({ professionals, isInsured, onSave, onClose }) {
+  const { suggestSpecialty, loading: aiLoading } = useAI();
+
+  const [step, setStep]         = useState(1);
+  const [symptoms, setSymptoms] = useState('');
+  const [suggestion, setSuggestion] = useState(null); // { specialty, reason, urgency }
+  const [selectedProf, setSelectedProf] = useState(null);
+  const [date, setDate]   = useState(TODAY);
+  const [time, setTime]   = useState('');
+  const [reason, setReason] = useState('');
+  const [reminderEnabled, setReminderEnabled] = useState(true);
+  const [reminderTiming, setReminderTiming]   = useState('24h');
+  const [reminderCustomTime, setReminderCustomTime] = useState('');
   const [saving, setSaving] = useState(false);
   const [error, setError]   = useState('');
 
-  const submit = async (e) => {
-    e.preventDefault();
-    if (!form.professionalId || !form.date || !form.time || !form.reason.trim()) {
-      setError('Todos los campos son obligatorios');
+  const goToStep = (n) => { setError(''); setStep(n); };
+
+  const handleSuggestSpecialty = async () => {
+    try {
+      const result = await suggestSpecialty(symptoms, professionals.map(p => p.specialty));
+      setSuggestion({ specialty: result.specialty, reason: result.reason, urgency: result.urgency });
+      setReason(prev => prev || symptoms);
+      goToStep(2);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  // Profesionales ordenados: primero los de la especialidad sugerida
+  const orderedProfessionals = useMemo(() => {
+    if (!suggestion?.specialty) return professionals;
+    const matches = (p) => p.specialty?.toLowerCase() === suggestion.specialty.toLowerCase();
+    return [...professionals].sort((a, b) => (matches(b) ? 1 : 0) - (matches(a) ? 1 : 0));
+  }, [professionals, suggestion]);
+
+  const isRecommended = (p) =>
+    suggestion?.specialty && p.specialty?.toLowerCase() === suggestion.specialty.toLowerCase();
+
+  const handleConfirm = async () => {
+    if (!date || !time || !reason.trim()) {
+      setError('Completá fecha, hora y motivo');
       return;
     }
     setSaving(true);
+    setError('');
     try {
-      const doc = professionals.find(p => p.id === form.professionalId);
       await onSave({
-        professionalId: form.professionalId,
-        professionalName: doc?.fullName ?? doc?.name ?? '',
-        scheduledAt: `${form.date}T${form.time}`,
-        reason: form.reason,
+        professionalId:   selectedProf.id,
+        professionalName: selectedProf.fullName ?? selectedProf.name ?? '',
+        scheduledAt:      `${date}T${time}`,
+        reason,
+        reminderConfig: reminderEnabled
+          ? { timing: reminderTiming, customTime: reminderTiming === 'custom' ? reminderCustomTime : null }
+          : null,
       });
       onClose();
     } catch (err) {
@@ -50,60 +120,159 @@ function BookModal({ professionals, onSave, onClose }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-md p-6 text-left">
-        <h2 className="text-lg font-semibold text-[#0E4A8A] mb-4">Agendar Nueva Cita</h2>
-        <form onSubmit={submit} className="space-y-4">
-          <FormField label="Profesional Médico" required>
-            <select
-              className={inputClass}
-              value={form.professionalId}
-              onChange={e => setForm(f => ({ ...f, professionalId: e.target.value }))}
-              required
-            >
-              <option value="">Seleccionar profesional…</option>
-              {professionals.map(p => (
-                <option key={p.id} value={p.id}>{p.fullName ?? p.name} ({p.specialty})</option>
-              ))}
-            </select>
-          </FormField>
-          <div className="grid grid-cols-2 gap-4">
-            <FormField label="Fecha" required>
-              <input
-                type="date"
-                min={TODAY}
-                className={inputClass}
-                value={form.date}
-                onChange={e => setForm(f => ({ ...f, date: e.target.value }))}
-                required
-              />
-            </FormField>
-            <FormField label="Hora" required>
-              <input
-                type="time"
-                className={inputClass}
-                value={form.time}
-                onChange={e => setForm(f => ({ ...f, time: e.target.value }))}
-                required
-              />
-            </FormField>
-          </div>
-          <FormField label="Motivo de la consulta" required>
-            <input
-              className={inputClass}
-              value={form.reason}
-              onChange={e => setForm(f => ({ ...f, reason: e.target.value }))}
-              placeholder="Ej: Control de rutina, dolor de cabeza..."
-              required
+      <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-lg p-6 text-left max-h-[90vh] overflow-y-auto">
+        <h2 className="text-lg font-semibold text-[#0E4A8A] mb-4 text-center">Agendar nueva cita</h2>
+        <Stepper step={step} />
+
+        {/* PASO 1 — Síntomas */}
+        {step === 1 && (
+          <div className="space-y-3">
+            <h3 className="text-base font-semibold text-[#0E4A8A]">Contanos cómo te sentís</h3>
+            <textarea
+              className={`${inputClass} resize-none`}
+              rows={5}
+              value={symptoms}
+              onChange={e => setSymptoms(e.target.value)}
+              placeholder={'Describí tus síntomas, por ejemplo:\ndolor de cabeza desde hace 3 días,\nmareos al levantarme...'}
             />
-          </FormField>
-          {error && <p className="text-xs text-red-500">{error}</p>}
-          <div className="flex justify-end gap-3 pt-2">
-            <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200">Cancelar</button>
-            <button type="submit" disabled={saving} className="px-4 py-2 text-sm text-white bg-[#00B4D8] rounded-lg hover:bg-[#0096B4] disabled:opacity-50 font-medium">
-              {saving ? 'Agendando…' : 'Agendar'}
-            </button>
+            <p className="text-xs text-gray-300">Mínimo {MIN_SYMPTOMS} caracteres</p>
+            <div className="flex flex-col gap-2">
+              <Button
+                label="Sugerir especialidad con IA →"
+                loading={aiLoading}
+                disabled={!symptoms.trim() || symptoms.length < MIN_SYMPTOMS}
+                onClick={handleSuggestSpecialty}
+              />
+              <Button label="Elegir sin IA →" variant="ghost" onClick={() => goToStep(2)} />
+            </div>
           </div>
-        </form>
+        )}
+
+        {/* PASO 2 — Seleccionar médico */}
+        {step === 2 && (
+          <div className="space-y-3">
+            {suggestion && (
+              <div className="bg-[#00B4D8]/5 border border-[#00B4D8]/20 rounded-xl p-4 mb-2">
+                <p className="text-xs text-[#00B4D8] font-medium uppercase">🤖 El asistente sugiere:</p>
+                <p className="text-lg font-bold text-[#0E4A8A]">{suggestion.specialty}</p>
+                <p className="text-sm text-gray-400">{suggestion.reason}</p>
+                <div className="mt-2"><UrgencyBadge urgency={suggestion.urgency} /></div>
+              </div>
+            )}
+
+            {orderedProfessionals.length === 0 ? (
+              <p className="text-sm text-gray-400 py-4 text-center">No hay profesionales disponibles.</p>
+            ) : (
+              <div className="space-y-2 max-h-[280px] overflow-y-auto pr-1">
+                {orderedProfessionals.map(p => (
+                  <button
+                    type="button"
+                    key={p.id}
+                    onClick={() => setSelectedProf(p)}
+                    className={`w-full text-left bg-white rounded-xl border p-4 flex items-center gap-3 transition-colors ${
+                      selectedProf?.id === p.id ? 'border-[#00B4D8] bg-[#00B4D8]/5' : 'border-gray-100 hover:border-[#00B4D8]/30'
+                    }`}
+                  >
+                    <Avatar name={p.fullName ?? p.name} photoUrl={p.photoUrl} size="md" />
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-[#0E4A8A] truncate">{p.fullName ?? p.name}</p>
+                      <p className="text-sm text-gray-400">{p.specialty}</p>
+                    </div>
+                    {isRecommended(p) && (
+                      <span className="text-xs bg-[#00B4D8]/10 text-[#00B4D8] px-2 py-0.5 rounded-full whitespace-nowrap">✓ Recomendado</span>
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {error && <p className="text-xs text-red-500">{error}</p>}
+            <div className="flex justify-between gap-3 pt-2">
+              <Button label="← Atrás" variant="secondary" onClick={() => goToStep(1)} />
+              <Button label="Continuar →" disabled={!selectedProf} onClick={() => goToStep(3)} />
+            </div>
+          </div>
+        )}
+
+        {/* PASO 3 — Fecha y hora */}
+        {step === 3 && (
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <FormField label="Fecha" required>
+                <input type="date" min={TODAY} className={inputClass} value={date} onChange={e => setDate(e.target.value)} />
+              </FormField>
+              <FormField label="Hora" required>
+                <input type="time" className={inputClass} value={time} onChange={e => setTime(e.target.value)} />
+              </FormField>
+            </div>
+            <FormField label="Motivo de la consulta" required>
+              <input className={inputClass} value={reason} onChange={e => setReason(e.target.value)} placeholder="Ej: control de rutina, dolor de cabeza..." />
+            </FormField>
+
+            {isInsured
+              ? <span className="inline-block px-2 py-1 text-xs rounded-full bg-green-500 text-white">Cita gratuita — Afiliado</span>
+              : <span className="inline-block px-2 py-1 text-xs rounded-full bg-orange-400 text-white">Se cobrará Bs. {DEFAULT_CONSULTATION_FEE}</span>
+            }
+
+            <div className="bg-gray-50 rounded-xl p-4 space-y-3">
+              <label className="flex items-center gap-2 text-sm text-gray-700">
+                <input type="checkbox" checked={reminderEnabled} onChange={e => setReminderEnabled(e.target.checked)} />
+                Recordatorio por WhatsApp
+              </label>
+              {reminderEnabled && (
+                <div className="grid grid-cols-2 gap-3">
+                  <select className={inputClass} value={reminderTiming} onChange={e => setReminderTiming(e.target.value)}>
+                    <option value="24h">24 horas antes</option>
+                    <option value="1h">1 hora antes</option>
+                    <option value="custom">Hora específica</option>
+                  </select>
+                  {reminderTiming === 'custom' && (
+                    <input type="time" className={inputClass} value={reminderCustomTime} onChange={e => setReminderCustomTime(e.target.value)} />
+                  )}
+                </div>
+              )}
+            </div>
+
+            {error && <p className="text-xs text-red-500">{error}</p>}
+            <div className="flex justify-between gap-3 pt-2">
+              <Button label="← Atrás" variant="secondary" onClick={() => goToStep(2)} />
+              <Button label="Continuar →" disabled={!date || !time || !reason.trim()} onClick={() => goToStep(4)} />
+            </div>
+          </div>
+        )}
+
+        {/* PASO 4 — Confirmación y pago */}
+        {step === 4 && (
+          <div className="space-y-4">
+            <h3 className="text-base font-semibold text-[#0E4A8A]">Confirmá tu cita</h3>
+            <div className="bg-gray-50 rounded-xl p-4 space-y-3">
+              <div className="flex items-center gap-3">
+                <Avatar name={selectedProf?.fullName ?? selectedProf?.name} photoUrl={selectedProf?.photoUrl} size="md" />
+                <div>
+                  <p className="font-semibold text-[#0E4A8A]">{selectedProf?.fullName ?? selectedProf?.name}</p>
+                  <p className="text-sm text-gray-400">{selectedProf?.specialty}</p>
+                </div>
+              </div>
+              <p className="text-sm text-gray-700">📅 {date} · {time}</p>
+              <p className="text-sm text-gray-700">📝 {reason}</p>
+            </div>
+
+            {isInsured
+              ? <span className="inline-block px-2 py-1 text-xs rounded-full bg-green-500 text-white">Cita gratuita por seguro médico</span>
+              : <span className="inline-block px-2 py-1 text-xs rounded-full bg-orange-400 text-white">Se requiere pago de Bs. {DEFAULT_CONSULTATION_FEE} para confirmar</span>
+            }
+
+            {error && <p className="text-xs text-red-500">{error}</p>}
+            <div className="flex justify-between gap-3 pt-2">
+              <Button label="← Atrás" variant="secondary" onClick={() => goToStep(3)} />
+              <Button
+                label={isInsured ? 'Confirmar cita gratis' : 'Continuar al pago'}
+                loading={saving}
+                onClick={handleConfirm}
+              />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -305,6 +474,7 @@ export default function PatientPortal() {
       {showBook && (
         <BookModal
           professionals={professionals}
+          isInsured={!!myPatient?.isInsured}
           onSave={handleBook}
           onClose={() => setShowBook(false)}
         />

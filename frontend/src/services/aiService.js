@@ -37,6 +37,10 @@ export const aiService = {
   chat: (message, patientContext, conversationHistory) =>
     callAI('/chat', { message, patientContext, conversationHistory }),
 
+  // Sugerir especialidad médica según síntomas (orientación al paciente)
+  suggestSpecialty: (symptoms, availableSpecialties) =>
+    callAI('/suggest-specialty', { symptoms, availableSpecialties }),
+
   // Sugerir insumos a descontar
   suggestSupplies: (diagnosis, notes, branchId) =>
     callAI('/suggest-supplies', { diagnosis, notes, branchId }),

@@ -24,14 +24,15 @@ export const MESSAGES = {
       noData: 'No hay sucursales registradas',
     },
     professionals: {
-      noData: 'No hay profesionales registrados para esta sucursal',
+      noData:    'No hay profesionales registrados',
+      noResults: 'No encontramos profesionales con ese criterio',
     },
     agenda: {
       noData: 'No tenés citas programadas para hoy',
     },
     noInsurance: '¿Tenés seguro médico? Registrá tu código en tu perfil y tus citas serán gratuitas.',
     reports: {
-      noData: 'No hay información disponible para ese período',
+      noData: 'No hay información para ese período y profesional',
     },
   },
   error: {
@@ -64,6 +65,8 @@ export const MESSAGES = {
     whatsappFailed:        'No se pudo enviar el WhatsApp. Intentá de nuevo.',
     aiNotConfigured:       'Asistente IA no disponible. Configurá CLAUDE_API_KEY en el servidor.',
     aiSimulated:           'Usando IA simulada — configurá CLAUDE_API_KEY para respuestas reales',
+    noReportData:          'No hay datos para el período seleccionado',
+    reportGenerationFailed:'Error al generar el reporte',
   },
   success: {
     patientCreated:      'Paciente registrado correctamente',
@@ -80,7 +83,10 @@ export const MESSAGES = {
     stockUpdated:        'Stock actualizado correctamente',
     recordCreated:       'Consulta registrada en el historial',
     branchCreated:       'Sucursal creada correctamente',
-    professionalCreated: 'Profesional registrado correctamente',
+    professionalCreated: (email) =>
+      `Profesional creado. Email: ${email} / Contraseña: MedIL2024!`,
+    reportGenerated:     'Reporte generado correctamente',
+    reportDownloaded:    'Reporte descargado',
     whatsappSent:        (phone) => `WhatsApp enviado correctamente a ${phone}`,
     reminderScheduled:   'Recordatorio programado correctamente',
     aiSuggestionApplied: 'Sugerencia de IA aplicada al diagnóstico',
@@ -95,5 +101,6 @@ export const MESSAGES = {
     deactivateBranch:   '¿Desactivar esta sucursal?',
     paymentCash:        '¿Confirmar que el paciente pagó en efectivo?',
     sendWhatsApp:       (name) => `¿Enviar recordatorio por WhatsApp a ${name}?`,
+    deactivateProfessional: '¿Desactivar este profesional? Sus citas futuras deberán reasignarse.',
   },
 };

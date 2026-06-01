@@ -50,9 +50,15 @@ export function useAI() {
     );
   }
 
+  async function suggestSpecialty(symptoms, availableSpecialties) {
+    return withAILoading(() =>
+      aiService.suggestSpecialty(symptoms, availableSpecialties)
+    );
+  }
+
   return {
     loading, error, isSimulated,
     suggestDiagnosis, summarizeHistory,
-    chat, suggestSupplies,
+    chat, suggestSupplies, suggestSpecialty,
   };
 }

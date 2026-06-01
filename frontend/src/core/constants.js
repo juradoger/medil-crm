@@ -60,6 +60,19 @@ export const DEFAULT_CONSULTATION_FEE = 150;
 // Porcentaje de comisión QR (2%) — QR commission percentage (2%)
 export const QR_COMMISSION_PERCENTAGE = 0.02;
 
+// Comisión por defecto del profesional (10%) — Default professional commission (10%)
+export const DEFAULT_COMMISSION_RATE = 0.10;
+
+// Especialidades médicas disponibles — Available medical specialties
+export const MEDICAL_SPECIALTIES = [
+  'Medicina General', 'Pediatría', 'Cardiología', 'Dermatología',
+  'Ginecología', 'Traumatología', 'Neurología', 'Oftalmología',
+  'Odontología', 'Psicología',
+];
+
+// Contraseña temporal para nuevos profesionales — Temporary password for new professionals
+export const DEFAULT_DOCTOR_PASSWORD = 'MedIL2024!';
+
 // Intervalo de polleo QR en ms — QR polling interval in ms
 export const QR_POLLING_INTERVAL_MS = 3000;
 

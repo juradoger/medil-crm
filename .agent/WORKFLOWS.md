@@ -217,3 +217,32 @@ b. Sigue el Flujo 5 desde el portal del paciente
    → Sistema crea user (role: patient) + patient en InsForge
 8. Toast "¡Cuenta creada!" + redirige a /login en 2.5s
 9. Paciente inicia sesión → redirige a /patient/portal
+
+
+---
+
+## Flujo 9 — Agendar cita con IA (paciente)
+
+1. Paciente hace click en "Nueva cita" en su portal
+2. Paso 1: describe sus síntomas (mínimo 20 caracteres)
+3. Botón "Sugerir especialidad con IA"
+   → POST /api/ai/suggest-specialty
+   → Claude analiza y retorna especialidad + razón + urgencia
+4. Paso 2: ve médicos filtrados por especialidad sugerida
+   Los recomendados tienen badge "✓ Recomendado"
+   Puede cambiar y elegir cualquier médico
+5. Paso 3: selecciona fecha, hora y configura recordatorio
+6. Paso 4: pago si no es afiliado, o confirma gratis
+7. Cita creada + recordatorio programado
+
+
+---
+
+## Flujo 10 — Generar reporte (admin)
+
+1. Admin entra a /admin/reports
+2. Selecciona profesional (o todos)
+3. Selecciona rango de fechas
+4. Click "Generar reporte"
+5. Ve métricas: atendidas, canceladas, ingresos, comisión
+6. Descarga PDF o Excel con el detalle completo

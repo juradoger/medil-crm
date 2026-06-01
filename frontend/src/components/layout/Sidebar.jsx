@@ -47,6 +47,16 @@ const ICONS = {
       <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
     </svg>
   ),
+  professionals: (
+    <svg className="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+    </svg>
+  ),
+  reports: (
+    <svg className="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+    </svg>
+  ),
   portal: (
     <svg className="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
       <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
@@ -65,9 +75,11 @@ const NAV_CONFIG = [
   { to: '/patients',       label: 'Pacientes',       roles: [USER_ROLES.ADMIN, USER_ROLES.DOCTOR], iconKey: 'patients' },
   { to: '/appointments',   label: 'Citas',           roles: [USER_ROLES.ADMIN, USER_ROLES.DOCTOR], iconKey: 'appointments' },
   { to: '/reminders',      label: 'Recordatorios',   roles: [USER_ROLES.ADMIN, USER_ROLES.DOCTOR], iconKey: 'reminders' },
-  { to: '/admin/branches', label: 'Sucursales',      roles: [USER_ROLES.ADMIN], iconKey: 'branches' },
-  { to: '/admin/billing',  label: 'Facturación',     roles: [USER_ROLES.ADMIN], iconKey: 'billing' },
-  { to: '/admin/supplies', label: 'Insumos',         roles: [USER_ROLES.ADMIN], iconKey: 'supplies' },
+  { to: '/admin/branches',      label: 'Sucursales',    roles: [USER_ROLES.ADMIN], iconKey: 'branches' },
+  { to: '/admin/professionals', label: 'Profesionales', roles: [USER_ROLES.ADMIN], iconKey: 'professionals' },
+  { to: '/admin/billing',       label: 'Facturación',   roles: [USER_ROLES.ADMIN], iconKey: 'billing' },
+  { to: '/admin/supplies',      label: 'Insumos',       roles: [USER_ROLES.ADMIN], iconKey: 'supplies' },
+  { to: '/admin/reports',       label: 'Reportes',      roles: [USER_ROLES.ADMIN], iconKey: 'reports' },
   { to: '/doctor/console', label: 'Consola médica',  roles: [USER_ROLES.DOCTOR], iconKey: 'console' },
   { to: '/patient/portal', label: 'Mi portal',       roles: [USER_ROLES.PATIENT], iconKey: 'portal' },
 ];
