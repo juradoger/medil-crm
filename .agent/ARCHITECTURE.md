@@ -516,6 +516,38 @@ GET  /api/public/branches                    lista pública de clínicas activas
 GET  /api/public/branches/:id                detalle de clínica + profesionales
 POST /api/public/register                    registro de nuevo paciente desde portal
 
+### Endpoints de IA (requieren CLAUDE_API_KEY en backend/.env)
+  POST /api/ai/suggest-diagnosis
+       body: { symptoms, patientId, doctorSpecialty }
+       Retorna: { suggestion, basedOn }
+
+  POST /api/ai/summarize-history
+       body: { patientId, patientName }
+       Retorna: { summary, recordCount }
+
+  POST /api/ai/chat
+       body: { message, patientContext, conversationHistory }
+       Retorna: { response, role }
+
+  POST /api/ai/suggest-supplies
+       body: { diagnosis, notes, branchId }
+       Retorna: { suggestions: [{ name, quantity }] }
+
+  POST /api/ai/generate-reminder-message
+       body: { patientName, appointmentDate,
+               appointmentTime, reason, professionalName }
+       Retorna: { message }
+
+Comportamiento sin API key:
+  Todos los endpoints retornan { simulated: true, ... }
+  con datos simulados para desarrollo.
+  La UI muestra un badge naranja "Simulado".
+
+Principio clave de la IA en MedIL:
+  La IA es asistente, nunca decide. El doctor tiene la última palabra.
+  Lo que se guarda es lo que el doctor confirmó. La IA nunca se llama
+  desde el frontend directamente: siempre pasa por el servidor Express.
+
 ### Estructura de archivos
 backend/
   server.js              ← entrada del servidor, puerto 3001

@@ -62,6 +62,8 @@ export const MESSAGES = {
     },
     whatsappNotConfigured: 'WhatsApp simulado — configurar Twilio para envío real',
     whatsappFailed:        'No se pudo enviar el WhatsApp. Intentá de nuevo.',
+    aiNotConfigured:       'Asistente IA no disponible. Configurá CLAUDE_API_KEY en el servidor.',
+    aiSimulated:           'Usando IA simulada — configurá CLAUDE_API_KEY para respuestas reales',
   },
   success: {
     patientCreated:      'Paciente registrado correctamente',
@@ -81,6 +83,9 @@ export const MESSAGES = {
     professionalCreated: 'Profesional registrado correctamente',
     whatsappSent:        (phone) => `WhatsApp enviado correctamente a ${phone}`,
     reminderScheduled:   'Recordatorio programado correctamente',
+    aiSuggestionApplied: 'Sugerencia de IA aplicada al diagnóstico',
+    suppliesDeducted:    'Insumos descontados del inventario',
+    historySummarized:   'Historial resumido correctamente',
   },
   confirm: {
     cancelAppointment:  '¿Cancelar esta cita? El recordatorio también se cancelará. Esta acción no se puede deshacer',

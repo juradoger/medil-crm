@@ -57,3 +57,9 @@ export const DEFAULT_APPOINTMENT_DURATION_MINUTES = 30;
 
 // Porcentaje de comisión QR (2%) — QR commission percentage (2%)
 export const QR_COMMISSION_PERCENTAGE = 0.02;
+
+// Modelo de Claude usado por los endpoints de IA — Claude model used by AI endpoints
+export const CLAUDE_MODEL = 'claude-sonnet-4-20250514';
+
+// Límite por defecto de tokens en respuestas de IA — Default token limit for AI responses
+export const AI_MAX_TOKENS = 1000;
