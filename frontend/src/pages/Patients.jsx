@@ -8,14 +8,19 @@ import { SearchBar } from '../molecules/SearchBar';
 import { StatusBadge } from '../molecules/StatusBadge';
 import { ConfirmModal } from '../molecules/ConfirmModal';
 import { FullPageSpinner } from '../atoms/Spinner';
+import { Button } from '../atoms/Button';
 import { FormField, inputClass } from '../molecules/FormField';
-import { PATIENT_STATUS } from '../core/constants';
+import { PATIENT_STATUS, USER_ROLES } from '../core/constants';
+import { ArrowLeft, Plus, Eye, Pencil, UserX } from 'lucide-react';
 
-const EMPTY_FORM = { name: '', phone: '', email: '' };
+const EMPTY_FORM = { name: '', ci: '', phone: '', email: '' };
+const CI_REGEX = /^\d{5,12}(-?\d{0,3}\s?[A-Za-z]{0,2})?$/;
 
 function PatientModal({ initial, onSave, onClose }) {
   const [form, setForm] = useState(
-    initial ? { name: initial.name ?? '', phone: initial.phone ?? '', email: initial.email ?? '' } : EMPTY_FORM
+    initial
+      ? { name: initial.name ?? '', ci: initial.ci ?? '', phone: initial.phone ?? '', email: initial.email ?? '' }
+      : EMPTY_FORM
   );
   const [saving, setSaving] = useState(false);
   const [error, setError]   = useState('');
@@ -25,6 +30,8 @@ function PatientModal({ initial, onSave, onClose }) {
   const submit = async (e) => {
     e.preventDefault();
     if (!form.name.trim()) { setError('El nombre es obligatorio'); return; }
+    if (!form.ci.trim())   { setError('El CI es obligatorio'); return; }
+    if (!CI_REGEX.test(form.ci.trim())) { setError('Ingresá un CI válido (5 a 12 dígitos)'); return; }
     setSaving(true);
     try { await onSave(form); onClose(); }
     catch (err) { setError(err.message); }
@@ -33,14 +40,18 @@ function PatientModal({ initial, onSave, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-md p-6">
+      <div className="absolute inset-0 medil-modal-overlay" onClick={onClose} />
+      <div className="medil-modal relative bg-white rounded-xl w-full max-w-md p-6">
         <h2 className="text-lg font-semibold text-gray-800 mb-4">
           {initial ? 'Editar Paciente' : 'Nuevo Paciente'}
         </h2>
         <form onSubmit={submit} className="space-y-4">
           <FormField label="Nombre completo">
             <input className={inputClass} value={form.name} onChange={e => set('name', e.target.value)} required />
+          </FormField>
+          <FormField label="CI (Carnet de Identidad)">
+            <input className={inputClass} inputMode="numeric" placeholder="Ej: 8451236 LP"
+              value={form.ci} onChange={e => set('ci', e.target.value)} required />
           </FormField>
           <FormField label="Teléfono">
             <input className={inputClass} value={form.phone} onChange={e => set('phone', e.target.value)} />
@@ -50,10 +61,8 @@ function PatientModal({ initial, onSave, onClose }) {
           </FormField>
           {error && <p className="text-xs text-red-500">{error}</p>}
           <div className="flex justify-end gap-3 pt-2">
-            <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200">Cancelar</button>
-            <button type="submit" disabled={saving} className="px-4 py-2 text-sm text-white bg-primary rounded-lg hover:bg-primary-dark disabled:opacity-50">
-              {saving ? 'Guardando…' : 'Guardar'}
-            </button>
+            <Button label="Cancelar" variant="secondary" type="button" onClick={onClose} />
+            <Button label={saving ? 'Guardando…' : 'Guardar'} type="submit" loading={saving} />
           </div>
         </form>
       </div>
@@ -62,7 +71,8 @@ function PatientModal({ initial, onSave, onClose }) {
 }
 
 export default function Patients() {
-  const { currentBranchId } = useAuth();
+  const { currentBranchId, user } = useAuth();
+  const isAdmin = user?.role === USER_ROLES.ADMIN;
   const { patients, loading, create, update, remove } = usePatients(currentBranchId);
 
   const [query, setQuery]         = useState('');
@@ -75,6 +85,7 @@ export default function Patients() {
 
   const columns = [
     { key: 'name',  label: 'Nombre' },
+    { key: 'ci',    label: 'CI', render: r => r.ci || '—', className: 'hidden sm:table-cell' },
     { key: 'phone', label: 'Teléfono', className: 'hidden md:table-cell' },
     { key: 'email', label: 'Email', className: 'hidden md:table-cell' },
     { key: 'status', label: 'Estado', render: r => <StatusBadge status={r.status} /> },
@@ -83,21 +94,17 @@ export default function Patients() {
       render: r => (
         <div className="flex gap-3">
           <Link to={`/patients/${r.id}`} className="text-gray-400 hover:text-primary transition-colors" title="Ver detalle">
-            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-            </svg>
+            <Eye size={18} strokeWidth={2} />
           </Link>
           <button onClick={() => setModal(r)} className="text-gray-400 hover:text-navy transition-colors" title="Editar">
-            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-            </svg>
+            <Pencil size={18} strokeWidth={2} />
           </button>
-          <button onClick={() => setDelete(r)} className="text-gray-400 hover:text-red-500 transition-colors" title="Desactivar">
-            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
-            </svg>
-          </button>
+          {/* Solo el admin puede desactivar pacientes; el doctor no */}
+          {isAdmin && (
+            <button onClick={() => setDelete(r)} className="text-gray-400 hover:text-red-500 transition-colors" title="Desactivar">
+              <UserX size={18} strokeWidth={2} />
+            </button>
+          )}
         </div>
       ),
     },
@@ -114,18 +121,14 @@ export default function Patients() {
     <div className="p-6 max-w-6xl mx-auto space-y-6">
       <div>
         <Link to="/" className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary-dark transition-colors">
-          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-          </svg>
+          <ArrowLeft size={16} strokeWidth={2.25} />
           Volver al Dashboard
         </Link>
       </div>
 
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-navy">Pacientes</h1>
-        <button onClick={() => setModal('create')} className="px-4 py-2 text-sm text-white bg-primary rounded-lg hover:bg-primary-dark">
-          + Nuevo
-        </button>
+        <Button label="Nuevo" icon={Plus} onClick={() => setModal('create')} />
       </div>
 
       <SearchBar value={query} onChange={setQuery} placeholder="Buscar por nombre…" />

@@ -40,12 +40,12 @@ router.get('/branches/:id', async (req, res, next) => {
 // POST /api/public/register — registro de nuevo paciente desde el portal
 router.post('/register', async (req, res, next) => {
   try {
-    const { name, phone, email, password, branchId, photoUrl } = req.body;
+    const { name, ci, phone, email, password, branchId, photoUrl } = req.body;
 
-    if (!name || !phone || !email || !password || !branchId) {
+    if (!name || !ci || !phone || !email || !password || !branchId) {
       return res.status(400).json({
         error:   'Datos incompletos',
-        message: 'Nombre, teléfono, correo, contraseña y sucursal son obligatorios',
+        message: 'Nombre, CI, teléfono, correo, contraseña y sucursal son obligatorios',
       });
     }
 
@@ -64,7 +64,7 @@ router.post('/register', async (req, res, next) => {
 
     const now = new Date().toISOString();
 
-    // Crear user con rol patient
+    // Crear user con rol patient (incluye la foto para que el avatar persista)
     const { data: userRows, error: userErr } = await db.from('users').insert({
       email,
       passwordHash: password,
@@ -72,6 +72,7 @@ router.post('/register', async (req, res, next) => {
       branchId,
       isActive:     true,
       fullName:     name,
+      photoUrl:     photoUrl ?? null,
       created_at:   now,
       updated_at:   now,
     }).select();
@@ -79,13 +80,17 @@ router.post('/register', async (req, res, next) => {
 
     const userId = userRows?.[0]?.id;
 
-    // Crear patient vinculado al user
+    // Crear patient vinculado al user (por email). Se guardan teléfono y foto
+    // para que se muestren luego en el perfil y el portal del paciente.
     const { data: patientRows, error: patientErr } = await db.from('patients').insert({
       name,
+      ci,
       phone,
       email,
-      status:    PATIENT_STATUS.ACTIVE,
-      createdAt: now,
+      status:        PATIENT_STATUS.ACTIVE,
+      photoUrl:      photoUrl ?? null,
+      whatsappPhone: phone,
+      createdAt:     now,
     }).select();
     if (patientErr) throw new Error(patientErr.message);
 

@@ -5,20 +5,23 @@ import { useAuth } from '../context/AuthContext';
 import { useAppointments } from '../hooks/useAppointments';
 import { usePatients } from '../hooks/usePatients';
 import { DataTable } from '../organisms/DataTable';
+import { SearchBar } from '../molecules/SearchBar';
 import { StatusBadge } from '../molecules/StatusBadge';
 import { ConfirmModal } from '../molecules/ConfirmModal';
 import { PaymentGate } from '../organisms/PaymentGate';
 import { FullPageSpinner } from '../atoms/Spinner';
+import { Button } from '../atoms/Button';
 import { FormField, inputClass } from '../molecules/FormField';
-import { APPOINTMENT_STATUS, DEFAULT_CONSULTATION_FEE } from '../core/constants';
+import { ArrowLeft, Plus } from 'lucide-react';
+import { APPOINTMENT_STATUS, DEFAULT_CONSULTATION_FEE, USER_ROLES } from '../core/constants';
 import { MESSAGES } from '../core/messages';
 import { eventBus } from '../core/eventBus';
 
 
 const EMPTY_FORM = { patientId: '', patientName: '', professional: '', date: '', time: '', reason: '' };
 
-function AppointmentModal({ patients, onSave, onClose }) {
-  const [form, setForm] = useState(EMPTY_FORM);
+function AppointmentModal({ patients, onSave, onClose, defaultProfessional = '', lockProfessional = false }) {
+  const [form, setForm] = useState({ ...EMPTY_FORM, professional: defaultProfessional });
   const [saving, setSaving] = useState(false);
   const [error, setError]   = useState('');
 
@@ -49,8 +52,8 @@ function AppointmentModal({ patients, onSave, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-md p-6">
+      <div className="absolute inset-0 medil-modal-overlay" onClick={onClose} />
+      <div className="medil-modal relative bg-white rounded-xl w-full max-w-md p-6">
         <h2 className="text-lg font-semibold text-gray-800 mb-4">Nueva Cita</h2>
         <form onSubmit={submit} className="space-y-4">
           <FormField label="Paciente">
@@ -62,7 +65,13 @@ function AppointmentModal({ patients, onSave, onClose }) {
             </select>
           </FormField>
           <FormField label="Profesional">
-            <input className={inputClass} value={form.professional} onChange={e => set('professional', e.target.value)} placeholder="Ej: Dra. Carmen Solís" />
+            <input
+              className={inputClass}
+              value={form.professional}
+              onChange={e => set('professional', e.target.value)}
+              placeholder="Ej: Dra. Carmen Solís"
+              readOnly={lockProfessional}
+            />
           </FormField>
           <FormField label="Fecha">
             <input className={inputClass} type="date" value={form.date} onChange={e => set('date', e.target.value)} />
@@ -90,13 +99,16 @@ const STATUS_FILTERS = ['Todas', APPOINTMENT_STATUS.SCHEDULED, APPOINTMENT_STATU
 const STATUS_LABELS  = { 'Todas': 'Todas', scheduled: 'Agendadas', attended: 'Atendidas', cancelled: 'Canceladas' };
 
 export default function Appointments() {
-  const { currentBranchId } = useAuth();
+  const { currentBranchId, user } = useAuth();
+  const isDoctor = user?.role === USER_ROLES.DOCTOR;
   const { appointments, loading, cancel, markAttended, createWithPaymentCheck, createAfterPayment } = useAppointments(currentBranchId);
   const { patients, loading: loadP } = usePatients(currentBranchId);
 
   const [showModal, setShowModal]       = useState(false);
   const [cancelTarget, setCancelTarget] = useState(null);
   const [filterStatus, setFilter]       = useState('Todas');
+  const [query, setQuery]               = useState('');   // búsqueda por paciente/profesional
+  const [dateFilter, setDateFilter]     = useState('');   // filtro por fecha
   const [pendingAppt, setPendingAppt]   = useState(null); // cita esperando pago
 
   // Verifica seguro: si está afiliado crea directo, si no abre la compuerta de pago
@@ -116,9 +128,13 @@ export default function Appointments() {
     setPendingAppt(null);
   };
 
-  const filtered = filterStatus === 'Todas'
-    ? appointments
-    : appointments.filter(a => a.status === filterStatus);
+  const q = query.trim().toLowerCase();
+  const filtered = appointments.filter(a => {
+    if (filterStatus !== 'Todas' && a.status !== filterStatus) return false;
+    if (dateFilter && a.date !== dateFilter) return false;
+    if (q && !(`${a.patientName ?? ''} ${a.professional ?? ''}`.toLowerCase().includes(q))) return false;
+    return true;
+  });
 
   const columns = [
     { key: 'datetime', label: 'Fecha y hora', render: r => `${r.date ?? '—'} ${r.time?.slice(0, 5) ?? ''}` },
@@ -155,18 +171,32 @@ export default function Appointments() {
     <div className="p-6 max-w-6xl mx-auto space-y-6">
       <div>
         <Link to="/" className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary-dark transition-colors">
-          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-          </svg>
+          <ArrowLeft size={16} strokeWidth={2.25} />
           Volver al Dashboard
         </Link>
       </div>
 
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-navy">Citas</h1>
-        <button onClick={() => setShowModal(true)} className="px-4 py-2 text-sm text-white bg-primary rounded-lg hover:bg-primary-dark">
-          + Nueva cita
-        </button>
+        <Button label="Nueva cita" icon={Plus} onClick={() => setShowModal(true)} />
+      </div>
+
+      {/* Filtros: búsqueda por paciente/profesional + fecha */}
+      <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
+        <div className="flex-1">
+          <SearchBar value={query} onChange={setQuery} placeholder="Buscar por paciente o profesional…" />
+        </div>
+        <input
+          type="date"
+          className={`${inputClass} sm:max-w-[180px]`}
+          value={dateFilter}
+          onChange={e => setDateFilter(e.target.value)}
+        />
+        {dateFilter && (
+          <button onClick={() => setDateFilter('')} className="text-xs text-gray-500 hover:text-primary">
+            Limpiar fecha
+          </button>
+        )}
       </div>
 
       <div className="flex gap-2 flex-wrap">
@@ -186,7 +216,13 @@ export default function Appointments() {
       <DataTable columns={columns} rows={filtered} emptyTitle="Sin citas registradas" />
 
       {showModal && (
-        <AppointmentModal patients={patients} onSave={handleCreate} onClose={() => setShowModal(false)} />
+        <AppointmentModal
+          patients={patients}
+          onSave={handleCreate}
+          onClose={() => setShowModal(false)}
+          defaultProfessional={isDoctor ? (user?.fullName ?? '') : ''}
+          lockProfessional={isDoctor}
+        />
       )}
 
       <PaymentGate

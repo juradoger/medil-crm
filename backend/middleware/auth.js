@@ -22,8 +22,17 @@ export function requireAuth(req, res, next) {
     });
   }
 
-  // Por ahora el token es el userId directamente (hasta JWT en Etapa 8)
-  req.userId = token;
-  req.token  = token;
+  // El token que envía el frontend es el payload en base64: { id, email, role, branchId }.
+  // Hay que decodificarlo para obtener el id real del usuario (no el blob base64),
+  // de lo contrario las consultas .eq('id', req.userId) nunca encuentran al usuario.
+  try {
+    const payload = JSON.parse(Buffer.from(token, 'base64').toString('utf8'));
+    req.userId = payload.id ?? token;
+    req.user   = payload;
+  } catch {
+    // Compatibilidad: si el token no es un base64 válido, usarlo tal cual
+    req.userId = token;
+  }
+  req.token = token;
   next();
 }

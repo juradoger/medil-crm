@@ -4,9 +4,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import { PublicLayout } from './PublicLayout';
 import { publicApi, uploadApi } from '../../services/backendService';
 import { Logo } from '../../atoms/Logo';
+import { CheckCircle } from 'lucide-react';
 
 
-const EMPTY = { name: '', phone: '', email: '', password: '', confirmPassword: '', branchId: '' };
+const EMPTY = { name: '', ci: '', phone: '', email: '', password: '', confirmPassword: '', branchId: '' };
 
 export default function RegisterPage() {
   const navigate  = useNavigate();
@@ -47,6 +48,8 @@ export default function RegisterPage() {
   function validate() {
     const e = {};
     if (!form.name.trim())            e.name            = 'El nombre es obligatorio';
+    if (!form.ci.trim())              e.ci              = 'El CI es obligatorio';
+    else if (!/^\d{5,12}(-?\d{0,3}\s?[A-Za-z]{0,2})?$/.test(form.ci.trim())) e.ci = 'CI inválido';
     if (!form.phone.trim())           e.phone           = 'El teléfono es obligatorio';
     if (!form.email.trim())           e.email           = 'El correo es obligatorio';
     else if (!/\S+@\S+\.\S+/.test(form.email)) e.email = 'Correo inválido';
@@ -89,7 +92,7 @@ export default function RegisterPage() {
   if (success) return (
     <PublicLayout>
       <div className="max-w-md mx-auto py-20 text-center space-y-4">
-        <div className="text-5xl">✓</div>
+        <div className="flex justify-center"><CheckCircle size={56} strokeWidth={2} className="text-primary" /></div>
         <h2 className="text-xl font-bold text-primary">¡Cuenta creada!</h2>
         <p className="text-gray-500">Redirigiendo al inicio de sesión…</p>
       </div>
@@ -136,6 +139,17 @@ export default function RegisterPage() {
             <input className={inputClass} value={form.name}
               onChange={e => set('name', e.target.value)} />
             {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name}</p>}
+          </div>
+
+          {/* CI */}
+          <div>
+            <label className="block text-xs font-medium text-gray-600 mb-1">
+              CI (Carnet de Identidad) <span className="text-red-500">*</span>
+            </label>
+            <input inputMode="numeric" className={inputClass} value={form.ci}
+              placeholder="Ej: 8451236 LP"
+              onChange={e => set('ci', e.target.value)} />
+            {errors.ci && <p className="text-xs text-red-500 mt-1">{errors.ci}</p>}
           </div>
 
           {/* Teléfono */}

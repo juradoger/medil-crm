@@ -47,8 +47,13 @@ export function useProfessionals(branchId = null) {
     setProfessionals(prev => prev.map(p => (p.id === id ? { ...p, isActive: false } : p)));
   });
 
+  const activateProfessional = (id) => withLoading(async () => {
+    await professionalService.activate(id);
+    setProfessionals(prev => prev.map(p => (p.id === id ? { ...p, isActive: true } : p)));
+  });
+
   return {
     professionals, loading, error,
-    createProfessional, updateProfessional, deactivateProfessional,
+    createProfessional, updateProfessional, deactivateProfessional, activateProfessional,
   };
 }

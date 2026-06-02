@@ -85,6 +85,9 @@ export const appointmentService = {
       date,
       time,
       reason:         data.reason ?? null,
+      // Sin status explícito la cita queda con estado nulo y no aparece como
+      // "agendada" en el portal ni en los listados → toda cita nueva es SCHEDULED
+      status:         APPOINTMENT_STATUS.SCHEDULED,
     }).select();
     if (error) throw new Error(error.message);
 

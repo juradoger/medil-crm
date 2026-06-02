@@ -9,48 +9,83 @@ import { StatusBadge } from '../molecules/StatusBadge';
 import { DataTable } from '../organisms/DataTable';
 import { FullPageSpinner } from '../atoms/Spinner';
 import { FormField, inputClass } from '../molecules/FormField';
+import { Button } from '../atoms/Button';
+import { ArrowLeft, Plus } from 'lucide-react';
 
 const TABS  = ['Citas', 'Historial'];
 const TODAY = new Date().toISOString().slice(0, 10);
 
-function RecordModal({ onSave, onClose }) {
-  const [form, setForm] = useState({ attendanceDate: TODAY, diagnosis: '', notes: '' });
+function RecordModal({ appointments, onSave, onClose }) {
+  const [form, setForm] = useState({ appointmentId: '', attendanceDate: TODAY, diagnosis: '', notes: '' });
   const [saving, setSaving] = useState(false);
+  const [error, setError]   = useState('');
+
+  // El historial debe vincularse a una cita; sin citas no se puede registrar
+  const hasAppointments = appointments.length > 0;
 
   const submit = async (e) => {
     e.preventDefault();
+    if (!form.appointmentId) { setError('Seleccioná la cita asociada a esta consulta'); return; }
+    setError('');
     setSaving(true);
     try { await onSave(form); onClose(); }
+    catch (err) { setError(err.message); }
     finally { setSaving(false); }
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-md p-6">
+      <div className="absolute inset-0 medil-modal-overlay" onClick={onClose} />
+      <div className="medil-modal relative bg-white rounded-xl w-full max-w-md p-6">
         <h2 className="text-lg font-semibold text-gray-800 mb-4">Nueva entrada</h2>
-        <form onSubmit={submit} className="space-y-4">
-          <FormField label="Fecha de atención" htmlFor="attendanceDate" required>
-            <input id="attendanceDate" type="date" className={inputClass}
-              value={form.attendanceDate}
-              onChange={e => setForm(f => ({ ...f, attendanceDate: e.target.value }))} />
-          </FormField>
-          <FormField label="Diagnóstico" htmlFor="diagnosis" required>
-            <input id="diagnosis" className={inputClass} value={form.diagnosis}
-              onChange={e => setForm(f => ({ ...f, diagnosis: e.target.value }))} required />
-          </FormField>
-          <FormField label="Notas" htmlFor="notes">
-            <textarea id="notes" className={`${inputClass} resize-none`} rows={3}
-              value={form.notes}
-              onChange={e => setForm(f => ({ ...f, notes: e.target.value }))} />
-          </FormField>
-          <div className="flex justify-end gap-3 pt-2">
-            <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200">Cancelar</button>
-            <button type="submit" disabled={saving} className="px-4 py-2 text-sm text-white bg-primary rounded-lg hover:bg-primary-dark disabled:opacity-50">
-              {saving ? 'Guardando…' : 'Guardar'}
-            </button>
+
+        {!hasAppointments ? (
+          <div className="space-y-4">
+            <p className="text-sm text-gray-500 bg-gray-50 border border-gray-100 rounded-lg p-4">
+              Este paciente no tiene citas registradas. No es posible agregar una entrada
+              al historial sin una cita asociada. Agendá una cita primero.
+            </p>
+            <div className="flex justify-end">
+              <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200">Cerrar</button>
+            </div>
           </div>
-        </form>
+        ) : (
+          <form onSubmit={submit} className="space-y-4">
+            <FormField label="Cita asociada" htmlFor="appointmentId" required>
+              <select id="appointmentId" className={inputClass}
+                value={form.appointmentId}
+                onChange={e => setForm(f => ({ ...f, appointmentId: e.target.value }))} required>
+                <option value="">Seleccioná una cita…</option>
+                {appointments.map(a => (
+                  <option key={a.id} value={a.id}>
+                    {a.date} {a.time?.slice(0, 5) ?? ''} — {a.reason || 'Sin motivo'}
+                  </option>
+                ))}
+              </select>
+            </FormField>
+            <FormField label="Fecha de atención" htmlFor="attendanceDate" required>
+              <input id="attendanceDate" type="date" className={inputClass}
+                value={form.attendanceDate}
+                onChange={e => setForm(f => ({ ...f, attendanceDate: e.target.value }))} />
+            </FormField>
+            <FormField label="Diagnóstico" htmlFor="diagnosis" required>
+              <input id="diagnosis" className={inputClass} value={form.diagnosis}
+                onChange={e => setForm(f => ({ ...f, diagnosis: e.target.value }))} required />
+            </FormField>
+            <FormField label="Notas" htmlFor="notes">
+              <textarea id="notes" className={`${inputClass} resize-none`} rows={3}
+                value={form.notes}
+                onChange={e => setForm(f => ({ ...f, notes: e.target.value }))} />
+            </FormField>
+            {error && <p className="text-xs text-red-500">{error}</p>}
+            <div className="flex justify-end gap-3 pt-2">
+              <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200">Cancelar</button>
+              <button type="submit" disabled={saving} className="px-4 py-2 text-sm text-white bg-primary rounded-lg hover:bg-primary-dark disabled:opacity-50">
+                {saving ? 'Guardando…' : 'Guardar'}
+              </button>
+            </div>
+          </form>
+        )}
       </div>
     </div>
   );
@@ -95,7 +130,9 @@ export default function PatientDetail() {
 
   return (
     <div className="p-6 max-w-5xl mx-auto space-y-6">
-      <Link to="/patients" className="text-sm text-primary hover:underline">← Volver a Pacientes</Link>
+      <Link to="/patients" className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary-dark transition-colors">
+        <ArrowLeft size={16} strokeWidth={2.25} /> Volver a Pacientes
+      </Link>
 
       {/* Columnas: info + stats */}
       <div className="grid md:grid-cols-3 gap-6">
@@ -106,7 +143,8 @@ export default function PatientDetail() {
             </div>
             <StatusBadge status={patient.status} />
           </div>
-          <div className="grid grid-cols-2 gap-3 text-sm text-gray-600">
+          <div className="grid grid-cols-2 gap-3 text-sm text-gray-600 leading-relaxed">
+            <div><span className="font-medium">CI:</span> {patient.ci || '—'}</div>
             <div><span className="font-medium">Teléfono:</span> {patient.phone || '—'}</div>
             <div><span className="font-medium">Email:</span> {patient.email || '—'}</div>
           </div>
@@ -147,12 +185,7 @@ export default function PatientDetail() {
         {tab === 1 && (
           <div className="space-y-3">
             <div className="flex justify-end">
-              <button
-                onClick={() => setShowRecord(true)}
-                className="px-4 py-2 text-sm text-white bg-primary rounded-lg hover:bg-primary-dark"
-              >
-                + Nueva entrada
-              </button>
+              <Button label="Nueva entrada" icon={Plus} size="sm" onClick={() => setShowRecord(true)} />
             </div>
             <DataTable columns={recordColumns} rows={records} emptyTitle="Sin registros" />
           </div>
@@ -161,6 +194,7 @@ export default function PatientDetail() {
 
       {showRecord && (
         <RecordModal
+          appointments={patientAppointments}
           onSave={createRecord}
           onClose={() => setShowRecord(false)}
         />

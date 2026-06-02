@@ -14,6 +14,7 @@ import { PaymentGate } from '../../organisms/PaymentGate';
 import { Button } from '../../atoms/Button';
 import { FullPageSpinner } from '../../atoms/Spinner';
 import { Avatar } from '../../atoms/Avatar';
+import { Check, Zap, Sparkles, ArrowRight, ArrowLeft, Calendar, FileText, Plus, XCircle } from 'lucide-react';
 import { APPOINTMENT_STATUS, DEFAULT_CONSULTATION_FEE } from '../../core/constants';
 import { MESSAGES } from '../../core/messages';
 import { eventBus } from '../../core/eventBus';
@@ -33,7 +34,7 @@ function Stepper({ step }) {
             : n === step ? 'bg-primary text-white'
             : 'bg-gray-100 text-gray-400'
           }`}>
-            {n < step ? '✓' : n}
+            {n < step ? <Check size={16} strokeWidth={3} /> : n}
           </div>
           {n < 4 && <div className={`h-0.5 w-8 ${n < step ? 'bg-green-500' : 'bg-gray-200'}`} />}
         </React.Fragment>
@@ -45,7 +46,7 @@ function Stepper({ step }) {
 // Insignia de urgencia según la sugerencia de la IA
 function UrgencyBadge({ urgency }) {
   if (urgency === 'Urgente') {
-    return <span className="px-2 py-0.5 text-xs rounded-full bg-red-500 text-white">⚡ Consulta urgente</span>;
+    return <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-full bg-red-500 text-white"><Zap size={12} strokeWidth={2.5} /> Consulta urgente</span>;
   }
   if (urgency === 'Consultar pronto') {
     return <span className="px-2 py-0.5 text-xs rounded-full bg-orange-400 text-white">Consultar pronto</span>;
@@ -119,8 +120,8 @@ function BookModal({ professionals, isInsured, onSave, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-lg p-6 text-left max-h-[90vh] overflow-y-auto">
+      <div className="absolute inset-0 medil-modal-overlay" onClick={onClose} />
+      <div className="medil-modal relative bg-white rounded-xl w-full max-w-lg p-6 text-left max-h-[90vh] overflow-y-auto">
         <h2 className="text-lg font-semibold text-navy mb-4 text-center">Agendar nueva cita</h2>
         <Stepper step={step} />
 
@@ -138,12 +139,14 @@ function BookModal({ professionals, isInsured, onSave, onClose }) {
             <p className="text-xs text-gray-300">Mínimo {MIN_SYMPTOMS} caracteres</p>
             <div className="flex flex-col gap-2">
               <Button
-                label="Sugerir especialidad con IA →"
+                label="Sugerir especialidad con IA"
+                icon={Sparkles}
+                iconRight={ArrowRight}
                 loading={aiLoading}
                 disabled={!symptoms.trim() || symptoms.length < MIN_SYMPTOMS}
                 onClick={handleSuggestSpecialty}
               />
-              <Button label="Elegir sin IA →" variant="ghost" onClick={() => goToStep(2)} />
+              <Button label="Elegir sin IA" iconRight={ArrowRight} variant="ghost" onClick={() => goToStep(2)} />
             </div>
           </div>
         )}
@@ -153,7 +156,7 @@ function BookModal({ professionals, isInsured, onSave, onClose }) {
           <div className="space-y-3">
             {suggestion && (
               <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 mb-2">
-                <p className="text-xs text-primary font-medium uppercase">🤖 El asistente sugiere:</p>
+                <p className="text-xs text-primary font-medium uppercase inline-flex items-center gap-1.5"><Sparkles size={13} /> El asistente sugiere:</p>
                 <p className="text-lg font-bold text-navy">{suggestion.specialty}</p>
                 <p className="text-sm text-gray-400">{suggestion.reason}</p>
                 <div className="mt-2"><UrgencyBadge urgency={suggestion.urgency} /></div>
@@ -179,7 +182,7 @@ function BookModal({ professionals, isInsured, onSave, onClose }) {
                       <p className="text-sm text-gray-400">{p.specialty}</p>
                     </div>
                     {isRecommended(p) && (
-                      <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full whitespace-nowrap">✓ Recomendado</span>
+                      <span className="inline-flex items-center gap-1 text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full whitespace-nowrap"><Check size={12} strokeWidth={2.5} /> Recomendado</span>
                     )}
                   </button>
                 ))}
@@ -188,8 +191,8 @@ function BookModal({ professionals, isInsured, onSave, onClose }) {
 
             {error && <p className="text-xs text-red-500">{error}</p>}
             <div className="flex justify-between gap-3 pt-2">
-              <Button label="← Atrás" variant="secondary" onClick={() => goToStep(1)} />
-              <Button label="Continuar →" disabled={!selectedProf} onClick={() => goToStep(3)} />
+              <Button label="Atrás" icon={ArrowLeft} variant="secondary" onClick={() => goToStep(1)} />
+              <Button label="Continuar" iconRight={ArrowRight} disabled={!selectedProf} onClick={() => goToStep(3)} />
             </div>
           </div>
         )}
@@ -235,8 +238,8 @@ function BookModal({ professionals, isInsured, onSave, onClose }) {
 
             {error && <p className="text-xs text-red-500">{error}</p>}
             <div className="flex justify-between gap-3 pt-2">
-              <Button label="← Atrás" variant="secondary" onClick={() => goToStep(2)} />
-              <Button label="Continuar →" disabled={!date || !time || !reason.trim()} onClick={() => goToStep(4)} />
+              <Button label="Atrás" icon={ArrowLeft} variant="secondary" onClick={() => goToStep(2)} />
+              <Button label="Continuar" iconRight={ArrowRight} disabled={!date || !time || !reason.trim()} onClick={() => goToStep(4)} />
             </div>
           </div>
         )}
@@ -253,8 +256,8 @@ function BookModal({ professionals, isInsured, onSave, onClose }) {
                   <p className="text-sm text-gray-400">{selectedProf?.specialty}</p>
                 </div>
               </div>
-              <p className="text-sm text-gray-700">📅 {date} · {time}</p>
-              <p className="text-sm text-gray-700">📝 {reason}</p>
+              <p className="text-sm text-gray-700 flex items-center gap-2"><Calendar size={15} className="text-primary shrink-0" /> {date} · {time}</p>
+              <p className="text-sm text-gray-700 flex items-center gap-2"><FileText size={15} className="text-primary shrink-0" /> {reason}</p>
             </div>
 
             {isInsured
@@ -264,7 +267,7 @@ function BookModal({ professionals, isInsured, onSave, onClose }) {
 
             {error && <p className="text-xs text-red-500">{error}</p>}
             <div className="flex justify-between gap-3 pt-2">
-              <Button label="← Atrás" variant="secondary" onClick={() => goToStep(3)} />
+              <Button label="Atrás" icon={ArrowLeft} variant="secondary" onClick={() => goToStep(3)} />
               <Button
                 label={isInsured ? 'Confirmar cita gratis' : 'Continuar al pago'}
                 loading={saving}
@@ -360,9 +363,7 @@ export default function PatientPortal() {
     <div className="p-6 max-w-6xl mx-auto space-y-6">
       <div>
         <Link to="/portal" className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary-dark transition-colors">
-          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-          </svg>
+          <ArrowLeft size={16} strokeWidth={2.25} />
           Volver al Portal Público
         </Link>
       </div>
@@ -370,7 +371,11 @@ export default function PatientPortal() {
       {/* Cabecera del Portal */}
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 flex flex-col md:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <Avatar name={user?.fullName || 'Paciente'} size="lg" />
+          <Avatar
+            name={user?.fullName || 'Paciente'}
+            photoUrl={user?.photoUrl || (user?.email ? localStorage.getItem(`medil_profile_photo_${user.email}`) : null)}
+            size="lg"
+          />
           <div className="text-center md:text-left">
             <h1 className="text-xl font-bold text-navy">¡Hola, {user?.fullName || 'Paciente'}!</h1>
             <p className="text-xs text-gray-400 mt-0.5">Bienvenido a tu portal de salud MedIL</p>
@@ -388,8 +393,8 @@ export default function PatientPortal() {
       {myPatient && !myPatient.insuranceCode && (
         <div className="bg-primary/10 border border-primary/20 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <p className="text-sm text-navy">{MESSAGES.empty.noInsurance}</p>
-          <Link to="/profile" className="text-sm font-semibold text-primary hover:text-primary-dark whitespace-nowrap">
-            Ir a mi perfil →
+          <Link to="/profile" className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary-dark whitespace-nowrap">
+            Ir a mi perfil <ArrowRight size={15} strokeWidth={2.25} />
           </Link>
         </div>
       )}
@@ -424,9 +429,7 @@ export default function PatientPortal() {
                       className="text-gray-400 hover:text-red-500 transition-colors"
                       title="Cancelar cita"
                     >
-                      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
+                      <XCircle size={20} strokeWidth={2} />
                     </button>
                   </div>
                 </div>
@@ -466,9 +469,7 @@ export default function PatientPortal() {
         className="md:hidden fixed bottom-6 right-6 z-40 bg-primary hover:bg-primary-dark text-white p-4 rounded-full shadow-lg transition-transform active:scale-95"
         aria-label="Agendar cita"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-        </svg>
+        <Plus size={24} strokeWidth={2.25} />
       </button>
 
       {showBook && (

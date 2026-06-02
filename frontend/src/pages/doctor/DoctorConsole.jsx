@@ -15,6 +15,8 @@ import { SuppliesDeductModal } from '../../organisms/SuppliesDeductModal';
 import { Button } from '../../atoms/Button';
 import { Avatar } from '../../atoms/Avatar';
 import { Spinner } from '../../atoms/Spinner';
+import { Logo } from '../../atoms/Logo';
+import { Sparkles, Check, MessageCircle, ArrowLeft, X, Send } from 'lucide-react';
 import { eventBus } from '../../core/eventBus';
 import { MESSAGES } from '../../core/messages';
 import { APPOINTMENT_STATUS } from '../../core/constants';
@@ -312,7 +314,7 @@ export default function DoctorConsole() {
           {/* Resumen automático del historial */}
           {autoSummary && (
             <div className="bg-primary/5 border-l-4 border-primary p-3 rounded-r-lg">
-              <p className="text-xs text-primary font-medium">🤖 Resumen IA</p>
+              <p className="text-xs text-primary font-medium inline-flex items-center gap-1.5"><Sparkles size={14} /> Resumen IA</p>
               <p className="text-sm text-gray-700 mt-1 whitespace-pre-wrap">{autoSummary}</p>
             </div>
           )}
@@ -343,6 +345,10 @@ export default function DoctorConsole() {
                   <span className="font-medium text-gray-800">{patient?.name || '—'}</span>
                 </div>
                 <div>
+                  <span className="block text-xs font-semibold text-gray-400 uppercase">CI</span>
+                  <span className="font-medium text-gray-800">{patient?.ci || '—'}</span>
+                </div>
+                <div>
                   <span className="block text-xs font-semibold text-gray-400 uppercase">Estado</span>
                   <span className="inline-block mt-0.5"><StatusBadge status={patient?.status || 'active'} /></span>
                 </div>
@@ -362,7 +368,8 @@ export default function DoctorConsole() {
             <div className="space-y-4">
               <div className="flex justify-end">
                 <Button
-                  label="🤖 Resumir con IA"
+                  label="Resumir con IA"
+                  icon={Sparkles}
                   variant="ghost"
                   size="sm"
                   loading={aiLoading}
@@ -412,7 +419,8 @@ export default function DoctorConsole() {
                   placeholder="Describí lo que refiere el paciente…"
                 />
                 <Button
-                  label="🤖 Sugerir diagnóstico"
+                  label="Sugerir diagnóstico"
+                  icon={Sparkles}
                   variant="ghost"
                   size="sm"
                   loading={aiLoading}
@@ -425,14 +433,14 @@ export default function DoctorConsole() {
               {aiSuggestion !== null && (
                 <div className="bg-primary/5 border-l-4 border-primary rounded-r-xl p-4 space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-semibold text-navy">🤖 Sugerencia del asistente IA</span>
+                    <span className="text-sm font-semibold text-navy inline-flex items-center gap-1.5"><Sparkles size={16} className="text-primary" /> Sugerencia del asistente IA</span>
                     {isSimulated && (
                       <span className="px-2 py-0.5 text-xs rounded-full bg-orange-400 text-white">Simulado</span>
                     )}
                   </div>
                   <p className="font-mono text-sm text-gray-700 whitespace-pre-wrap">{aiSuggestion}</p>
                   <div className="flex gap-2">
-                    <Button label="✓ Usar esta sugerencia" variant="primary" size="sm" onClick={handleUseSuggestion} />
+                    <Button label="Usar esta sugerencia" icon={Check} variant="primary" size="sm" onClick={handleUseSuggestion} />
                     <Button label="Ignorar" variant="secondary" size="sm" onClick={() => setAiSuggestion(null)} />
                   </div>
                 </div>
@@ -476,7 +484,8 @@ export default function DoctorConsole() {
               {/* Sección 5: Botones de acción */}
               <div className="flex justify-between items-center pt-2">
                 <Button
-                  label="💬 Chat con IA"
+                  label="Chat con IA"
+                  icon={MessageCircle}
                   variant="ghost"
                   size="sm"
                   onClick={() => setShowChat(s => !s)}
@@ -491,9 +500,10 @@ export default function DoctorConsole() {
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 text-sm text-white bg-primary rounded-lg hover:bg-primary-dark transition-colors font-medium"
+                    className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm text-white bg-primary rounded-lg hover:bg-primary-dark transition-colors font-medium"
                   >
-                    ✓ Guardar consulta
+                    <Check size={16} strokeWidth={2.25} />
+                    Guardar consulta
                   </button>
                 </div>
               </div>
@@ -524,9 +534,7 @@ export default function DoctorConsole() {
     <div className="p-6 max-w-7xl mx-auto space-y-4">
       <div>
         <Link to="/" className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary-dark transition-colors">
-          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-          </svg>
+          <ArrowLeft size={16} strokeWidth={2.25} />
           Volver al Dashboard
         </Link>
       </div>
@@ -536,18 +544,21 @@ export default function DoctorConsole() {
       {showChat && selected && (
         <div className="fixed right-0 top-0 h-full w-80 z-40 bg-white shadow-2xl border-l border-gray-100 flex flex-col">
           <div className="p-4 border-b border-gray-100 flex items-start justify-between">
-            <div>
-              <p className="font-semibold text-navy">🤖 Asistente MedIL</p>
-              <p className="text-xs text-gray-400">Contexto: {patient?.name || selected.patientName}</p>
+            <div className="flex items-center gap-2.5">
+              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 shrink-0">
+                <Logo className="text-[0.55rem]" />
+              </span>
+              <div>
+                <p className="font-semibold text-navy leading-tight">Asistente MedIL</p>
+                <p className="text-xs text-gray-400">Contexto: {patient?.name || selected.patientName}</p>
+              </div>
             </div>
             <button
               onClick={() => setShowChat(false)}
               aria-label="Cerrar chat"
               className="text-gray-400 hover:text-gray-600"
             >
-              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <X size={20} strokeWidth={2} />
             </button>
           </div>
 
@@ -584,7 +595,7 @@ export default function DoctorConsole() {
               onChange={e => setChatInput(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleChatSend(); } }}
             />
-            <Button label="Enviar" variant="primary" size="sm" onClick={handleChatSend} />
+            <Button label="Enviar" iconRight={Send} variant="primary" size="sm" onClick={handleChatSend} />
           </div>
         </div>
       )}

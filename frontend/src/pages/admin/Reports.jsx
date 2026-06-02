@@ -10,6 +10,7 @@ import { EmptyState } from '../../organisms/EmptyState';
 import { StatusBadge } from '../../molecules/StatusBadge';
 import { FormField, inputClass } from '../../molecules/FormField';
 import { Button } from '../../atoms/Button';
+import { FileDown, FileSpreadsheet, ArrowLeft } from 'lucide-react';
 import { eventBus } from '../../core/eventBus';
 import { MESSAGES } from '../../core/messages';
 import { APPOINTMENT_STATUS } from '../../core/constants';
@@ -152,9 +153,7 @@ export default function Reports() {
     <div className="p-6 max-w-6xl mx-auto space-y-6">
       <div>
         <Link to="/" className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary-dark transition-colors">
-          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-          </svg>
+          <ArrowLeft size={16} strokeWidth={2.25} />
           Volver al Dashboard
         </Link>
       </div>
@@ -233,8 +232,8 @@ export default function Reports() {
           </div>
 
           <div className="flex gap-3">
-            <Button label="📄 Descargar PDF"   variant="primary" onClick={handleDownloadPDF} />
-            <Button label="📊 Descargar Excel" variant="ghost"   onClick={handleDownloadExcel} />
+            <Button label="Descargar PDF"   icon={FileDown}        variant="primary" onClick={handleDownloadPDF} />
+            <Button label="Descargar Excel" icon={FileSpreadsheet} variant="ghost"   onClick={handleDownloadExcel} />
           </div>
         </>
       ))}

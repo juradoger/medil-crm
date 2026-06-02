@@ -40,6 +40,12 @@ export function useReminders(branchId) {
     await fetchReminders();
   });
 
+  // Reprograma la fecha/hora de envío del recordatorio
+  const reschedule = (id, sendAt) => withLoading(async () => {
+    await reminderService.reschedule(id, sendAt);
+    await fetchReminders();
+  });
+
   // Envía el recordatorio por WhatsApp y actualiza el estado local
   const sendWhatsAppReminder = (reminder) => withLoading(async () => {
     const result = await reminderService.sendWhatsAppForReminder(reminder);
@@ -55,7 +61,7 @@ export function useReminders(branchId) {
 
   return {
     reminders, loading, error,
-    markSent, sendWhatsAppReminder,
+    markSent, reschedule, sendWhatsAppReminder,
     refreshReminders: load, reload: load,
   };
 }

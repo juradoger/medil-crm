@@ -21,3 +21,47 @@
   --color-ink-muted: #6B7280;     /* Texto secundario — Muted text */
   --color-ink-faint: #9CA3AF;     /* Texto tenue — Faint text */
 }
+
+/* ============================================================================
+   Modales — borde brillante (glow aqua) + animación de entrada.
+   Aplicar .medil-modal al panel del modal y .medil-modal-overlay al fondo.
+   Modal panels — glowing aqua border + entrance animation.
+   ============================================================================ */
+
+.medil-modal {
+  border: 1px solid rgba(0, 180, 216, 0.55);   /* borde aqua — aqua border */
+  box-shadow:
+    0 0 0 1px rgba(0, 180, 216, 0.30),          /* halo interno — inner halo */
+    0 0 28px 2px rgba(0, 180, 216, 0.38),       /* resplandor — glow */
+    0 25px 50px -12px rgba(0, 0, 0, 0.25);      /* profundidad — depth */
+  animation: medil-modal-in 0.18s ease-out;
+}
+
+@keyframes medil-modal-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0)    scale(1); }
+}
+
+/* Overlay reutilizable de modal — reusable modal overlay */
+.medil-modal-overlay {
+  background: rgba(14, 74, 138, 0.35);          /* navy translúcido — translucent navy */
+  backdrop-filter: blur(2px);
+}
+
+/* ============================================================================
+   Interlineado base — texto más legible y "que respire" en toda la app.
+   Base line-height — more readable, breathing text across the app.
+   ============================================================================ */
+body {
+  line-height: 1.55;
+}
+
+/* Párrafos y bloques de texto largo con interlineado cómodo */
+p {
+  line-height: 1.625;
+}
+
+/* Títulos: interlineado ajustado para que no se separen demasiado */
+h1, h2, h3, h4 {
+  line-height: 1.25;
+}

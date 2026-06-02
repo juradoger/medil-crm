@@ -1,0 +1,45 @@
+# Render — Backend Express de MedIL CRM
+# Conectá el repo en https://dashboard.render.com (Blueprint) y completá las
+# variables marcadas como sync:false en el dashboard (no se commitean secretos).
+# Render asigna PORT automáticamente; server.js ya lee process.env.PORT.
+services:
+  - type: web
+    name: medil-backend
+    runtime: node
+    rootDir: backend
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # URL del frontend en Vercel — necesaria para CORS
+      - key: FRONTEND_URL
+        sync: false
+      # InsForge
+      - key: INSFORGE_API_URL
+        sync: false
+      - key: INSFORGE_API_KEY
+        sync: false
+      # IA (Groq)
+      - key: GROQ_API_KEY
+        sync: false
+      # Cloudinary (subida de fotos)
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      # Twilio (WhatsApp) — opcional
+      - key: TWILIO_ACCOUNT_SID
+        sync: false
+      - key: TWILIO_AUTH_TOKEN
+        sync: false
+      - key: TWILIO_WHATSAPP_FROM
+        sync: false
+      # Job de recordatorios automáticos (dejar en false salvo que lo uses)
+      - key: ENABLE_REMINDER_JOB
+        value: "false"

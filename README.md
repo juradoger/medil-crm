@@ -107,7 +107,28 @@ Generadas por `scripts/seed-insforge.js`:
 6. Portal Paciente ✅
 7. Módulos ERP ✅
 8. IA integrada ✅
-9. Deploy → Vercel (próximo)
+9. Deploy → Frontend en Vercel + Backend en Render ✅
+
+## Deploy
+
+La app tiene dos piezas: **frontend** estático (Vite) y **backend** Express (Node).
+
+### 1. Base de datos (InsForge)
+- Ejecutar `scripts/migrations/2026-06-02-fk-indexes.sql` en el SQL Editor (índices de FK).
+- Verificar que la tabla `patients` tenga la columna **`ci`**.
+- Estado de seguridad y deuda técnica documentados en [`docs/SECURITY.md`](docs/SECURITY.md).
+
+### 2. Backend → Render
+- New → Blueprint, apuntar al repo (lee `render.yaml`).
+- Completar las env vars `sync:false` (ver `backend/.env.example`), sobre todo `FRONTEND_URL` (la URL de Vercel, para CORS).
+- Render asigna `PORT` solo. Health check: `/health`.
+
+### 3. Frontend → Vercel
+- Importar el repo, **Root Directory = `frontend`** (usa `frontend/vercel.json`).
+- Env vars (ver `frontend/.env.example`): `VITE_INSFORGE_API_URL`, `VITE_INSFORGE_API_KEY`, y `VITE_BACKEND_URL` con la URL de Render.
+
+### 4. Cerrar el círculo
+- Poner la URL final de Vercel en `FRONTEND_URL` del backend (Render) para que el CORS la permita.
 
 ## Autora
 

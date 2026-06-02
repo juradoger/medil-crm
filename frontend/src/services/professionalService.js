@@ -16,6 +16,13 @@ export const professionalService = {
     return data;
   },
 
+  // Resuelve el profesional por su email (vínculo con el usuario doctor)
+  async getByEmail(email) {
+    const { data, error } = await db.from('professionals').select('*').eq('email', email);
+    if (error) return null;
+    return data?.[0] ?? null;
+  },
+
   // Deriva los profesionales de una sucursal: por branchId propio o, si no lo tienen,
   // por los profesionales con citas en esa sucursal (compatibilidad con datos previos)
   async getByBranch(branchId) {
@@ -31,12 +38,11 @@ export const professionalService = {
   },
 
   async create(professionalData) {
-    const now = new Date().toISOString();
+    // created_at/updated_at los gestiona InsForge automáticamente (no enviar camelCase)
     const professional = {
       ...professionalData,
       commissionRate: professionalData.commissionRate ?? DEFAULT_COMMISSION_RATE,
       isActive:  true,
-      createdAt: now,
     };
     const { data, error } = await db.from('professionals')
       .insert(professional).select().single();
@@ -64,16 +70,35 @@ export const professionalService = {
   },
 
   async update(id, professionalData) {
+    // updated_at lo gestiona InsForge (no enviar camelCase inexistente)
     const { data, error } = await db.from('professionals')
-      .update({ ...professionalData, updatedAt: new Date().toISOString() })
+      .update(professionalData)
       .eq('id', id).select();
     if (error) throw new Error(MESSAGES.error.connection.server);
     return data?.[0] ?? null;
   },
 
+  // Actualiza el profesional resolviéndolo por email (vínculo con el usuario)
+  async patchByEmail(email, fields) {
+    const { data: rows, error } = await db.from('professionals').select('id').eq('email', email);
+    if (error) throw new Error(MESSAGES.error.connection.server);
+    const id = rows?.[0]?.id;
+    if (!id) return null;
+    return professionalService.update(id, fields);
+  },
+
   async deactivate(id) {
     const { data, error } = await db.from('professionals')
       .update({ isActive: false })
+      .eq('id', id).select();
+    if (error) throw new Error(MESSAGES.error.connection.server);
+    return data?.[0] ?? null;
+  },
+
+  // Reactiva un profesional dado de baja (el admin puede volver a activarlo)
+  async activate(id) {
+    const { data, error } = await db.from('professionals')
+      .update({ isActive: true })
       .eq('id', id).select();
     if (error) throw new Error(MESSAGES.error.connection.server);
     return data?.[0] ?? null;

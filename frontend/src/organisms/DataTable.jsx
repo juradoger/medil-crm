@@ -1,5 +1,6 @@
 // Tabla de datos con búsqueda, ordenamiento y estado vacío
 import React, { useState, useMemo } from 'react';
+import { ChevronUp, ChevronDown } from 'lucide-react';
 import { Spinner } from '../atoms/Spinner';
 import { SearchBar } from '../molecules/SearchBar';
 import { EmptyState } from './EmptyState';
@@ -76,7 +77,9 @@ export function DataTable({
                   >
                     {col.label}
                     {sortable && sortKey === col.key && (
-                      <span className="ml-1">{sortDir === 'asc' ? '↑' : '↓'}</span>
+                      <span className="ml-1 inline-block align-middle">
+                        {sortDir === 'asc' ? <ChevronUp size={14} strokeWidth={2.5} /> : <ChevronDown size={14} strokeWidth={2.5} />}
+                      </span>
                     )}
                   </th>
                 ))}

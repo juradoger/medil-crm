@@ -10,6 +10,7 @@ import { ConfirmModal } from '../../molecules/ConfirmModal';
 import { FormField, inputClass } from '../../molecules/FormField';
 import { Button } from '../../atoms/Button';
 import { Avatar } from '../../atoms/Avatar';
+import { ArrowLeft, Plus } from 'lucide-react';
 import { FullPageSpinner } from '../../atoms/Spinner';
 import { eventBus } from '../../core/eventBus';
 import { MESSAGES } from '../../core/messages';
@@ -52,8 +53,8 @@ function ProfessionalModal({ initial, branches, onSave, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto">
+      <div className="absolute inset-0 medil-modal-overlay" onClick={onClose} />
+      <div className="medil-modal relative bg-white rounded-xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto">
         <h2 className="text-lg font-semibold text-gray-800 mb-4">
           {initial ? 'Editar profesional' : 'Nuevo profesional'}
         </h2>
@@ -130,13 +131,14 @@ function ProfessionalModal({ initial, branches, onSave, onClose }) {
 }
 
 export default function Professionals() {
-  const { professionals, loading, createProfessional, updateProfessional, deactivateProfessional } = useProfessionals();
+  const { professionals, loading, createProfessional, updateProfessional, deactivateProfessional, activateProfessional } = useProfessionals();
   const { branches } = useBranches();
 
   const [modal, setModal]               = useState(null);   // 'create' | professional | null
   const [branchFilter, setBranchFilter] = useState('');     // '' = todas
   const [statusFilter, setStatusFilter] = useState('Todos');
   const [deactivateTarget, setDeactivate] = useState(null);
+  const [activateTarget, setActivate]     = useState(null);
 
   const branchName = (id) => branches.find(b => b.id === id)?.name ?? 'Sin sucursal';
 
@@ -170,6 +172,12 @@ export default function Professionals() {
     setDeactivate(null);
   };
 
+  const handleActivateConfirmed = async () => {
+    if (!activateTarget) return;
+    await activateProfessional(activateTarget.id);
+    setActivate(null);
+  };
+
   const editInitial = (p) => ({
     ...p,
     commissionPercent: Math.round((p.commissionRate ?? DEFAULT_COMMISSION_RATE) * 100),
@@ -182,16 +190,14 @@ export default function Professionals() {
     <div className="p-6 max-w-6xl mx-auto space-y-6">
       <div>
         <Link to="/" className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary-dark transition-colors">
-          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-          </svg>
+          <ArrowLeft size={16} strokeWidth={2.25} />
           Volver al Dashboard
         </Link>
       </div>
 
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-navy">Profesionales</h1>
-        <Button label="+ Nuevo profesional" onClick={() => setModal('create')} />
+        <Button label="Nuevo profesional" icon={Plus} onClick={() => setModal('create')} />
       </div>
 
       {/* Filtros */}
@@ -244,8 +250,10 @@ export default function Professionals() {
 
               <div className="flex gap-2 mt-4">
                 <Button label="Editar" variant="ghost" size="sm" onClick={() => setModal(editInitial(p))} />
-                {p.isActive !== false && (
+                {p.isActive !== false ? (
                   <Button label="Desactivar" variant="danger" size="sm" onClick={() => setDeactivate(p)} />
+                ) : (
+                  <Button label="Activar" variant="primary" size="sm" onClick={() => setActivate(p)} />
                 )}
               </div>
             </div>
@@ -270,6 +278,15 @@ export default function Professionals() {
         confirmLabel="Desactivar"
         onConfirm={handleDeactivateConfirmed}
         onCancel={() => setDeactivate(null)}
+      />
+
+      <ConfirmModal
+        open={!!activateTarget}
+        title="Activar profesional"
+        description="El profesional volverá a estar activo y disponible para agendar citas."
+        confirmLabel="Activar"
+        onConfirm={handleActivateConfirmed}
+        onCancel={() => setActivate(null)}
       />
     </div>
   );

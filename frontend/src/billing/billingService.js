@@ -60,9 +60,22 @@ export class BillingService {
   }
 }
 
-// Instancia por defecto según entorno — Default instance by environment
-const adapter = import.meta.env.PROD
-  ? new PagoFacilAdapter()
-  : new SimulatedQRAdapter();
+// Selección del adaptador — Adapter selection.
+// Usa PagoFácil solo si está realmente configurado (URL + API key); de lo
+// contrario usa el simulado. Así el pago QR funciona en la demo desplegada en
+// vez de quedar esperando una API inexistente ("tiempo de espera agotado").
+function resolveAdapter() {
+  const hasPagoFacil =
+    import.meta.env.VITE_PAGOFACIL_API_URL && import.meta.env.VITE_PAGOFACIL_API_KEY;
+  if (hasPagoFacil) {
+    try {
+      return new PagoFacilAdapter();
+    } catch {
+      // Si la configuración es inválida, caer al simulado en lugar de romper
+      return new SimulatedQRAdapter();
+    }
+  }
+  return new SimulatedQRAdapter();
+}
 
-export const billingService = new BillingService(adapter);
+export const billingService = new BillingService(resolveAdapter());

@@ -2,6 +2,7 @@
 // El organismo solo gestiona la lista editable; la deducción real
 // la hace la página vía el hook useSupplies (regla de dependencias).
 import React, { useState, useEffect } from 'react';
+import { X } from 'lucide-react';
 import { Button } from '../atoms/Button';
 
 export function SuppliesDeductModal({ isOpen, suggestions = [], onConfirm, onCancel }) {
@@ -34,9 +35,9 @@ export function SuppliesDeductModal({ isOpen, suggestions = [], onConfirm, onCan
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/40" onClick={onCancel} />
+      <div className="absolute inset-0 medil-modal-overlay" onClick={onCancel} />
 
-      <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-md p-6 flex flex-col gap-4">
+      <div className="medil-modal relative bg-white rounded-xl w-full max-w-md p-6 flex flex-col gap-4">
         <div>
           <h2 className="text-lg font-semibold text-gray-800">
             ¿Descontar insumos del inventario?
@@ -72,9 +73,7 @@ export function SuppliesDeductModal({ isOpen, suggestions = [], onConfirm, onCan
                   aria-label={`Quitar ${item.name}`}
                   className="text-gray-400 hover:text-red-500 transition-colors"
                 >
-                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
+                  <X size={16} strokeWidth={2} />
                 </button>
               </li>
             ))}

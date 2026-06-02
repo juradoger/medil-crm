@@ -16,6 +16,13 @@ export const patientService = {
     return data?.[0] ?? null;
   },
 
+  // Resuelve el paciente por su email (los pacientes se vinculan al usuario por email)
+  async getByEmail(email) {
+    const { data, error } = await db.from('patients').select('*').eq('email', email);
+    if (error) throw new Error(error.message);
+    return data?.[0] ?? null;
+  },
+
   async search(_branchId, query) {
     const all = await patientService.getAll();
     const q = query.toLowerCase();
@@ -25,6 +32,7 @@ export const patientService = {
   async create(data) {
     const { data: rows, error } = await db.from('patients').insert({
       name:   data.fullName ?? data.name ?? '',
+      ci:     data.ci     ?? null,
       email:  data.email  ?? null,
       phone:  data.phone  ?? null,
       status: PATIENT_STATUS.ACTIVE,
@@ -33,9 +41,22 @@ export const patientService = {
     return rows?.[0];
   },
 
+  // Actualiza el registro del paciente resolviéndolo por email (los pacientes
+  // se vinculan al usuario por email, no por id). Escribe los campos tal cual.
+  async patchByEmail(email, fields) {
+    const { data: rows, error } = await db.from('patients').select('id').eq('email', email);
+    if (error) throw new Error(MESSAGES.error.connection.server);
+    const id = rows?.[0]?.id;
+    if (!id) return null;
+    const { data, error: updateErr } = await db.from('patients').update(fields).eq('id', id).select();
+    if (updateErr) throw new Error(MESSAGES.error.connection.server);
+    return data?.[0] ?? null;
+  },
+
   async update(id, data) {
     const patch = {};
     if (data.fullName ?? data.name) patch.name  = data.fullName ?? data.name;
+    if (data.ci     !== undefined)  patch.ci     = data.ci;
     if (data.email  !== undefined)  patch.email  = data.email;
     if (data.phone  !== undefined)  patch.phone  = data.phone;
     if (data.status !== undefined)  patch.status = data.status;

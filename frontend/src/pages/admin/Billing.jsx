@@ -5,10 +5,13 @@ import { useAuth } from '../../context/AuthContext';
 import { useAppointments } from '../../hooks/useAppointments';
 import { paymentService } from '../../services/paymentService';
 import { DataTable } from '../../organisms/DataTable';
+import { SearchBar } from '../../molecules/SearchBar';
 import { StatusBadge } from '../../molecules/StatusBadge';
 import { ConfirmModal } from '../../molecules/ConfirmModal';
 import { PaymentModal } from '../../organisms/PaymentModal';
 import { FullPageSpinner } from '../../atoms/Spinner';
+import { inputClass } from '../../molecules/FormField';
+import { ArrowLeft } from 'lucide-react';
 
 const STANDARD_FEE = 150; // Tarifa estándar por consulta en Bs
 
@@ -21,6 +24,11 @@ export default function Billing() {
   const [qrTarget, setQrTarget]       = useState(null);
   const [cashTarget, setCashTarget]   = useState(null);
   const [processing, setProcessing]   = useState(false);
+
+  // Filtros: paciente (búsqueda), fecha y monto mínimo
+  const [query, setQuery]         = useState('');
+  const [dateFilter, setDateFilter] = useState('');
+  const [minAmount, setMinAmount] = useState('');
 
   const loadPayments = async () => {
     if (!currentBranchId) return;
@@ -88,6 +96,18 @@ export default function Billing() {
       })
       .sort((a, b) => b.date.localeCompare(a.date));
   }, [appointments, paymentMap]);
+
+  // Aplica los filtros de paciente, fecha y monto sobre las filas de facturación
+  const visibleRows = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    const min = minAmount ? Number(minAmount) : null;
+    return billingRows.filter(r => {
+      if (q && !(r.patientName ?? '').toLowerCase().includes(q)) return false;
+      if (dateFilter && r.date !== dateFilter) return false;
+      if (min != null && Number(r.amountPaid ?? STANDARD_FEE) < min) return false;
+      return true;
+    });
+  }, [billingRows, query, dateFilter, minAmount]);
 
   const columns = [
     { key: 'date',         label: 'Fecha', render: r => `${r.date} ${r.time?.slice(0, 5) ?? ''}` },
@@ -184,9 +204,7 @@ export default function Billing() {
     <div className="p-6 max-w-6xl mx-auto space-y-6">
       <div>
         <Link to="/" className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary-dark transition-colors">
-          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-          </svg>
+          <ArrowLeft size={16} strokeWidth={2.25} />
           Volver al Dashboard
         </Link>
       </div>
@@ -214,8 +232,37 @@ export default function Billing() {
         </div>
       </div>
 
+      {/* Filtros por paciente, fecha y monto */}
+      <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
+        <div className="flex-1">
+          <SearchBar value={query} onChange={setQuery} placeholder="Buscar por paciente…" />
+        </div>
+        <input
+          type="date"
+          className={`${inputClass} sm:max-w-[170px]`}
+          value={dateFilter}
+          onChange={e => setDateFilter(e.target.value)}
+        />
+        <input
+          type="number"
+          min={0}
+          className={`${inputClass} sm:max-w-[150px]`}
+          value={minAmount}
+          onChange={e => setMinAmount(e.target.value)}
+          placeholder="Monto mín. (Bs.)"
+        />
+        {(query || dateFilter || minAmount) && (
+          <button
+            onClick={() => { setQuery(''); setDateFilter(''); setMinAmount(''); }}
+            className="text-xs text-gray-500 hover:text-primary whitespace-nowrap"
+          >
+            Limpiar filtros
+          </button>
+        )}
+      </div>
+
       {/* Listado de Consultas para facturar */}
-      <DataTable columns={columns} rows={billingRows} emptyTitle="Sin consultas por facturar" />
+      <DataTable columns={columns} rows={visibleRows} emptyTitle="Sin consultas por facturar" />
 
       {qrTarget && (
         <PaymentModal

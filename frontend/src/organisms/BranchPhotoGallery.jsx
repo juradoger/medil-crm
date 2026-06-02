@@ -2,6 +2,7 @@
 // editable=true (admin): permite cambiar cada foto
 // editable=false (público): solo muestra las fotos existentes
 import React, { useState, useRef } from 'react';
+import { Camera } from 'lucide-react';
 import { Spinner } from '../atoms/Spinner';
 import { BACKEND_URL } from '../services/backendService';
 import { eventBus } from '../core/eventBus';
@@ -67,7 +68,7 @@ function SlotUploader({ branchId, slotKey, label, currentUrl, cover, onChange })
         disabled={uploading}
         className="absolute top-2 right-2 inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-white bg-black/50 rounded-lg hover:bg-black/70 disabled:opacity-60 transition-colors"
       >
-        {uploading ? <Spinner size="sm" /> : 'Cambiar'}
+        {uploading ? <Spinner size="sm" /> : <><Camera size={12} strokeWidth={2.25} /> Cambiar</>}
       </button>
       <input
         ref={inputRef}

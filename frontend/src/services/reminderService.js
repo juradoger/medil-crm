@@ -15,7 +15,15 @@ export const reminderService = {
   async getAll(_branchId) {
     const { data, error } = await db.from('reminders').select('*');
     if (error) throw new Error(error.message);
-    return data ?? [];
+    const reminders = data ?? [];
+
+    // Enriquecer con el nombre del paciente para no mostrar el id crudo en la UI
+    const ids = [...new Set(reminders.map(r => r.patientId).filter(Boolean))];
+    if (ids.length === 0) return reminders;
+
+    const { data: patients } = await db.from('patients').select('id, name');
+    const nameById = new Map((patients ?? []).map(p => [p.id, p.name]));
+    return reminders.map(r => ({ ...r, patientName: nameById.get(r.patientId) ?? r.patientName }));
   },
 
   async getPending(_branchId) {
@@ -30,13 +38,25 @@ export const reminderService = {
       patientId:     data.patientId     ?? null,
       message:       data.message       ?? null,
       sendAt:        data.sendAt        ?? data.reminderAt ?? null,
+      status:        data.status        ?? REMINDER_STATUS.PENDING,
     }).select();
     if (error) throw new Error(error.message);
     return rows?.[0];
   },
 
-  async markSent(id) {
-    const { error } = await db.from('reminders').update({ status: REMINDER_STATUS.SENT }).eq('id', id);
+  async markSent(id, sentBy = null) {
+    // Registrar también la fecha de envío para mostrarla en la lista de enviados
+    const { error } = await db.from('reminders')
+      .update({ status: REMINDER_STATUS.SENT, sentAt: new Date().toISOString(), sentBy })
+      .eq('id', id);
+    if (error) throw new Error(error.message);
+  },
+
+  // Reprograma la fecha/hora de envío de un recordatorio (lo deja pendiente)
+  async reschedule(id, sendAt) {
+    const { error } = await db.from('reminders')
+      .update({ sendAt, status: REMINDER_STATUS.PENDING })
+      .eq('id', id);
     if (error) throw new Error(error.message);
   },
 

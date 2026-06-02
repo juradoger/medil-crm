@@ -3,9 +3,9 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Logo } from '../../atoms/Logo';
 
-export function PublicLayout({ children }) {
+export function PublicLayout({ children, fullBleed = false }) {
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className={`min-h-screen flex flex-col ${fullBleed ? 'bg-transparent' : 'bg-gray-50'}`}>
       <header className="bg-white shadow-sm sticky top-0 z-10">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
           <Link to="/portal" className="flex items-center">
@@ -13,7 +13,7 @@ export function PublicLayout({ children }) {
           </Link>
           <Link
             to="/login"
-            className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-dark transition-colors"
+            className="px-4 py-2 text-sm font-semibold text-primary border border-primary/60 rounded-lg shadow-[0_0_14px_rgba(45,214,205,0.25)] hover:shadow-[0_0_18px_rgba(45,214,205,0.4)] hover:bg-primary/10 transition-all"
           >
             Iniciar sesión
           </Link>
@@ -21,7 +21,7 @@ export function PublicLayout({ children }) {
       </header>
 
 
-      <main className="flex-1 max-w-6xl mx-auto w-full px-4 py-8">
+      <main className={fullBleed ? 'flex-1 w-full' : 'flex-1 max-w-6xl mx-auto w-full px-4 py-8'}>
         {children}
       </main>
 

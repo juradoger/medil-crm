@@ -1,5 +1,5 @@
 // Página Mi perfil — accesible para todos los roles (/profile)
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useAppointments } from '../hooks/useAppointments';
@@ -7,11 +7,13 @@ import { PhotoUpload } from '../organisms/PhotoUpload';
 import { FormField, inputClass } from '../molecules/FormField';
 import { Button } from '../atoms/Button';
 import { Badge } from '../atoms/Badge';
+import { ArrowLeft } from 'lucide-react';
 import { eventBus } from '../core/eventBus';
 import { MESSAGES } from '../core/messages';
 import { USER_ROLES, APPOINTMENT_STATUS } from '../core/constants';
 import { patientService } from '../services/patientService';
 import { professionalService } from '../services/professionalService';
+import { authService } from '../services/authService';
 import { userApi } from '../services/backendService';
 
 const ROLE_BADGE = {
@@ -44,15 +46,21 @@ export default function UserProfile() {
   const [savingData, setSavingData] = useState(false);
   const setField = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
+  // Foto a mostrar: la del usuario o, si falta, la del registro de dominio
+  const [displayPhoto, setDisplayPhoto] = useState(user?.photoUrl ?? null);
+
   async function handleSaveData() {
     setSavingData(true);
     try {
+      // El usuario (saludo/avatar) vive en la tabla users → se actualiza por user.id
+      await authService.updateProfile(user.id, { fullName: form.name, email: form.email });
+      // El registro de dominio (patient/professional) se vincula por email, no por id
       if (isPatient) {
-        await patientService.update(user.id, { name: form.name, phone: form.phone, email: form.email });
-      } else {
-        await professionalService.update(user.id, { fullName: form.name, phone: form.phone, email: form.email });
+        await patientService.patchByEmail(user.email, { name: form.name, phone: form.phone, email: form.email });
+      } else if (isDoctor) {
+        await professionalService.patchByEmail(user.email, { fullName: form.name, phone: form.phone, email: form.email });
       }
-      updateUser({ fullName: form.name });
+      updateUser({ fullName: form.name, email: form.email });
       toast(MESSAGES.success.patientUpdated, 'success');
     } catch (err) {
       toast(err.message || MESSAGES.error.connection.server, 'error');
@@ -64,9 +72,12 @@ export default function UserProfile() {
   // ── Foto de perfil ────────────────────────────────────────────────
   async function handlePhotoUploaded(url) {
     try {
-      if (isPatient) await patientService.update(user.id, { photoUrl: url });
-      else           await professionalService.update(user.id, { photoUrl: url });
+      // Guarda en users (fuente del avatar, persiste tras recargar) y en el registro de dominio
+      await authService.updateProfile(user.id, { photoUrl: url });
+      if (isPatient)      await patientService.patchByEmail(user.email, { photoUrl: url });
+      else if (isDoctor)  await professionalService.patchByEmail(user.email, { photoUrl: url });
       updateUser({ photoUrl: url });
+      setDisplayPhoto(url);
       // Sincroniza la foto que muestra el Sidebar
       if (user?.email) localStorage.setItem(`medil_profile_photo_${user.email}`, url);
     } catch (err) {
@@ -83,11 +94,11 @@ export default function UserProfile() {
   async function handleSaveInsurance() {
     setSavingInsurance(true);
     try {
-      await patientService.update(user.id, {
-        isInsured: hasInsurance,
-        insuranceCode: hasInsurance ? insuranceCode : '',
-      });
-      updateUser({ isInsured: hasInsurance, insuranceCode });
+      const code = hasInsurance ? insuranceCode.trim() : '';
+      // isInsured se deriva del sufijo del código (MED/SAL), igual que el seed
+      const isInsuredFinal = hasInsurance && /(MED|SAL)$/i.test(code);
+      await patientService.patchByEmail(user.email, { insuranceCode: code, isInsured: isInsuredFinal });
+      updateUser({ isInsured: isInsuredFinal, insuranceCode: code });
       toast(MESSAGES.success.patientUpdated, 'success');
     } catch (err) {
       toast(err.message || MESSAGES.error.connection.server, 'error');
@@ -108,7 +119,7 @@ export default function UserProfile() {
   async function handleSaveBio() {
     setSavingBio(true);
     try {
-      await professionalService.update(user.id, { bio });
+      await professionalService.patchByEmail(user.email, { bio });
       toast(MESSAGES.success.patientUpdated, 'success');
     } catch (err) {
       toast(err.message || MESSAGES.error.connection.server, 'error');
@@ -142,15 +153,43 @@ export default function UserProfile() {
     }
   }
 
+  // Carga el registro de dominio (patient/professional) para poblar los datos
+  // que NO viven en la tabla users (teléfono, bio, seguro, foto) — así el perfil
+  // muestra lo que el paciente ingresó al registrarse.
+  useEffect(() => {
+    if (!user?.email) return;
+    let active = true;
+    (async () => {
+      try {
+        if (isPatient) {
+          const p = await patientService.getByEmail(user.email);
+          if (!active || !p) return;
+          setForm(f => ({ ...f, phone: p.phone ?? f.phone }));
+          if (p.photoUrl) setDisplayPhoto(prev => prev ?? p.photoUrl);
+          setHasInsurance(Boolean(p.insuranceCode));
+          setInsuranceCode(p.insuranceCode ?? '');
+        } else if (isDoctor) {
+          const pro = await professionalService.getByEmail(user.email);
+          if (!active || !pro) return;
+          setForm(f => ({ ...f, phone: pro.phone ?? f.phone }));
+          if (pro.photoUrl) setDisplayPhoto(prev => prev ?? pro.photoUrl);
+          setBio(pro.bio ?? '');
+        }
+      } catch {
+        // Si falla la carga, el perfil queda con los datos básicos del usuario
+      }
+    })();
+    return () => { active = false; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.email, isPatient, isDoctor]);
+
   if (!user) return null;
 
   return (
     <div className="p-6 max-w-3xl mx-auto space-y-6">
       <div>
         <Link to="/" className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary-dark transition-colors">
-          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-          </svg>
+          <ArrowLeft size={16} strokeWidth={2.25} />
           Volver al Dashboard
         </Link>
       </div>
@@ -164,7 +203,7 @@ export default function UserProfile() {
       {/* SECCIÓN 1 — Foto de perfil */}
       <div className="flex justify-center">
         <PhotoUpload
-          currentPhoto={user.photoUrl ?? null}
+          currentPhoto={displayPhoto}
           onUpload={handlePhotoUploaded}
           entityType={photoEntity}
           entityId={user.id}

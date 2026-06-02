@@ -24,9 +24,9 @@ export function ConfirmModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Fondo semitransparente — click fuera cierra */}
-      <div className="absolute inset-0 bg-black/40" onClick={handleClose} />
+      <div className="absolute inset-0 medil-modal-overlay" onClick={handleClose} />
 
-      <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-sm p-6 flex flex-col gap-4">
+      <div className="medil-modal relative bg-white rounded-xl w-full max-w-sm p-6 flex flex-col gap-4">
         <h2 className="text-lg font-semibold text-gray-800">{title}</h2>
         {text && <p className="text-sm text-gray-500">{text}</p>}
 

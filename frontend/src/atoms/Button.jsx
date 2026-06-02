@@ -17,6 +17,9 @@ const SIZE_MAP = {
   lg: 'px-6 py-3 text-base',
 };
 
+// Tamaño del icono según el tamaño del botón — Icon size per button size
+const ICON_SIZE = { sm: 14, md: 16, lg: 18 };
+
 export function Button({
   label,
   onClick,
@@ -27,24 +30,28 @@ export function Button({
   type = 'button',
   fullWidth = false,
   className = '',
+  icon: Icon,         // Componente de icono lucide (izquierda) — lucide icon (left)
+  iconRight: IconR,   // Componente de icono lucide (derecha) — lucide icon (right)
 }) {
   const isDisabled = disabled || loading;
+  const iconPx = ICON_SIZE[size] ?? ICON_SIZE.md;
 
   return (
     <button
       type={type}
       onClick={onClick}
       disabled={isDisabled}
-      className={`inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-colors
+      className={`inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-colors leading-none
         ${VARIANT_MAP[variant] ?? VARIANT_MAP.primary}
         ${SIZE_MAP[size] ?? SIZE_MAP.md}
         ${fullWidth ? 'w-full' : ''}
         ${className}
         disabled:opacity-50 disabled:cursor-not-allowed`}
     >
-      {/* Spinner visible cuando está cargando */}
-      {loading && <Spinner size="sm" />}
-      {label}
+      {/* Spinner visible cuando está cargando, si no el icono izquierdo */}
+      {loading ? <Spinner size="sm" /> : Icon && <Icon size={iconPx} strokeWidth={2.25} className="shrink-0" />}
+      {label && <span>{label}</span>}
+      {IconR && <IconR size={iconPx} strokeWidth={2.25} className="shrink-0" />}
     </button>
   );
 }

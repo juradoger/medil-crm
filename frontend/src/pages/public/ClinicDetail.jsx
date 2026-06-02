@@ -4,6 +4,7 @@ import { useParams, Link } from 'react-router-dom';
 import { PublicLayout } from './PublicLayout';
 import { publicApi } from '../../services/backendService';
 import { useAuth } from '../../context/AuthContext';
+import { ArrowLeft } from 'lucide-react';
 
 function ProfessionalCard({ professional }) {
   const initials = professional.fullName
@@ -62,7 +63,7 @@ export default function ClinicDetail() {
     <PublicLayout>
       <div className="text-center py-24 space-y-3">
         <p className="text-lg text-gray-500">{error || 'Clínica no encontrada'}</p>
-        <Link to="/portal" className="text-primary hover:underline text-sm">← Volver al portal</Link>
+        <Link to="/portal" className="inline-flex items-center gap-1.5 text-primary hover:underline text-sm"><ArrowLeft size={15} strokeWidth={2.25} /> Volver al portal</Link>
       </div>
     </PublicLayout>
   );
@@ -71,8 +72,8 @@ export default function ClinicDetail() {
 
   return (
     <PublicLayout>
-      <Link to="/portal" className="text-sm text-primary hover:underline mb-6 inline-block">
-        ← Volver al portal
+      <Link to="/portal" className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline mb-6">
+        <ArrowLeft size={15} strokeWidth={2.25} /> Volver al portal
       </Link>
 
       {/* Header de la clínica */}

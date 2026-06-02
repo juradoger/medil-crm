@@ -7,7 +7,9 @@ import { DataTable } from '../../organisms/DataTable';
 import { StatusBadge } from '../../molecules/StatusBadge';
 import { ConfirmModal } from '../../molecules/ConfirmModal';
 import { FullPageSpinner } from '../../atoms/Spinner';
+import { Button } from '../../atoms/Button';
 import { FormField, inputClass } from '../../molecules/FormField';
+import { ArrowLeft, Plus } from 'lucide-react';
 import { SUPPLY_STATUS } from '../../core/constants';
 import { supplyService } from '../../services/supplyService';
 
@@ -52,8 +54,8 @@ function SupplyModal({ initial, onSave, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-md p-6">
+      <div className="absolute inset-0 medil-modal-overlay" onClick={onClose} />
+      <div className="medil-modal relative bg-white rounded-xl w-full max-w-md p-6">
         <h2 className="text-lg font-semibold text-navy mb-4">
           {initial ? 'Editar Insumo' : 'Nuevo Insumo'}
         </h2>
@@ -115,8 +117,8 @@ function AdjustStockModal({ supply, onSave, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-md p-6">
+      <div className="absolute inset-0 medil-modal-overlay" onClick={onClose} />
+      <div className="medil-modal relative bg-white rounded-xl w-full max-w-md p-6">
         <h2 className="text-lg font-semibold text-navy mb-2 font-bold">Ajustar Stock</h2>
         <p className="text-sm text-gray-500 mb-4">{supply.name}</p>
         <form onSubmit={submit} className="space-y-4">
@@ -234,9 +236,7 @@ export default function Supplies() {
     <div className="p-6 max-w-6xl mx-auto space-y-6">
       <div>
         <Link to="/" className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary-dark transition-colors">
-          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-          </svg>
+          <ArrowLeft size={16} strokeWidth={2.25} />
           Volver al Dashboard
         </Link>
       </div>
@@ -246,12 +246,7 @@ export default function Supplies() {
           <h1 className="text-2xl font-bold text-navy">Insumos y Suministros</h1>
           <p className="text-sm text-gray-400 mt-0.5">Control de inventario y alertas de stock de la sucursal</p>
         </div>
-        <button
-          onClick={() => setModal('create')}
-          className="px-4 py-2 text-sm text-white bg-primary rounded-lg hover:bg-primary-dark transition-colors"
-        >
-          + Nuevo insumo
-        </button>
+        <Button label="Nuevo insumo" icon={Plus} onClick={() => setModal('create')} />
       </div>
 
       {/* Tarjetas de Resumen */}

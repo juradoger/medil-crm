@@ -7,6 +7,7 @@ import { patientValidator } from '../domain/validators/patientValidator';
 
 const EMPTY = {
   name:   '',
+  ci:     '',
   phone:  '',
   email:  '',
   status: PATIENT_STATUS.ACTIVE,
@@ -33,6 +34,12 @@ export function PatientForm({ initialData, onSubmit, onCancel, loading = false }
       <FormField label="Nombre completo" htmlFor="name" required error={errors.name}>
         <input id="name" className={inputClass} value={form.name ?? ''}
           onChange={e => set('name', e.target.value)} />
+      </FormField>
+
+      <FormField label="CI (Carnet de Identidad)" htmlFor="ci" required error={errors.ci}>
+        <input id="ci" inputMode="numeric" className={inputClass} value={form.ci ?? ''}
+          placeholder="Ej: 8451236 LP"
+          onChange={e => set('ci', e.target.value)} />
       </FormField>
 
       <FormField label="Teléfono" htmlFor="phone" required error={errors.phone}>

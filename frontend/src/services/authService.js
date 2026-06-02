@@ -39,4 +39,12 @@ export const authService = {
 
   logout() { localStorage.removeItem(TOKEN_KEY); },
   getToken() { return localStorage.getItem(TOKEN_KEY); },
+
+  // Actualiza el registro del usuario (tabla users) por su id real.
+  // Solo columnas existentes en users: fullName, email, photoUrl.
+  async updateProfile(userId, fields) {
+    const { data, error } = await db.from('users').update(fields).eq('id', userId).select();
+    if (error) throw new Error(MESSAGES.error.connection.server);
+    return data?.[0] ?? null;
+  },
 };

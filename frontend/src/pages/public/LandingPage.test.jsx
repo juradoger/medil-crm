@@ -24,8 +24,9 @@ describe('LandingPage Page', () => {
 
     // Muestra sección hero
     expect(screen.getByText('La plataforma médica', { exact: false })).toBeTruthy();
-    // Muestra sección características
-    expect(screen.getByText('Todo lo que tu clínica necesita')).toBeTruthy();
+    // Muestra sección características (el encabezado resalta "necesita" en un <span>,
+    // por eso usamos el nombre accesible del heading que concatena el texto)
+    expect(screen.getByRole('heading', { name: 'Todo lo que tu clínica necesita' })).toBeTruthy();
     // Muestra sección clínicas tras cargar
     await waitFor(() => {
       expect(screen.getByText('Clínica Central')).toBeTruthy();

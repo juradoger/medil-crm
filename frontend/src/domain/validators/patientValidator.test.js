@@ -2,6 +2,7 @@ import { patientValidator } from './patientValidator';
 
 const VALID = {
   name:  'Ana García',
+  ci:    '8451236',
   phone: '591-70000000',
   email: 'ana@example.com',
 };
@@ -10,6 +11,11 @@ describe('patientValidator', () => {
   it('retorna error cuando name está vacío', () => {
     const { errors } = patientValidator.validate({ ...VALID, name: '' });
     expect(errors.name).toBeTruthy();
+  });
+
+  it('retorna error cuando ci está vacío', () => {
+    const { errors } = patientValidator.validate({ ...VALID, ci: '' });
+    expect(errors.ci).toBeTruthy();
   });
 
   it('retorna error cuando phone está vacío', () => {
