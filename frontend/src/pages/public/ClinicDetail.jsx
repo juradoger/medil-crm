@@ -125,7 +125,7 @@ export default function ClinicDetail() {
       <div className="text-center py-6 bg-primary-pale rounded-2xl">
         <p className="text-gray-700 font-medium mb-4">¿Querés agendar una cita?</p>
         {isAuthenticated
-          ? <Link to="/patient/portal"
+          ? <Link to="/login"
               className="px-6 py-3 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-dark transition-colors">
               Ir a mi portal
             </Link>
