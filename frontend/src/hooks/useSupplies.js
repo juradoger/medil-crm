@@ -34,25 +34,29 @@ export function useSupplies(branchId) {
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { load().catch(() => {}); }, [load]);
 
-  const create = (data) => withLoading(async () => {
+  // Las mutaciones NO usan withLoading: `loading` solo refleja la carga inicial.
+  // Si una mutación lo activara, la página que hace `if (loading) return
+  // <FullPageSpinner/>` se re-renderizaría y desmontaría el modal abierto a
+  // mitad del guardado. El modal muestra su propio estado y captura los errores.
+  const create = async (data) => {
     await supplyService.create(branchId, data);
     await fetchSupplies();
-  });
+  };
 
-  const update = (id, data) => withLoading(async () => {
+  const update = async (id, data) => {
     await supplyService.update(id, data);
     await fetchSupplies();
-  });
+  };
 
-  const adjustStock = (id, newStock, minimum) => withLoading(async () => {
+  const adjustStock = async (id, newStock, minimum) => {
     await supplyService.adjustStock(id, newStock, minimum);
     await fetchSupplies();
-  });
+  };
 
-  const remove = (id) => withLoading(async () => {
+  const remove = async (id) => {
     await supplyService.remove(id);
     await fetchSupplies();
-  });
+  };
 
   return { supplies, loading, error, create, update, adjustStock, remove, reload: load };
 }

@@ -34,10 +34,14 @@ export function useMedicalRecords(patientId, branchId) {
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { load().catch(() => {}); }, [load]);
 
-  const create = (data) => withLoading(async () => {
+  // La mutación NO usa withLoading: `loading` solo refleja la carga inicial.
+  // Si lo activara, la página que hace `if (loading) return <FullPageSpinner/>`
+  // se re-renderizaría y desmontaría el modal a mitad del guardado. El modal
+  // muestra su propio estado y captura el error que esta función lanza.
+  const create = async (data) => {
     await recordService.create({ ...data, patientId, branchId });
     await fetchRecords();
-  });
+  };
 
   return { records, loading, error, create, reload: load };
 }

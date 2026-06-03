@@ -39,4 +39,23 @@ describe('useProfessionals — hook', () => {
 
     expect(result.current.professionals.some(p => p.id === 'p9')).toBe(true);
   });
+
+  it('updateProfessional refleja los cambios y sincroniza el usuario vinculado', async () => {
+    professionalService.getAll.mockResolvedValue(MOCK);
+    professionalService.update.mockResolvedValue({ id: 'p1', fullName: 'Dr. A Editado' });
+    professionalService.syncLinkedUser.mockResolvedValue({});
+    const { result } = renderHook(() => useProfessionals());
+    await waitFor(() => expect(result.current.professionals).toHaveLength(2));
+
+    await act(async () => {
+      await result.current.updateProfessional('p1', { fullName: 'Dr. A Editado', email: 'a@medil.com' });
+    });
+
+    const edited = result.current.professionals.find(p => p.id === 'p1');
+    expect(edited.fullName).toBe('Dr. A Editado');
+    expect(professionalService.syncLinkedUser).toHaveBeenCalledWith(
+      'a@medil.com',
+      expect.objectContaining({ fullName: 'Dr. A Editado', email: 'a@medil.com' }),
+    );
+  });
 });

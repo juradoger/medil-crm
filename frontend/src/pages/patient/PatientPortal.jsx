@@ -294,6 +294,7 @@ export default function PatientPortal() {
   const [showBook, setShowBook]         = useState(false);
   const [cancelTarget, setCancelTarget] = useState(null);
   const [pendingAppt, setPendingAppt]   = useState(null); // cita esperando pago
+  const [ready, setReady]               = useState(false); // carga inicial completada
 
   // Encontrar el registro del paciente vinculado al usuario
   const myPatient = useMemo(() => {
@@ -333,6 +334,15 @@ export default function PatientPortal() {
       .finally(() => setLoadProfs(false));
   }, []);
 
+  // El spinner de página completa solo debe verse en la carga inicial. Las
+  // mutaciones (agendar, cancelar) también activan `loading` en los hooks; si
+  // volviéramos a mostrar el spinner se desmontaría el BookModal a mitad del
+  // guardado y se perdería el mensaje de error. Por eso `ready` se fija una vez.
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (!loadP && !loadA && !loadR && !loadProfs) setReady(true);
+  }, [loadP, loadA, loadR, loadProfs]);
+
   const handleBook = async (formPayload) => {
     if (!myPatient) return;
     const data = { ...formPayload, patientId: myPatient.id, patientName: myPatient.name };
@@ -346,9 +356,15 @@ export default function PatientPortal() {
 
   // Tras aprobarse el pago, crea la cita definitivamente
   const handlePaymentSuccess = async (paymentId) => {
-    await createAfterPayment(pendingAppt, paymentId);
-    eventBus.emit('toast:show', { message: MESSAGES.success.appointmentCreated, type: 'success' });
-    setPendingAppt(null);
+    try {
+      await createAfterPayment(pendingAppt, paymentId);
+      eventBus.emit('toast:show', { message: MESSAGES.success.appointmentCreated, type: 'success' });
+      setPendingAppt(null);
+    } catch (err) {
+      // Si la creación falla tras el pago, avisamos en vez de dejar la pasarela
+      // abierta sin explicación.
+      eventBus.emit('toast:show', { message: err.message, type: 'error' });
+    }
   };
 
   const handleCancelConfirmed = async () => {
@@ -357,7 +373,7 @@ export default function PatientPortal() {
     setCancelTarget(null);
   };
 
-  if (loadP || loadA || loadR || loadProfs) return <FullPageSpinner />;
+  if (!ready) return <FullPageSpinner />;
 
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-6">

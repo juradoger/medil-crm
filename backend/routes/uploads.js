@@ -17,7 +17,9 @@ router.post('/branch/:id',
       if (!req.files || req.files.length === 0)
         return res.status(400).json({ error: 'No se recibieron fotos' });
       const urls = req.files.map(f => f.path);
-      res.json({ urls, message: 'Fotos subidas correctamente' });
+      // `url` (singular) para el caso de un solo slot (galería de sucursal),
+      // `urls` (plural) por compatibilidad con subidas múltiples.
+      res.json({ url: urls[0], urls, message: 'Fotos subidas correctamente' });
     } catch (error) { next(error); }
   }
 );

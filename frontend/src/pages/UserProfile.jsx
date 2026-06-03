@@ -180,7 +180,6 @@ export default function UserProfile() {
       }
     })();
     return () => { active = false; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.email, isPatient, isDoctor]);
 
   if (!user) return null;

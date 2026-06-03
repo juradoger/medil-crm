@@ -78,6 +78,28 @@ export const professionalService = {
     return data?.[0] ?? null;
   },
 
+  // Sincroniza el usuario (tabla users: identidad/login) vinculado al profesional.
+  // Se busca por el email anterior porque el email puede haber cambiado en la edición.
+  // Solo escribe columnas existentes en users: fullName, email, photoUrl, branchId.
+  async syncLinkedUser(prevEmail, fields) {
+    if (!prevEmail) return null;
+    const { data: rows, error } = await db.from('users').select('id').eq('email', prevEmail);
+    if (error) return null;
+    const userId = rows?.[0]?.id;
+    if (!userId) return null;
+
+    const payload = {};
+    if (fields.fullName !== undefined) payload.fullName = fields.fullName;
+    if (fields.email    !== undefined) payload.email    = fields.email;
+    if (fields.photoUrl !== undefined) payload.photoUrl = fields.photoUrl;
+    if (fields.branchId !== undefined) payload.branchId = fields.branchId;
+    if (Object.keys(payload).length === 0) return null;
+
+    const { data, error: upErr } = await db.from('users').update(payload).eq('id', userId).select();
+    if (upErr) return null;
+    return data?.[0] ?? null;
+  },
+
   // Actualiza el profesional resolviéndolo por email (vínculo con el usuario)
   async patchByEmail(email, fields) {
     const { data: rows, error } = await db.from('professionals').select('id').eq('email', email);

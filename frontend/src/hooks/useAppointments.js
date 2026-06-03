@@ -36,24 +36,28 @@ export function useAppointments(branchId) {
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { load().catch(() => {}); }, [load]);
 
-  const create = (data) => withLoading(async () => {
+  // Las mutaciones NO usan withLoading: `loading` solo refleja la carga inicial.
+  // Si una mutación lo activara, la página que hace `if (loading) return
+  // <FullPageSpinner/>` se re-renderizaría y desmontaría el modal abierto a
+  // mitad del guardado. El modal muestra su propio estado y captura los errores.
+  const create = async (data) => {
     await appointmentService.create({ ...data, branchId });
     await fetchAppointments();
-  });
+  };
 
-  const cancel = (id) => withLoading(async () => {
+  const cancel = async (id) => {
     await appointmentService.cancel(id);
     await fetchAppointments();
-  });
+  };
 
-  const markAttended = (id) => withLoading(async () => {
+  const markAttended = async (id) => {
     await appointmentService.markAttended(id);
     await fetchAppointments();
-  });
+  };
 
   // Verifica el seguro del paciente: si está afiliado crea la cita gratis;
   // si no, devuelve que requiere pago (la cita se crea luego con createAfterPayment)
-  const createWithPaymentCheck = (appointmentData) => withLoading(async () => {
+  const createWithPaymentCheck = async (appointmentData) => {
     const insurance = await patientService.checkInsurance(appointmentData.patientId);
 
     if (insurance.isInsured) {
@@ -67,10 +71,10 @@ export function useAppointments(branchId) {
     }
 
     return { appointment: null, requiresPayment: true, appointmentData };
-  });
+  };
 
   // Crea la cita una vez que el pago fue aprobado
-  const createAfterPayment = (appointmentData, paymentId) => withLoading(async () => {
+  const createAfterPayment = async (appointmentData, paymentId) => {
     const appointment = await appointmentService.create({
       ...appointmentData,
       paymentStatus: 'paid',
@@ -79,7 +83,7 @@ export function useAppointments(branchId) {
     await fetchAppointments();
     eventBus.emit('appointment:created', appointment);
     return appointment;
-  });
+  };
 
   return {
     appointments, loading, error,

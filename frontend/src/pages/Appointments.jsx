@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useAppointments } from '../hooks/useAppointments';
 import { usePatients } from '../hooks/usePatients';
+import { useProfessionals } from '../hooks/useProfessionals';
 import { DataTable } from '../organisms/DataTable';
 import { SearchBar } from '../molecules/SearchBar';
 import { StatusBadge } from '../molecules/StatusBadge';
@@ -18,10 +19,14 @@ import { MESSAGES } from '../core/messages';
 import { eventBus } from '../core/eventBus';
 
 
-const EMPTY_FORM = { patientId: '', patientName: '', professional: '', date: '', time: '', reason: '' };
+const EMPTY_FORM = { patientId: '', patientName: '', professionalId: '', professional: '', date: '', time: '', reason: '' };
 
-function AppointmentModal({ patients, onSave, onClose, defaultProfessional = '', lockProfessional = false }) {
-  const [form, setForm] = useState({ ...EMPTY_FORM, professional: defaultProfessional });
+function AppointmentModal({ patients, professionals, onSave, onClose, lockedProfessional = null }) {
+  const [form, setForm] = useState({
+    ...EMPTY_FORM,
+    professionalId: lockedProfessional?.id ?? '',
+    professional:   lockedProfessional?.fullName ?? lockedProfessional?.name ?? '',
+  });
   const [saving, setSaving] = useState(false);
   const [error, setError]   = useState('');
 
@@ -32,10 +37,15 @@ function AppointmentModal({ patients, onSave, onClose, defaultProfessional = '',
     setForm(f => ({ ...f, patientId: id, patientName: p?.name ?? '' }));
   };
 
+  const pickProfessional = (id) => {
+    const pr = professionals.find(p => p.id === id);
+    setForm(f => ({ ...f, professionalId: id, professional: pr?.fullName ?? pr?.name ?? '' }));
+  };
+
   const submit = async (e) => {
     e.preventDefault();
-    if (!form.patientId || !form.date || !form.time) {
-      setError('Paciente, fecha y hora son obligatorios');
+    if (!form.patientId || !form.professionalId || !form.date || !form.time) {
+      setError('Paciente, profesional, fecha y hora son obligatorios');
       return;
     }
     setSaving(true);
@@ -65,13 +75,16 @@ function AppointmentModal({ patients, onSave, onClose, defaultProfessional = '',
             </select>
           </FormField>
           <FormField label="Profesional">
-            <input
-              className={inputClass}
-              value={form.professional}
-              onChange={e => set('professional', e.target.value)}
-              placeholder="Ej: Dra. Carmen Solís"
-              readOnly={lockProfessional}
-            />
+            {lockedProfessional ? (
+              <input className={inputClass} value={form.professional} readOnly />
+            ) : (
+              <select className={inputClass} value={form.professionalId} onChange={e => pickProfessional(e.target.value)}>
+                <option value="">Seleccionar…</option>
+                {professionals.map(p => (
+                  <option key={p.id} value={p.id}>{p.fullName ?? p.name}</option>
+                ))}
+              </select>
+            )}
           </FormField>
           <FormField label="Fecha">
             <input className={inputClass} type="date" value={form.date} onChange={e => set('date', e.target.value)} />
@@ -103,6 +116,10 @@ export default function Appointments() {
   const isDoctor = user?.role === USER_ROLES.DOCTOR;
   const { appointments, loading, cancel, markAttended, createWithPaymentCheck, createAfterPayment } = useAppointments(currentBranchId);
   const { patients, loading: loadP } = usePatients(currentBranchId);
+  const { professionals, loading: loadPr } = useProfessionals(currentBranchId);
+
+  // El profesional asociado al doctor logueado (vínculo por email)
+  const myProfessional = professionals.find(p => p.email === user?.email) ?? null;
 
   const [showModal, setShowModal]       = useState(false);
   const [cancelTarget, setCancelTarget] = useState(null);
@@ -165,7 +182,7 @@ export default function Appointments() {
     },
   ];
 
-  if (loading || loadP) return <FullPageSpinner />;
+  if (loading || loadP || loadPr) return <FullPageSpinner />;
 
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-6">
@@ -218,10 +235,10 @@ export default function Appointments() {
       {showModal && (
         <AppointmentModal
           patients={patients}
+          professionals={professionals}
           onSave={handleCreate}
           onClose={() => setShowModal(false)}
-          defaultProfessional={isDoctor ? (user?.fullName ?? '') : ''}
-          lockProfessional={isDoctor}
+          lockedProfessional={isDoctor ? myProfessional : null}
         />
       )}
 

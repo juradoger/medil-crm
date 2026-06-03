@@ -34,20 +34,25 @@ export function usePatients(branchId) {
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { load().catch(() => {}); }, [load]);
 
-  const create = (data) => withLoading(async () => {
+  // Las mutaciones NO usan withLoading: `loading` solo refleja la carga inicial.
+  // Si una mutación lo activara, la página que hace `if (loading) return
+  // <FullPageSpinner/>` se re-renderizaría y desmontaría el modal abierto a
+  // mitad del guardado (se perdían los datos y el error). El modal muestra su
+  // propio estado de guardado y captura los errores que estas funciones lanzan.
+  const create = async (data) => {
     await patientService.create({ ...data, branchId });
     await fetchPatients();
-  });
+  };
 
-  const update = (id, data) => withLoading(async () => {
+  const update = async (id, data) => {
     await patientService.update(id, data);
     await fetchPatients();
-  });
+  };
 
-  const remove = (id) => withLoading(async () => {
+  const remove = async (id) => {
     await patientService.remove(id);
     await fetchPatients();
-  });
+  };
 
   const search = (query) => patientService.search(branchId, query);
 

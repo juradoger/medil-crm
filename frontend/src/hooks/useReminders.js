@@ -35,19 +35,24 @@ export function useReminders(branchId) {
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { load().catch(() => {}); }, [load]);
 
-  const markSent = (id) => withLoading(async () => {
+  // Las mutaciones NO usan withLoading: `loading` solo refleja la carga inicial.
+  // Si una mutación lo activara, la página que hace `if (loading) return
+  // <FullPageSpinner/>` se re-renderizaría y desmontaría el modal abierto a
+  // mitad de la operación. Los controles de la página manejan su propio estado
+  // (sendingId, scheduleId) y capturan los errores que estas funciones lanzan.
+  const markSent = async (id) => {
     await reminderService.markSent(id);
     await fetchReminders();
-  });
+  };
 
   // Reprograma la fecha/hora de envío del recordatorio
-  const reschedule = (id, sendAt) => withLoading(async () => {
+  const reschedule = async (id, sendAt) => {
     await reminderService.reschedule(id, sendAt);
     await fetchReminders();
-  });
+  };
 
   // Envía el recordatorio por WhatsApp y actualiza el estado local
-  const sendWhatsAppReminder = (reminder) => withLoading(async () => {
+  const sendWhatsAppReminder = async (reminder) => {
     const result = await reminderService.sendWhatsAppForReminder(reminder);
     if (result.success || result.simulated) {
       setReminders(prev => prev.map(r =>
@@ -57,7 +62,7 @@ export function useReminders(branchId) {
       ));
     }
     return result;
-  });
+  };
 
   return {
     reminders, loading, error,

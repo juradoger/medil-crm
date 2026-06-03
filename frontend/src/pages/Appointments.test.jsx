@@ -26,6 +26,15 @@ vi.mock('../hooks/usePatients', () => ({
   }),
 }));
 
+vi.mock('../hooks/useProfessionals', () => ({
+  useProfessionals: () => ({
+    professionals: [
+      { id: 'prof1', fullName: 'Dr. Solis', email: 'solis@medil.com', branchId: 'branch-1' },
+    ],
+    loading: false,
+  }),
+}));
+
 describe('Appointments Page', () => {
   it('smoke test: renderiza sin errores', () => {
     render(
