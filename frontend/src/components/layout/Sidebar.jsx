@@ -4,7 +4,7 @@ import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard, Users, Calendar, Bell, Building2, Receipt,
   Package, ClipboardList, Stethoscope, BarChart3, HeartPulse, User,
-  Globe, X, LogOut,
+  Globe, X, LogOut, ShieldCheck,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { USER_ROLES } from '../../core/constants';
@@ -22,6 +22,7 @@ const ICONS = {
   supplies:      Package,
   console:       ClipboardList,
   professionals: Stethoscope,
+  admins:        ShieldCheck,
   reports:       BarChart3,
   portal:        HeartPulse,
   profile:       User,
@@ -35,6 +36,7 @@ const NAV_CONFIG = [
   { to: '/reminders',      label: 'Recordatorios',   roles: [USER_ROLES.ADMIN, USER_ROLES.DOCTOR], iconKey: 'reminders' },
   { to: '/admin/branches',      label: 'Sucursales',    roles: [USER_ROLES.ADMIN], iconKey: 'branches' },
   { to: '/admin/professionals', label: 'Profesionales', roles: [USER_ROLES.ADMIN], iconKey: 'professionals' },
+  { to: '/admin/admins',        label: 'Administradores', roles: [USER_ROLES.ADMIN], iconKey: 'admins' },
   { to: '/admin/billing',       label: 'Facturación',   roles: [USER_ROLES.ADMIN], iconKey: 'billing' },
   { to: '/admin/supplies',      label: 'Insumos',       roles: [USER_ROLES.ADMIN], iconKey: 'supplies' },
   { to: '/admin/reports',       label: 'Reportes',      roles: [USER_ROLES.ADMIN], iconKey: 'reports' },

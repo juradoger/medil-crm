@@ -27,6 +27,9 @@ export const MESSAGES = {
       noData:    'No hay profesionales registrados',
       noResults: 'No encontramos profesionales con ese criterio',
     },
+    admins: {
+      noData: 'No hay administradores registrados',
+    },
     agenda: {
       noData: 'No tenés citas programadas para hoy',
     },
@@ -85,6 +88,10 @@ export const MESSAGES = {
     branchCreated:       'Sucursal creada correctamente',
     professionalCreated: (email) =>
       `Profesional creado. Email: ${email} / Contraseña: MedIL2024!`,
+    adminCreated: (email) =>
+      `Administrador creado. Email: ${email} (usá la contraseña que definiste)`,
+    adminElevated: (name) =>
+      `${name} ahora es administrador de la sucursal`,
     reportGenerated:     'Reporte generado correctamente',
     reportDownloaded:    'Reporte descargado',
     whatsappSent:        (phone) => `WhatsApp enviado correctamente a ${phone}`,

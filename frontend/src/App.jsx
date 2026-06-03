@@ -24,6 +24,7 @@ import Branches       from './pages/admin/Branches';
 import Billing        from './pages/admin/Billing';
 import Supplies       from './pages/admin/Supplies';
 import Professionals  from './pages/admin/Professionals';
+import Admins         from './pages/admin/Admins';
 import Reports        from './pages/admin/Reports';
 import DoctorConsole  from './pages/doctor/DoctorConsole';
 import PatientPortal  from './pages/patient/PatientPortal';
@@ -109,6 +110,11 @@ function AppLayout() {
           <Route path="/admin/professionals" element={
             <ProtectedRoute allowedRoles={[USER_ROLES.ADMIN]}>
               <Professionals />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/admins" element={
+            <ProtectedRoute allowedRoles={[USER_ROLES.ADMIN]}>
+              <Admins />
             </ProtectedRoute>
           } />
           <Route path="/admin/reports" element={
