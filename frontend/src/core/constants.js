@@ -28,6 +28,12 @@ export const PATIENT_STATUS = {
   INACTIVE: 'inactive', // Inactivo — Inactive
 };
 
+// Estados de sucursal — Branch statuses (el portal público solo lista 'active')
+export const BRANCH_STATUS = {
+  ACTIVE:   'active',   // Activa — Active
+  INACTIVE: 'inactive', // Inactiva — Inactive
+};
+
 // Estados de pago — Payment statuses
 export const PAYMENT_STATUS = {
   PENDING:  'pending',  // Pendiente — Pending

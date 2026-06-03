@@ -1,5 +1,6 @@
 // Servicio de sucursales
 import { db } from '../lib/insforge';
+import { BRANCH_STATUS } from '../core/constants';
 
 export const branchService = {
   async getAll() {
@@ -15,7 +16,10 @@ export const branchService = {
   },
 
   async create(data) {
-    const { data: rows, error } = await db.from('branches').insert(data).select();
+    // Toda sucursal nueva nace activa para que aparezca en el portal público
+    // (que filtra por status = 'active'); si se pasa status explícito, ese gana.
+    const { data: rows, error } = await db.from('branches')
+      .insert({ status: BRANCH_STATUS.ACTIVE, ...data }).select();
     if (error) throw new Error(error.message);
     return rows?.[0];
   },
