@@ -28,9 +28,11 @@ router.get('/branches/:id', async (req, res, next) => {
 
     const branch = rows[0];
 
+    // Solo los profesionales de ESTA sucursal (antes devolvía todos los del sistema)
     const { data: professionals, error: profErr } = await db.from('professionals')
       .select('*')
-      .eq('isActive', true);
+      .eq('isActive', true)
+      .eq('branchId', req.params.id);
     if (profErr) throw new Error(profErr.message);
 
     res.json({ branch, professionals: professionals ?? [] });
